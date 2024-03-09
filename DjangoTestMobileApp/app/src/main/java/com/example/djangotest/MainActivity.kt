@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                     val responseBody = response.body()
                     if (response.isSuccessful && responseBody != null) {
-                        val message = "POST request successful: ${responseBody["message"]}"
-                        Log.d("ya mano", responseBody.toString())
+                        val message = "POST request successful: First Name: ${responseBody["first_name"]}, Last Name: ${responseBody["last_name"]}"
+                        Log.d("ya mano", message)
                         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                     } else {
                         Log.d("ya mano","fodeu1")
