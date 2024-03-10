@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(
+void main() => runApp(const MaterialApp(
   home: Home(),
 ));
 
@@ -23,6 +23,11 @@ class Home extends StatelessWidget {
       ),
       backgroundColor: Colors.blue[600],
       centerTitle: true,
+    ),
+    body: Container(
+      color: Colors.grey[200],
+      child: Text("Home")
+
     ),
   );
   }
