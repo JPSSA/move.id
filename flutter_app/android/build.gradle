@@ -1,3 +1,12 @@
+buildscript {
+    ext.kotlin_version = '1.5.+'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // Your other build script configurations...
+}
+
 allprojects {
     repositories {
         google()

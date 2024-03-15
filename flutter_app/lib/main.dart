@@ -1,34 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
-void main() => runApp(const MaterialApp(
-  home: Home(),
-));
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    // Your background task logic goes here
+    print("Background task executed!");
+    return Future.value(true);
+  });
+}
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher);
+  runApp(MyApp());
+}
 
+void scheduleTask() {
+  Workmanager().registerOneOffTask(
+    'myTask',
+    'simpleTask',
+    inputData: <String, dynamic>{'key': 'value'},
+  );
+}
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-    appBar: AppBar(
-      title: const Text(
-        "Move ID ", 
-        style: TextStyle(
-          letterSpacing: 2.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-          fontSize: 20,
-          fontFamily: "RobotoMono",
+    return MaterialApp(
+      title: 'WorkManager Test',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('WorkManager Test'),
+        ),
+        body: Center(
+          child: ElevatedButton(
+            onPressed: () {
+              scheduleTask();
+              print("Task scheduled!");
+            },
+            child: Text('Schedule Task'),
+          ),
         ),
       ),
-      backgroundColor: Colors.blue[600],
-      centerTitle: true,
-    ),
-    body: Container(
-      color: Colors.grey[200],
-      child: Text("Home")
-
-    ),
-  );
+    );
   }
 }
