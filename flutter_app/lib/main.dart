@@ -1,47 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:flutter_app/screens/signin_screen.dart';
 
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
-    // Your background task logic goes here
-    print("Background task executed!");
-    return Future.value(true);
-  });
-}
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(callbackDispatcher);
-  runApp(MyApp());
-}
-
-void scheduleTask() {
-  Workmanager().registerOneOffTask(
-    'myTask',
-    'simpleTask',
-    inputData: <String, dynamic>{'key': 'value'},
-  );
+void main(){
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key:key);
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return MaterialApp(
-      title: 'WorkManager Test',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('WorkManager Test'),
-        ),
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              scheduleTask();
-              print("Task scheduled!");
-            },
-            child: Text('Schedule Task'),
-          ),
-        ),
+      title: "Move ID",
+      theme: ThemeData(
+
+        primaryColor: Colors.blue,
+
+
       ),
+      home:const SignInScreen(),
     );
   }
 }
