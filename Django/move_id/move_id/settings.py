@@ -27,6 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Configuration items for the MQTT broker
+MQTT_SERVER = 'broker.emqx.io'
+MQTT_PORT = 1883
+MQTT_KEEPALIVE = 60
+MQTT_USER = ''
+MQTT_PASSWORD = ''
+
 
 # Application definition
 
@@ -76,8 +83,10 @@ WSGI_APPLICATION = 'move_id.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':'move_id',
+        'USER':'admin',
+        'PASSWORD':'admin',
     }
 }
 

@@ -1,0 +1,7 @@
+pip install django
+pip install djangorestframework
+pip install paho-mqtt
+
+django account
+user : admin
+pass : 1234
