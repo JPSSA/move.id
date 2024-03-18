@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_app/utils/color_utils.dart';
 import 'package:flutter_app/screens/signup_screen.dart';
+import 'package:flutter_app/utils/utils.dart';
+
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -33,25 +34,15 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
+            buildSignUpField(
               controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                fillColor: Colors.white,
-                filled: true,
-              ),
+              labelText: 'Username',
             ),
-            const SizedBox(height: 20),
-            TextField(
+            buildSignUpField(
               controller: _passwordController,
+              labelText: 'Email',
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                fillColor: Colors.white,
-                filled: true,
-              ),
-            ),
-            const SizedBox(height: 20),
+            ),           
             ElevatedButton(
               onPressed: () {
                 // Handle sign in button press
