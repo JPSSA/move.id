@@ -36,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 100), // Adjust vertical padding here
+         padding: EdgeInsetsDirectional.symmetric(horizontal: 20,vertical: 200),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end, // Align the column content to the bottom
               children: [
@@ -75,7 +75,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                   child: const Text('Register'),
                 ),
-                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
