@@ -1,10 +1,35 @@
 import 'dart:convert';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Notification/notification.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-void main() {
+void main() async {
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: "MoveID_channel_group",
+        channelKey: "MoveID_Notification_Channel", 
+        channelName: "MoveID Notification", 
+        channelDescription: "MoveID Notification Channel"
+        )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: "MoveID_channel_group", 
+        channelGroupName: "MoveID Group"
+      )
+
+    ]
+  );
+  bool isAllowedToSendNotifications = await AwesomeNotifications().isNotificationAllowed();
+
+  if(!isAllowedToSendNotifications){
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
   runApp(MyApp());
 }
 
@@ -20,6 +45,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+   AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.OnNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.OnNotificationDisplayedMethod
+      );
     _initializeMqttClient();
   }
 
@@ -77,6 +108,14 @@ class _MyAppState extends State<MyApp> {
   void _onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) {
   final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
   final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+
+
+  AwesomeNotifications().createNotification(content: NotificationContent(
+    id: 1, 
+    channelKey: "MoveID_Notification_Channel",
+    title: "OH JOCA OH JOCA JURO QUE É FACIL",
+    body: "$message"),
+    );
 
   print('Received message: $message');
 
