@@ -1,13 +1,14 @@
 import paho.mqtt.client as mqtt
 from django.conf import settings
 
-subscribed_to_topic = False
-
 
 # MQTT client configuration
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
 
 def on_connect(mqtt_client, userdata, flags, rc):
+
+    subscribed_to_topic = False
+
      
     if rc == 0:
         print('Connected successfully')
@@ -37,4 +38,5 @@ client.connect(
 )
 
 # Start the MQTT client loop
+# here or in __ini__.py
 client.loop_start()
