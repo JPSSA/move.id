@@ -1,6 +1,4 @@
-import 'dart:ffi';
 import 'package:flutter/material.dart';
-
 
 //Constum widget used to make input fields for login and register
 Widget buildInputField({

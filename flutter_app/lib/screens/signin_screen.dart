@@ -52,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   );
                 },
                 child: const Text(
-                  "Don't have an account? Click here to register!",
+                  "Don't have an account? Click here!",
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     fontSize: 12,

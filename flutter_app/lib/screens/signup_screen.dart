@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/signin_screen.dart';
 import 'package:flutter_app/utils/color_utils.dart';
 import 'package:flutter_app/utils/utils.dart';
-import 'package:flutter_app/screens/signup_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -11,6 +13,62 @@ class SignUpScreen extends StatefulWidget {
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
+
+
+Future<Map<String, String>> registerRequest(TextEditingController fnameController, TextEditingController lnameController,
+    TextEditingController usernameController, TextEditingController emailController,
+    TextEditingController password1Controller) async {
+  
+  final String url = 'http://192.168.1.68:8000/registerAPI/';
+  
+  final String firstName = fnameController.text;
+  final String lastName = lnameController.text;
+  final String username = usernameController.text;
+  final String email = emailController.text;
+  final String password = password1Controller.text;
+
+  final Map<String, String> userData = {
+    'first_name': firstName,
+    'last_name': lastName,
+    'username': username,
+    'email': email,
+    'password': password,
+  };
+
+  final http.Response response = await http.post(
+    Uri.parse(url),
+    body: json.encode(userData),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Fluttertoast.showToast(
+      msg: "Account created successfully",
+      toastLength: Toast.LENGTH_SHORT,
+      backgroundColor: Colors.white,
+      textColor: Colors.black
+    );
+    // Decode the response body
+    final Map<String, dynamic> responseBody = json.decode(response.body);
+    
+    final Map<String, String> responseData = {};
+    responseBody.forEach((key, value) {
+      responseData[key] = value.toString();
+    });
+    return responseData;
+  } else {
+    Fluttertoast.showToast(
+      msg: "Email already in use",
+      toastLength: Toast.LENGTH_SHORT,
+      backgroundColor: Colors.white,
+      textColor: Colors.black
+    );
+    throw Exception('Failed to register user');
+  }
+}
+
 
 class _SignUpScreenState extends State<SignUpScreen> {
   
@@ -20,6 +78,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _password1Controller = TextEditingController();
   final TextEditingController _password2Controller = TextEditingController();
+
+  final url = 'http://192.168.1.75:8000/registerAPI/';
 
   @override
   Widget build(BuildContext context) {
@@ -78,31 +138,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if(_fnameController.text.isEmpty || _lnameController.text.isEmpty
-                  || _emailController.text.isEmpty || _usernameController.text.isEmpty
-                  || _password1Controller.text.isEmpty || _password2Controller.text.isEmpty){
+             ElevatedButton(
+              onPressed: () {
+                if (_fnameController.text.isEmpty || _lnameController.text.isEmpty ||
+                    _emailController.text.isEmpty || _usernameController.text.isEmpty ||
+                    _password1Controller.text.isEmpty || _password2Controller.text.isEmpty) {
+                  Fluttertoast.showToast(
+                    msg: "Forgot to fill all the fields!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black
+                  );
+                } else if (_password1Controller.text != _password2Controller.text) {
+                  Fluttertoast.showToast(
+                    msg: "Passwords don't match!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black
+                  );
+                } else {
+                  registerRequest(
+                    _fnameController, _lnameController,
+                    _usernameController, _emailController, _password1Controller
+                  ).then((response) {
+                    print("Register successful");
+                  }).catchError((error) {
+                    print("Error during registration: $error");
                     Fluttertoast.showToast(
-                      msg: "Forgot to fill all the fields",
+                      msg: "Failed to register user: $error",
                       toastLength: Toast.LENGTH_SHORT,
                       backgroundColor: Colors.white,
                       textColor: Colors.black
                     );
-                  }else{
-
-                  }
-
-                },
-                child: const Text(
-                  "Register",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'RobotoMono'
-                  ),
+                  });
+                }
+              },
+              child: const Text(
+                "Register",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'RobotoMono'
                 ),
               ),
-               const SizedBox(height: 40),
+            ),
+            const SizedBox(height: 40),
             ],
           )
         ),
