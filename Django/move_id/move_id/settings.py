@@ -119,7 +119,8 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+#changed to save the datetime in the SensorData
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
