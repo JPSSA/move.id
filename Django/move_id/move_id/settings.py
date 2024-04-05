@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-p93i)6t6n063xydhlj=*)3h4a$o3-mhrgj#r4*8y8031(bw38u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.68']
+ALLOWED_HOSTS = ['192.168.1.68','127.0.0.1']
 
 # Configuration items for the MQTT broker
 MQTT_SERVER = 'broker.emqx.io'
@@ -119,7 +119,8 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+#changed to save the datetime in the SensorData
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
