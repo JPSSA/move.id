@@ -40,6 +40,7 @@ dependencies:
   flutter_local_notifications: ^17.0.0
   awesome_notifications: ^0.9.3+1
   fluttertoast: ^8.2.4
+  get: ^4.6.6
 
 
 dev_dependencies:

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/signin_screen.dart';
+import 'package:get/get.dart';
+import 'utils/home_controller.dart';
 
 
-void main(){
-  runApp(const MyApp());
+void main() {
+  // Initialize HomeController
+  Get.put(HomeController());
+
+  // Run the app
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

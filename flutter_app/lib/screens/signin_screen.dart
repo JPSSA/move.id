@@ -63,30 +63,30 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-
-                  if(_usernameController.text.isEmpty || _passwordController.text.isEmpty){
-                      Fluttertoast.showToast(
-                        msg: "Forgot to fill all the fields",
-                        toastLength: Toast.LENGTH_SHORT,
-                        backgroundColor: Colors.white,
-                        textColor: Colors.black
-                        );
-                  }else{
-                    Navigator.push(
+              onPressed: () {
+                if(_usernameController.text.isEmpty || _passwordController.text.isEmpty){
+                  Fluttertoast.showToast(
+                    msg: "Forgot to fill all the fields",
+                    toastLength: Toast.LENGTH_SHORT,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black
+                  );
+                } else {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeSreen()),
-                    );
-                  }
-                },
-                child: const Text(
-                  "Sign up",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'RobotoMono'
-                  ),
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                }
+              },
+              child: const Text(
+                "Sign up",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'RobotoMono'
                 ),
               ),
+            ),
+
               const SizedBox(height: 100),
             ],
         ),
