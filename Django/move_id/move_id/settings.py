@@ -87,6 +87,7 @@ DATABASES = {
         'NAME':'move_id',
         'USER':'admin',
         'PASSWORD':'admin',
+        'HOST': 'localhost'
     }
 }
 
