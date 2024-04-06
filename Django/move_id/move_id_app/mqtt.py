@@ -1,8 +1,12 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt # type: ignore
 from django.conf import settings
-from .models import SensorData
-import json
-from datetime import datetime
+from .sensordatautils import get_recent_values_accelerometer
+from .sensordatautils import get_recent_values_gyroscope
+from .sensordatautils import get_sensor_data_as_dataframe
+from .sensordatautils import appendData
+from .sensordatautils import count_rows_with_topic_id
+from .sensordatautils import delete_oldest_sensor_data
+
 
 subscribed_topics = []
 
@@ -20,55 +24,10 @@ def on_connect(mqtt_client, userdata, flags, rc):
 
 def on_message(mqtt_client, userdata, msg):
     appendData(msg)
-    
+
     if count_rows_with_topic_id(msg.topic) >= 120:
         delete_oldest_sensor_data(msg.topic)
     
-def appendData(msg):
-    data = json.loads(msg.payload)
-    
-    gyroscope = data.get('gyroscopeSensor', {})
-    accelerometer = data.get('accelerometerSensor', {})
-
-    if gyroscope and accelerometer:
-        gyroscope_x = float(gyroscope['x'])
-        gyroscope_y = float(gyroscope['y'])
-        gyroscope_z = float(gyroscope['z'])
-        accelerometer_x = float(accelerometer['x'])
-        accelerometer_y = float(accelerometer['y'])
-        accelerometer_z = float(accelerometer['z'])
-
-        sensor_data_instance = SensorData.objects.create(
-            datetime = datetime.now(),
-            topic_id = msg.topic,
-            gyroscopeX = gyroscope_x,
-            gyroscopeY = gyroscope_y,
-            gyroscopeZ = gyroscope_z,
-            accelerometerX = accelerometer_x,
-            accelerometerY = accelerometer_y,
-            accelerometerZ = accelerometer_z
-        )
-        print("Sensor Data saved!!")
-    else:
-        print("Missing Gyroscope and Accelerometer Data")
-
-
-def count_rows_with_topic_id(topic_id):
-    count = SensorData.objects.filter(topic_id=topic_id).count()
-    return count
-
-def delete_oldest_sensor_data(topic_id):
-    try:
-        oldest_sensor_data = SensorData.objects.filter(topic_id=topic_id).order_by('datetime').first()
-        if oldest_sensor_data:
-            oldest_sensor_data.delete()
-            print(f"Oldest SensorData record with topic_id {topic_id} deleted successfully.")
-        else:
-            print(f"No SensorData records found with topic_id {topic_id}.")
-
-    except Exception as e:
-         print("Error occurred while deleting oldest SensorData record:", e)
-
 # Set callback functions
 client.on_connect = on_connect
 client.on_message = on_message
@@ -83,4 +42,10 @@ client.connect(
 
 # Start the MQTT client loop
 # here or in __ini__.py
+print("Dataframe as pandas dataframe")
+print(get_sensor_data_as_dataframe("move_id/1234"))
+print("list of the 6 most recent accelerometerX values")
+print(get_recent_values_accelerometer("move_id/1234","x",6))
+print("list of the 6 most recent gyroscopeX values")
+print(get_recent_values_gyroscope("move_id/1234","x",6))
 client.loop_start()
