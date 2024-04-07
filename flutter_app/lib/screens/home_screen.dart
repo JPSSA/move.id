@@ -77,7 +77,7 @@ class HomeScreen extends GetView<HomeController> {
                     controller.deviceIDTextEditingController.text,
                   );
                 },
-                child: Text(
+                child: const Text(
                   "Add Notifier",
                   style: TextStyle(
                     fontSize: 16,
@@ -87,7 +87,7 @@ class HomeScreen extends GetView<HomeController> {
               ),
               Obx(
                 () => Container(
-                  height: 200,
+                  height: 320,
                   child: ListView.builder(
                     itemCount: controller.itemCount.value,
                     itemBuilder: (context, index) {
@@ -111,7 +111,6 @@ class HomeScreen extends GetView<HomeController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 120),
             ],
           ),
         ),
