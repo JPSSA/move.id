@@ -16,7 +16,7 @@ class RegisterAPI(APIView):
 
         if request.method == 'POST':
 
-            print("Entrou no POST!!")
+            print("Entrou no Resgister")
             
             # Getting the data from the register
             data = json.loads(request.body)
@@ -43,3 +43,33 @@ class RegisterAPI(APIView):
         else:
             print("Erro no metodo")
             return JsonResponse({'error': 'Method not allowed'}, status=405)
+        
+
+
+
+class LoginAPI(APIView):
+
+    def post(self,request):
+
+        if request.method == 'POST':
+
+            print("Entrou no Login")
+
+            data = json.loads(request.body)
+
+            email = data.get('email')
+            password = data.get('password')
+
+            user = User.objects.filter(email=email).first()
+            if not user:
+                return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+            
+            authenticated_user = authenticate(username=user.username, password=password)
+            if not authenticated_user:
+                return JsonResponse({'error': 'Incorrect password'}, status=401)
+            
+            return JsonResponse({'message': 'Login successful', 'user_id': user.id}, status=200)
+
+
+
+

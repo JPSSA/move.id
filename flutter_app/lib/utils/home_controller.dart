@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/models/patient_model.dart';
@@ -10,9 +9,10 @@ import 'package:get/get.dart';
 
 class HomeController extends GetxController{
 
+
+
+  RxString selectedLocation = RxString("Hospital Santa Maria");
   Rx<List<PatientModel>> patients = Rx<List<PatientModel>>([]);
-  TextEditingController fnameTextEditingController = TextEditingController();
-  TextEditingController lnameTextEditingController = TextEditingController();
   TextEditingController deviceIDTextEditingController = TextEditingController();
   late PatientModel patientModel;
   var itemCount = 0.obs;
@@ -29,16 +29,13 @@ class HomeController extends GetxController{
   @override
   void onClose(){
     super.onClose();
-    fnameTextEditingController.dispose();
-    lnameTextEditingController.dispose();
     deviceIDTextEditingController.dispose();
   }
-  addPatient(String fname,String lname, String deviceid){
-    patientModel = PatientModel(deviceid: deviceid, fname: fname, lname: lname);
+  addPatient(String location, String deviceid){
+    patientModel = PatientModel(deviceid: deviceid,location: selectedLocation);
     patients.value.add(patientModel);
     itemCount.value = patients.value.length;
-    fnameTextEditingController.clear();
-    lnameTextEditingController.clear();
+    selectedLocation.value = "Hospital Santa Maria"; 
     deviceIDTextEditingController.clear();
   }
 

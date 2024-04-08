@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import RegisterAPI
+from .views import LoginAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('publish', views.publish_message, name='publish'),
-    path('registerAPI/',RegisterAPI.as_view())
+    path('registerAPI/',RegisterAPI.as_view()),
+    path('loginAPI/',LoginAPI.as_view()),   
 ]

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PatientModel {
-  final String? fname;
-  final String? lname;
+  final RxString? location;
   final String? deviceid;
 
   PatientModel(
     {
       @required this.deviceid,
-      @required this.fname,
-      @required this.lname,
+      @required this.location
     }
   );
 }

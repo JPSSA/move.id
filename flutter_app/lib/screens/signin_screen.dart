@@ -13,7 +13,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
 
@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
                const SizedBox(height: 100),
               Image.asset("assets/images/move_id_logo.png"),
               const SizedBox(height: 10),
-              buildInputField(controller: _usernameController, hintText: "Username", obscureText: false, icon: const Icon(Icons.account_circle)),
+              buildInputField(controller: _emailController, hintText: "Email", obscureText: false, icon: const Icon(Icons.account_circle)),
               const SizedBox(height: 20),
               buildInputField(controller: _passwordController, hintText: "Password", obscureText: true, icon: const Icon(Icons.lock)),
               const SizedBox(height:20),
@@ -64,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
               onPressed: () {
-                if(_usernameController.text.isEmpty || _passwordController.text.isEmpty){
+                if(_emailController.text.isEmpty || _passwordController.text.isEmpty){
                   Fluttertoast.showToast(
                     msg: "Forgot to fill all the fields",
                     toastLength: Toast.LENGTH_SHORT,

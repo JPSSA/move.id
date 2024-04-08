@@ -19,7 +19,7 @@ Future<Map<String, String>> registerRequest(TextEditingController fnameControlle
     TextEditingController usernameController, TextEditingController emailController,
     TextEditingController password1Controller) async {
   
-  final String url = 'http://192.168.1.68:8000/registerAPI/';
+  const String url = 'http://172.20.10.2:8000/registerAPI/';
   
   final String firstName = fnameController.text;
   final String lastName = lnameController.text;
@@ -79,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _password1Controller = TextEditingController();
   final TextEditingController _password2Controller = TextEditingController();
 
-  final url = 'http://192.168.1.75:8000/registerAPI/';
+  final String url = 'http://172.20.10.2:8000/registerAPI/';
 
   @override
   Widget build(BuildContext context) {
