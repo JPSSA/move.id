@@ -18,7 +18,8 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               children: [
                 ListTile(
-                  title: const Text('Logout'),
+                  title: const Text('Logout',
+                  style: TextStyle(fontFamily: 'RobotoMono'),),
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.remove('email');
@@ -36,10 +37,12 @@ class SettingsScreen extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
+
+                
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings, color: Colors.purple),
-                label: 'Settings',
+                label: 'Settings'
               ),
             ],
             currentIndex: 1, 
