@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/home_screen.dart';
-import 'package:flutter_app/utils/color_utils.dart';
-import 'package:flutter_app/screens/signup_screen.dart';
-import 'package:flutter_app/utils/utils.dart';
+import 'package:move_id/screens/home_screen.dart';
+import 'package:move_id/utils/color_utils.dart';
+import 'package:move_id/screens/signup_screen.dart';
+import 'package:move_id/utils/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_app/utils/api_urls.dart';
+import 'package:move_id/utils/api_urls.dart';
 
 
 class SignInScreen extends StatefulWidget {

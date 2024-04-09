@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/settings_screen.dart';
-import 'package:flutter_app/utils/color_utils.dart';
-import 'package:flutter_app/utils/home_controller.dart';
+import 'package:move_id/screens/settings_screen.dart';
+import 'package:move_id/utils/color_utils.dart';
+import 'package:move_id/utils/home_controller.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends GetView<HomeController> {
