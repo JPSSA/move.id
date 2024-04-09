@@ -4,12 +4,8 @@ from move_id_app.mqtt import client as mqtt_client
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
-#def publish_message(request):
-#    request_data = json.loads(request.body)
-#    rc, mid = mqtt_client.publish(request_data['topic'], request_data['msg'])
-#    return JsonResponse({'code': rc})
-
+from move_id_app.models import UserSensor
+from move_id_app.models import PatientSensor
 
 class RegisterAPI(APIView):
 
@@ -19,7 +15,6 @@ class RegisterAPI(APIView):
 
             print("Entrou no Resgister")
             
-            # Getting the data from the register
             data = json.loads(request.body)
             first_name = data.get('first_name')
             last_name = data.get('last_name')
@@ -27,17 +22,14 @@ class RegisterAPI(APIView):
             email = data.get('email')
             password = data.get('password')
 
-            # Checking if the email exists
             if User.objects.filter(email=email).exists():
                 print("Email ja esta usado")
                 return JsonResponse({'error': 'Email already in use'}, status=400)
-
-            # Creating the user
+      
             user = User.objects.create_user(username=username, email=email, password=password)
             user.first_name = first_name
             user.last_name = last_name
-
-            # Saving the user to the database
+          
             user.save()
 
             return JsonResponse({'message': 'User created successfully'}, status=200)
@@ -71,6 +63,59 @@ class LoginAPI(APIView):
             
             return JsonResponse({'message': 'Login successful', 'user_id': user.id}, status=200)
 
+
+class NotifierAPI(APIView):
+
+    def post(self, request):
+        if request.method == 'POST':
+
+            print("Entrou no post addNotifier")
+
+            data = json.loads(request.body)
+
+            email = data.get('email')
+            idSensor = data.get('idSensor')
+            location = data.get('location')
+
+            user = User.objects.filter(email=email).first()
+            if not user:
+                return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+
+            sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+            if not sensor:
+                return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
+        
+            user_sensor = UserSensor(user=user, idSensor=sensor, location=location)
+            user_sensor.save()
+
+
+            return JsonResponse({'message': 'Notifier added succesfully'}, status=200)
+    
+
+    def delete(self, request):
+            if request.method == 'DELETE':
+
+                print("Entrou no delete addNotifier")
+
+                data = json.loads(request.body)
+
+                email = data.get('email')
+                idSensor = data.get('idSensor')
+
+                user = User.objects.filter(email=email).first()
+                if not user:
+                    return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+
+                sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+                if not sensor:
+                    return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
+
+                try:
+                    user_sensor = UserSensor.objects.get(user=user, idSensor=sensor)
+                    user_sensor.delete()
+                    return JsonResponse({'message': 'Notifier removed successfully'}, status=200)
+                except UserSensor.DoesNotExist:
+                    return JsonResponse({'error': 'Notifier does not exist'}, status=404)
 
 
 

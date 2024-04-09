@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_id/screens/home_screen.dart';
 import 'package:move_id/screens/signin_screen.dart';
-import 'package:move_id/utils/color_utils.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatelessWidget {
