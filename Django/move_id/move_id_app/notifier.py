@@ -29,9 +29,6 @@ class Notifier:
         Dataset.objects.all().delete()
         new_instance = Dataset(path=path)
 
-
-
-
         new_instance.save()
 
         
@@ -46,14 +43,7 @@ class Notifier:
 
         self.voting(classifier,parameters, X, y)
     
-    def add_subscriber(self, idSensor, email, location):
-        
-        # Create an instance of MyModel
-        new_instance = UserSensor(idSensor=idSensor, email=email, location=location)
-
-        # Save the instance to the database
-        new_instance.save()
-
+    
     def add_subscriber(self, idSensor, email, location):
         self.stopListening()
         # Create an instance of MyModel

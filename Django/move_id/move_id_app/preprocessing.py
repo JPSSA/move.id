@@ -11,32 +11,37 @@ def windowed_data(data, window_size):
     windows = [data[i:i+window_size] for i in range(num_windows)]
     return windows
 
+def dict_flatten(dic):
+    Dic = {}
+    for key in dic.keys():
+        sample_dict = json.loads(dic[key])
+        if(isinstance(sample_dict, dict)):
+            axis = list(dic[key].keys())
+            for x in axis:
+                Dic[key+x] = sample_dict[x]
+    
+
+    return Dic
+
 def calculate_statistics(window):
     
     Dic = {}
     
-    keys = list(json.loads(window[0]).keys())
     
     
+    flatten = [dict_flatten(json.loads(dic)) for dic in window]
+    
+    keys = list(json.loads(flatten[0]).keys())
+
     for key in keys:
         data = []
-        for sample in window:
-            sample_dict = json.loads(sample)
-            data.append(sample_dict[key])
+        for sample in flatten:
+            data.append(sample[key])
 
-        #Caso seja um dicionáro, ou seja, vários valores
-        if(isinstance(sample_dict, dict)):
-            #Recolhe-se os eixos (ou qualquer significado que tenham esses valores)
-            axis = list(data[0].keys())
 
-            #Percorre-se cada um para calcular individualmente as várias métricas
-            for x in axis:
-                #Recolhe-se todos os valores de x na janela
-                values = [float(sample[x]) for sample in data]
-
-                #Aplica-se todas as metricas e junta-se ao dicionário
-                for metric in metrics:
-                    Dic[key+'_'+x+'_'+metric] = metrics[metric](values)
+        #Aplica-se todas as metricas e junta-se ao dicionário
+        for metric in metrics:
+            Dic[key+'_'+metric] = metrics[metric](data)
                     
     return Dic
 
