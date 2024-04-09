@@ -2,6 +2,7 @@ from .models import Classifier, Dataset, DatasetAttributes, UserSensor
 from votingClassifier import VotingClassifier
 from subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
+import pickle
 import json
 import os
 import csv
@@ -27,6 +28,9 @@ class Notifier:
     def new_dataset(self, path):
         Dataset.objects.all().delete()
         new_instance = Dataset(path=path)
+
+
+
 
         new_instance.save()
 
