@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from move_id_app.mqtt import client as mqtt_client
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 #def publish_message(request):
 #    request_data = json.loads(request.body)
