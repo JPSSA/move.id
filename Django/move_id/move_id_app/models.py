@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import User
 
 
@@ -8,7 +9,8 @@ class Patient(models.Model):
     lname = models.CharField(max_length = 50)
     
 class SensorData(models.Model):
-    datetime = models.DateTimeField(primary_key = True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    datetime = models.DateTimeField()
     topic_id = models.CharField(max_length=255)
     gyroscopeX = models.FloatField(null=True)
     gyroscopeY = models.FloatField(null=True)

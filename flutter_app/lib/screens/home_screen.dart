@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/settings_screen.dart';
 import 'package:flutter_app/utils/color_utils.dart';
 import 'package:flutter_app/utils/home_controller.dart';
 import 'package:get/get.dart';
@@ -98,7 +99,6 @@ class HomeScreen extends GetView<HomeController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(controller.patients.value[index].location.toString()),
-                            Text(controller.patients.value[index].deviceid!),
                           ],
                         ),
                         trailing: GestureDetector(
@@ -117,8 +117,33 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home,color: Colors.purple),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: 0, // Set the current index of the selected item
+        onTap: (index) {
+          // Handle navigation when a tab is tapped
+          switch (index) {
+            case 0:
+              // Navigate to HomeScreen
+              break;
+            case 1:
+              Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  );
+              break;
+          }
+        },
+      ),
     );
   }
 }
-
-

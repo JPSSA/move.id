@@ -5,6 +5,7 @@ import 'package:flutter_app/utils/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_app/utils/api_urls.dart';
 
 
 class SignUpScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ Future<Map<String, String>> registerRequest(TextEditingController fnameControlle
     TextEditingController usernameController, TextEditingController emailController,
     TextEditingController password1Controller) async {
   
-  const String url = 'http://172.20.10.2:8000/registerAPI/';
+  const String url = ApiUrls.registerUrl;
   
   final String firstName = fnameController.text;
   final String lastName = lnameController.text;
@@ -78,8 +79,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _password1Controller = TextEditingController();
   final TextEditingController _password2Controller = TextEditingController();
-
-  final String url = 'http://172.20.10.2:8000/registerAPI/';
 
   @override
   Widget build(BuildContext context) {
