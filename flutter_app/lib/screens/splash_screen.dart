@@ -1,8 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/home_screen.dart';
-import 'package:flutter_app/screens/signin_screen.dart';
-import 'package:flutter_app/utils/color_utils.dart';
+import 'package:move_id/screens/home_screen.dart';
+import 'package:move_id/screens/signin_screen.dart';
+import 'package:move_id/utils/color_utils.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

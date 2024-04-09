@@ -1,6 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_app/models/patient_model.dart';
+import 'package:move_id/models/patient_model.dart';
 
 import 'package:get/get.dart';
 
