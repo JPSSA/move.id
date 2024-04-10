@@ -67,29 +67,11 @@ def get_recent_values_gyroscope(topic_id, axis, num_values=6):
     return axis_values
 
 def appendData(msg):
-    data = json.loads(msg.payload)
     
-    gyroscope = data.get('gyroscopeSensor', {})
-    accelerometer = data.get('accelerometerSensor', {})
-
-    if gyroscope and accelerometer:
-        gyroscope_x = float(gyroscope['x'])
-        gyroscope_y = float(gyroscope['y'])
-        gyroscope_z = float(gyroscope['z'])
-        accelerometer_x = float(accelerometer['x'])
-        accelerometer_y = float(accelerometer['y'])
-        accelerometer_z = float(accelerometer['z'])
-
-        sensor_data_instance = SensorData.objects.create(
-            datetime = datetime.now(),
-            topic_id = msg.topic,
-            gyroscope_x = gyroscope_x,
-            gyroscope_y = gyroscope_y,
-            gyroscopeZ = gyroscope_z,
-            accelerometerX = accelerometer_x,
-            accelerometerY = accelerometer_y,
-            accelerometerZ = accelerometer_z
+    sensor_data_instance = SensorData.objects.create(
+        datetime = datetime.now(),
+        topic_id = msg.topic,
+        message=msg.payload
         )
-        print("Sensor Data saved!!")
-    else:
-        print("Missing Gyroscope and Accelerometer Data")
+    print("Sensor Data saved!!")
+   
