@@ -22,14 +22,26 @@ def delete_oldest_sensor_data(topic_id):
 
 def get_sensor_data_as_dataframe(topic_id):
     
-    sensor_data_queryset = SensorData.objects.filter(topic_id=topic_id).order_by('datetime')
+    sensor_data_queryset = SensorData.objects.filter(topic_id=topic_id)
 
-    sensor_data_list = list(sensor_data_queryset.values('datetime', 'accelerometerX', 'accelerometerY', 'accelerometerZ'))
+    accelerometer_data_list = []
+
+    for sensor_data in sensor_data_queryset:
+        data = json.loads(sensor_data.message)
+        accelerometer_data = data.get('accelerometerSensor')
+        if accelerometer_data:
+            accelerometer_data_list.append({
+                'datetime': sensor_data.datetime,
+                'accelerometerX': accelerometer_data.get('x'),
+                'accelerometerY': accelerometer_data.get('y'),
+                'accelerometerZ': accelerometer_data.get('z')
+            })
     
-    sensor_data_df = pd.DataFrame(sensor_data_list)
-    
+    sensor_data_df = pd.DataFrame(accelerometer_data_list)
+
+    sensor_data_df['datetime'] = pd.to_datetime(sensor_data_df['datetime'])  # Convert datetime to datetime type
     sensor_data_df.set_index('datetime', inplace=True)
-    
+
     return sensor_data_df
 
 def appendData(msg):
