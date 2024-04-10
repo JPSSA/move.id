@@ -19,6 +19,8 @@ def dict_flatten(dic):
             axis = list(dic[key].keys())
             for x in axis:
                 Dic[key+x] = sample_dict[x]
+        else:
+            Dic[key] = sample_dict[x]
     
 
     return Dic
