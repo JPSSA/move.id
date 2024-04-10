@@ -36,7 +36,7 @@ def appendData(msg):
     sensor_data_instance = SensorData.objects.create(
         datetime = datetime.now(),
         topic_id = msg.topic,
-        message=msg.payload
+        message=msg.payload.decode()
         )
     print("Sensor Data saved!!")
    
