@@ -64,3 +64,9 @@ def energy(array):
 
 def entropy(array):
     return scipy.stats.entropy(np.histogram(array)[0])
+
+
+def preprocessing(data,window_size):
+    windowed = windowed_data(data, window_size)
+    processed_data = [calculate_statistics(window) for window in neg_windows]
+    X2 = to_matrix(neg_processed_data)
