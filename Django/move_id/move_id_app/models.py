@@ -12,12 +12,8 @@ class SensorData(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     datetime = models.DateTimeField()
     topic_id = models.CharField(max_length=255)
-    gyroscopeX = models.FloatField(null=True)
-    gyroscopeY = models.FloatField(null=True)
-    gyroscopeZ = models.FloatField(null=True)
-    accelerometerX = models.FloatField(null=True)
-    accelerometerY = models.FloatField(null=True)
-    accelerometerZ = models.FloatField(null=True)
+    message = models.CharField()
+    
     
 class PatientSensor(models.Model):
     idSensor = models.CharField(primary_key=True, max_length=50)

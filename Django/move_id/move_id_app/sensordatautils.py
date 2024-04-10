@@ -83,8 +83,8 @@ def appendData(msg):
         sensor_data_instance = SensorData.objects.create(
             datetime = datetime.now(),
             topic_id = msg.topic,
-            gyroscopeX = gyroscope_x,
-            gyroscopeY = gyroscope_y,
+            gyroscope_x = gyroscope_x,
+            gyroscope_y = gyroscope_y,
             gyroscopeZ = gyroscope_z,
             accelerometerX = accelerometer_x,
             accelerometerY = accelerometer_y,
