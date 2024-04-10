@@ -26,10 +26,27 @@ class Notifier:
         self.port = port
 
     def new_dataset(self, path):
+        #Delete the existing dataset path saved on the database
         Dataset.objects.all().delete()
-        new_instance = Dataset(path=path)
 
+        #Add the new dataset path
+        new_instance = Dataset(path=path)
         new_instance.save()
+
+        #Delete the existing data that the dataset requires
+        DatasetAttributes.objects.all().delete()
+
+        #Open that dataset
+        Dataset=pickle.load(open(path,'rb'))
+
+        #Get the data names that is required to work with this new dataset
+        data_used = Dataset['data_used']
+
+        for data in data_used:
+            #Add each one to the data required table
+            new_instance = DatasetAttributes(atr=data)
+            new_instance.save()
+
 
         
     def add_classifier(self, classifier, parameters):
@@ -112,7 +129,9 @@ class Notifier:
             if msg_count > 5:
                 break
 
-    def getData(self, file):
+    def getData(self):
+
+        array = []
 
         data = {}
         with open(file, 'r') as csvfile:
