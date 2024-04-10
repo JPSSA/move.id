@@ -128,21 +128,17 @@ class Notifier:
             if msg_count > 5:
                 break
 
-    def getData(self):
+    def getData(self, topic_id):
 
         array = []
 
-        data = {}
-        with open(file, 'r') as csvfile:
-            reader = csv.reader(csvfile)
-            header = next(reader)  # Pula o cabeçalho
-            for row in reader:
-                for i in range(len(row)):
-                    my_float_list =[]
-                    for x in row[i].split('_'):
-                        if(x != ''):
-                            my_float_list.append(float(x))
-                    data[header[i]] = { 'x' : my_float_list[0], 'y' : my_float_list[1], 'z' : my_float_list[2]}
+        instances = Dataset.objects.all() # Retrieve all rows where name is "John"
+        path = instances[0].path
+
+        Dataset=pickle.load(open(path,'rb'))
+        window = Dataset['len_window']
+
+        newest_rows = UserSensor.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
 
         return data
 
