@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path
 from .views import RegisterAPI
 from .views import LoginAPI
+from .views import NotifierAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('publish', views.publish_message, name='publish'),
     path('registerAPI/',RegisterAPI.as_view()),
-    path('loginAPI/',LoginAPI.as_view()),   
+    path('loginAPI/',LoginAPI.as_view()),  
+    path('removeNotifierAPI/',NotifierAPI.as_view()),   
+    path('addNotifierAPI/',NotifierAPI.as_view()),    
 ]

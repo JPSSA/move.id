@@ -76,6 +76,8 @@ class HomeScreen extends GetView<HomeController> {
               onPressed: () {
                 String deviceID = controller.deviceIDTextEditingController.text;
                 controller.addPatient(controller.selectedLocation.value, deviceID);
+                print(controller.selectedLocation.value.toString());
+                print(deviceID);
               },
               child: const Text(
                 "Add Notifier",
@@ -104,6 +106,8 @@ class HomeScreen extends GetView<HomeController> {
                         trailing: GestureDetector(
                           child: const Icon(Icons.delete, color: Colors.red),
                           onTap: () {
+                            print(controller.patients.value[index].location);
+                            print(controller.patients.value[index].deviceid);
                             controller.removePatient(index);
                           },
                         ),

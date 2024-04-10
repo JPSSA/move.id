@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_id/screens/home_screen.dart';
 import 'package:move_id/screens/signin_screen.dart';
-import 'package:move_id/utils/color_utils.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -18,7 +16,8 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               children: [
                 ListTile(
-                  title: const Text('Logout'),
+                  title: const Text('Logout',
+                  style: TextStyle(fontFamily: 'RobotoMono'),),
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.remove('email');
@@ -36,10 +35,12 @@ class SettingsScreen extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
+
+                
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings, color: Colors.purple),
-                label: 'Settings',
+                label: 'Settings'
               ),
             ],
             currentIndex: 1, 

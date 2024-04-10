@@ -23,9 +23,10 @@ def on_connect(mqtt_client, userdata, flags, rc):
    
 
 def on_message(mqtt_client, userdata, msg):
-    appendData(msg)
-    if count_rows_with_topic_id(msg.topic) >= 120:
-        delete_oldest_sensor_data(msg.topic)
+    print(msg)
+    #appendData(msg)
+    #if count_rows_with_topic_id(msg.topic) >= 120:
+    #    delete_oldest_sensor_data(msg.topic)
     
 # Set callback functions
 client.on_connect = on_connect
@@ -41,10 +42,10 @@ client.connect(
 
 # Start the MQTT client loop
 # here or in __ini__.py
-print("Dataframe as pandas dataframe")
-print(get_sensor_data_as_dataframe("move_id/1234")) 
-print("list of the 6 most recent accelerometerX values")
-print(get_recent_values_accelerometer("move_id/1234","x",6))
-print("list of the 6 most recent gyroscopeX values")
-print(get_recent_values_gyroscope("move_id/1234","x",6))
+#print("Dataframe as pandas dataframe")
+#print(get_sensor_data_as_dataframe("move_id/1234")) 
+#print("list of the 6 most recent accelerometerX values")
+#print(get_recent_values_accelerometer("move_id/1234","x",6))
+#print("list of the 6 most recent gyroscopeX values")
+#print(get_recent_values_gyroscope("move_id/1234","x",6))
 client.loop_start()
