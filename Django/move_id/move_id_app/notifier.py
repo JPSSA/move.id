@@ -1,4 +1,4 @@
-from .models import Classifier, Dataset, DatasetAttributes, UserSensor
+from .models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData
 from votingClassifier import VotingClassifier
 from subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
@@ -90,14 +90,14 @@ class Notifier:
 
     def startListening(self):
 
-        ids_values = UserSensor.objects.values_list('idUser', flat=True).distinct()
+        ids_values = UserSensor.objects.values_list('idSensor', flat=True).distinct()
         
         self.subs = []
 
         # Loop through all instances and print their attributes
-        for idUser in ids:
-            instance = UserSensor.objects.filter(idUser=idUser)[0]
-            self.subs.append(subscriberMQTT('moveID/subscriber' + instance.location + idUser , self.ip, self.port))
+        for idSensor in ids:
+            instance = UserSensor.objects.filter(idSensor=idSensor)[0]
+            self.subs.append(subscriberMQTT('moveID/subscriber' + instance.location + idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()
@@ -138,12 +138,16 @@ class Notifier:
         Dataset=pickle.load(open(path,'rb'))
         window = Dataset['len_window']
 
-        newest_rows = UserSensor.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
+        newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
 
-        return data
+        for row in newest_rows:
+            array.append(row.message)
+
+        if(len(array)== window):
+            return array
+        return []
 
     def classify(self, data):
-        windowed = preprocessing.windowed_data(data, 6)
         calculated = preprocessing.calculate_statistics(windowed)
         matrix = preprocessing.to_matrix(calculated)
 
@@ -157,8 +161,9 @@ class Notifier:
         while True:
             
             for sub in self.subs:
-                data = self.getData(sub.csv_file)
-                if data.keys() == 6:
+                data = self.getData(sub.topic)
+
+                if data:
                     if self.classify(data):
                         client.loop_start()
                         self.publish(client, sub.topic)
