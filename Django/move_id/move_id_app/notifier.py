@@ -19,7 +19,6 @@ class Notifier:
     '''
 
     def __init__(self, ip, port=1883):
-        self.ids_file = ids_file
         self.voting = VotingClassifier()
         self.subs = []
         self.ip = ip
