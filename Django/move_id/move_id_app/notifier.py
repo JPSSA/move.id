@@ -67,12 +67,10 @@ class Notifier:
 
         # Save the instance to the database
         new_instance.save()
-        self.startListening()
     
     def delete_subscriber(self, idSensor, email, location):
         self.stopListening()
         UserSensor.objects.filter(idSensor=idSensor, email=email, location=location).delete()
-        self.startListening()
 
     
     def connect_mqtt(self) -> mqtt_client:
@@ -170,3 +168,6 @@ class Notifier:
                         client.loop_stop()
 
     
+if __name__ == '__main__':
+    notifier = Notifier('192.168.1.78')
+    notifier.add
