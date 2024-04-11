@@ -1,6 +1,7 @@
 from .models import SensorData
 import pandas as pd # type: ignore
 import json
+import pytz
 from datetime import datetime
 
 
@@ -21,14 +22,15 @@ def delete_oldest_sensor_data(topic_id):
          print("Error occurred while deleting oldest SensorData record:", e)
 
 def get_sensor_data_as_dataframe(topic_id):
-    sensor_data_queryset = SensorData.objects.filter(topic_id=topic_id)
+    sensor_data_queryset = SensorData.objects.filter(topic_id=topic_id).order_by('datetime')
 
     flattened_data_list = []
 
     for sensor_data in sensor_data_queryset:
         data = json.loads(sensor_data.message)
         flattened_data = dict_flatten(data)
-        flattened_data['datetime'] = sensor_data.datetime
+        datetime_utc = sensor_data.datetime.astimezone(pytz.UTC)
+        flattened_data['datetime'] = datetime_utc
         flattened_data_list.append(flattened_data)
 
     sensor_data_df = pd.DataFrame(flattened_data_list)
@@ -36,6 +38,7 @@ def get_sensor_data_as_dataframe(topic_id):
     sensor_data_df.set_index('datetime', inplace=True)
 
     return sensor_data_df
+
 
 def dict_flatten(dic):
     flattened_dict = {}
@@ -48,10 +51,12 @@ def dict_flatten(dic):
     return flattened_dict
 
 def appendData(msg):
+    datetime_utc = datetime.now(pytz.UTC)
     sensor_data_instance = SensorData.objects.create(
-        datetime = datetime.now(),
-        topic_id = msg.topic,
+        datetime=datetime_utc,
+        topic_id=msg.topic,
         message=msg.payload.decode()
-        )
+    )
+    
     print("Sensor Data saved!!")
    
