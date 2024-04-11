@@ -9,15 +9,6 @@ class VotingClassifier:
     def __init__(self, models_dir='models'):
         self.models_dir = models_dir
 
-        # Cria o diretório se não existir
-        if not os.path.exists(self.models_dir):
-            os.makedirs(self.models_dir)
-
-        # Cria o arquivo CSV se não existir
-        if not os.path.exists(self.result_file):
-            with open(self.result_file, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(['Classifier', 'Score', 'Model_File'])
 
     def add_classifier(self, classifier, parameters, X_train, y_train):
         clf_name = classifier.__class__.__name__
@@ -35,57 +26,45 @@ class VotingClassifier:
         with open(model_file, 'wb') as f:
             pickle.dump(best_clf, f)
 
-        # Atualiza o arquivo CSV
-        with open(self.result_file, 'r') as csvfile:
-            data = list(csv.reader(csvfile))
+        
 
-        # Procura e atualiza a linha correspondente ao classificador
-        updated = False
-        for i, row in enumerate(data):
-            if row[0] == clf_name:
-                data[i][1] = best_score
-                data[i][2] = model_file
-                updated = True
-                break
+        # Tenta recuperar o objeto Cliente pelo ID
+        cliente = Classifier.objects.filter(name=clf_name).first()  
 
-        # Se o classificador não existir no CSV, adicione-o
-        if not updated:
-            data.append([clf_name, best_score, model_file])
+        # Verifica se o objeto foi encontrado
+        if cliente is not None:
+            # Modifica o campo 'nome'
+            cliente.path = model_file
+            cliente.score = best_score
+            # Salva as alterações no banco de dados
+            cliente.save()  
+        
+        else:
+            new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
+            new_instance.save()
 
-
-        # Escreve os dados atualizados de volta ao arquivo CSV
-        with open(self.result_file, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerows(data)
 
     def delete_classifier(self, classifier):
         clf_name = classifier.__class__.__name__
 
-            # Read the CSV file and filter rows based on the classifier
-        with open(self.result_file, 'r') as file:
-            reader = csv.reader(file)
-            rows = [row for row in reader if row[0] != clf_name]
-    
-        # Write the filtered rows back to the CSV file
-        with open(self.result_file, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(rows)
+        Classifier.objects.filter(name=clf_name).delete() 
+
     
     def predict(self, X):
         predictions = []
         classifiers = []
         scores = []
         
+
+        instances = Classifier.objects.all()
+
+        for instance in instances:
+            
+            scores.append(float(instance.score))
+            with open(instance.path, 'rb') as f:
+                clf = pickle.load(f)
+                classifiers.append(clf)
         
-        with open(self.result_file, 'r') as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader)  # Pula o cabeçalho
-            for row in reader:
-                model_file = row[2]
-                scores.append(float(row[1]))
-                with open(model_file, 'rb') as f:
-                    clf = pickle.load(f)
-                    classifiers.append(clf)
 
         total_scores = np.sum(scores)
 
