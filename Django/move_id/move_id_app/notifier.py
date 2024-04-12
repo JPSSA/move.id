@@ -35,7 +35,7 @@ class Notifier:
         #Delete the existing data that the dataset requires
         DatasetAttributes.objects.all().delete()
 
-        #Open that dataset
+        '''#Open that dataset
         dset=pickle.load(open(path,'rb'))
 
         #Get the data names that is required to work with this new dataset
@@ -44,7 +44,7 @@ class Notifier:
         for data in data_used:
             #Add each one to the data required table
             new_instance = DatasetAttributes(atr=data)
-            new_instance.save()
+            new_instance.save()'''
 
 
         
