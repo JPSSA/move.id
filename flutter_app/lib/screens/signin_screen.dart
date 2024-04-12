@@ -19,52 +19,64 @@ class SignInScreen extends StatefulWidget {
 
 Future<Map<String, String>> loginRequest(TextEditingController emailController,TextEditingController passwordController) async {
   
-   const String url = ApiUrls.loginUrl;
+  const String url = ApiUrls.loginUrl;
 
-  final String email = emailController.text;
-  final String password = passwordController.text;
+  try {
+    final String email = emailController.text;
+    final String password = passwordController.text;
 
-  final Map<String, String> userData = {
-      'email': email,
-      'password': password,
-    };
+    final Map<String, String> userData = {
+        'email': email,
+        'password': password,
+      };
 
-  final http.Response response = await http.post(
-    Uri.parse(url),
-    body: json.encode(userData),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: json.encode(userData),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-  if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: "logged in successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('email', email);
+
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      
+      final Map<String, String> responseData = {};
+      responseBody.forEach((key, value) {
+        responseData[key] = value.toString();
+      });
+      return responseData;
+    } else {
+      Fluttertoast.showToast(
+        msg: "Could not complete login, check password or email.",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+      return {}; 
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
     Fluttertoast.showToast(
-      msg: "logged in successfully",
+      msg: "Could not complete login, check password or email.",
       toastLength: Toast.LENGTH_SHORT,
       backgroundColor: Colors.white,
       textColor: Colors.black
     );
-
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', email);
-
-    final Map<String, dynamic> responseBody = json.decode(response.body);
-    
-    final Map<String, String> responseData = {};
-    responseBody.forEach((key, value) {
-      responseData[key] = value.toString();
-    });
-    return responseData;
-  } else {
-    Fluttertoast.showToast(
-      msg: "Wrong password or email",
-      toastLength: Toast.LENGTH_SHORT,
-      backgroundColor: Colors.white,
-      textColor: Colors.black
-    );
-    throw Exception('Failed to log in user');
+    return {}; 
   }
 }
+
 
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
