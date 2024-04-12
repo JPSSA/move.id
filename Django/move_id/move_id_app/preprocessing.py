@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import entropy
 
 
-metrics = [np.mean, np.median, max, min, np.std, energy, entropy]
+
 
 def windowed_data(data, window_size):
     num_samples = len(data)
@@ -24,6 +24,14 @@ def dict_flatten(dic):
     
 
     return Dic
+
+def energy(array):
+    return np.sum(np.square(array))
+
+def entropy(array):
+    return scipy.stats.entropy(np.histogram(array)[0])
+
+metrics = [np.mean, np.median, max, min, np.std, energy, entropy]
 
 def calculate_statistics(window):
     
@@ -61,14 +69,9 @@ def to_matrix(processed_data):
     
     return X
 
-def energy(array):
-    return np.sum(np.square(array))
-
-def entropy(array):
-    return scipy.stats.entropy(np.histogram(array)[0])
-
 
 def preprocessing(data,window_size):
     windowed = windowed_data(data, window_size)
     processed_data = [calculate_statistics(window) for window in neg_windows]
     X2 = to_matrix(neg_processed_data)
+
