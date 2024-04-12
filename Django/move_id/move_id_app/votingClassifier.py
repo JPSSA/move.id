@@ -1,6 +1,7 @@
 import pickle
 import csv
 import os
+from move_id_app.models import Classifier
 import numpy as np
 from datetime import datetime
 from sklearn.model_selection import GridSearchCV
