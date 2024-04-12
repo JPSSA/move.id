@@ -168,6 +168,3 @@ class Notifier:
                         client.loop_stop()
 
     
-if __name__ == '__main__':
-    notifier = Notifier('192.168.1.78')
-    notifier.add
