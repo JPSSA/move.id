@@ -1,6 +1,6 @@
 from .models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData
-from votingClassifier import VotingClassifier
-from subscriberMQTT import subscriberMQTT
+from .votingClassifier import VotingClassifier
+from .subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
 import pickle
 import json
