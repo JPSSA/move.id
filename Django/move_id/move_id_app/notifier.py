@@ -57,7 +57,7 @@ class Notifier:
         X = dataset['X']
         y = dataset['y']
 
-        self.voting(classifier,parameters, X, y)
+        voting.voting(classifier,parameters, X, y)
     
     
     def add_subscriber(self, idSensor, email, location):
