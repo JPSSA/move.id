@@ -53,9 +53,9 @@ class Notifier:
 
         path = instances[0].path
 
-        Dataset=pickle.load(open(path,'rb'))
-        X = Dataset['X']
-        y = Dataset['y']
+        dataset=pickle.load(open(path,'rb'))
+        X = dataset['X']
+        y = dataset['y']
 
         self.voting(classifier,parameters, X, y)
     
