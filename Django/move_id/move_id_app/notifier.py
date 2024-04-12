@@ -36,10 +36,10 @@ class Notifier:
         DatasetAttributes.objects.all().delete()
 
         #Open that dataset
-        Dataset=pickle.load(open(path,'rb'))
+        dset=pickle.load(open(path,'rb'))
 
         #Get the data names that is required to work with this new dataset
-        data_used = Dataset['data_used']
+        data_used = dset['data_used']
 
         for data in data_used:
             #Add each one to the data required table
