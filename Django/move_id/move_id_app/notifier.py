@@ -1,4 +1,4 @@
-from .models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData
+from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
