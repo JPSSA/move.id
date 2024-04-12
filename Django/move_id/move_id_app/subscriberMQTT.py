@@ -1,5 +1,5 @@
 from paho.mqtt import client as mqtt_client
-import sensordatautils
+from .sensordatautils import appendData, count_rows_with_topic_id, delete_oldest_sensor_data
 import json
 import os
 
@@ -32,7 +32,7 @@ class subscriberMQTT:
         def on_message(client, userdata, msg):
             if count_rows_with_topic_id(msg.topic) >= 120:
                 delete_oldest_sensor_data(msg.topic)
-            sensordatautils.appendData(msg)
+            appendData(msg)
             
         client.subscribe(self.topic)
         client.on_message = on_message
