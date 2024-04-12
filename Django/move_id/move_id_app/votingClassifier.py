@@ -6,7 +6,7 @@ from datetime import datetime
 from sklearn.model_selection import GridSearchCV
 
 class VotingClassifier:
-    def __init__(self, models_dir='home/joao/move.id/move.id/Django/move_id/move_id_app/models'):
+    def __init__(self, models_dir='/home/joao/move.id/move.id/Django/move_id/move_id_app/models'):
         self.models_dir = models_dir
 
 
