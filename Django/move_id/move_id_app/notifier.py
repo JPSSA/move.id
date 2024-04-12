@@ -167,4 +167,3 @@ class Notifier:
                         self.publish(client, sub.topic)
                         client.loop_stop()
 
-    
