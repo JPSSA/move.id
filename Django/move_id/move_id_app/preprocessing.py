@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from scipy import entropy
+from scipy.stats import entropy
 
 
 metrics = [np.mean, np.median, max, min, np.std, energy, entropy]
