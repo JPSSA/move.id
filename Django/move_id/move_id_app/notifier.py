@@ -60,10 +60,14 @@ class Notifier:
         self.voting.add_classifier(classifier,parameters, X, y)
     
     
-    def add_subscriber(self, idSensor, email, location):
+    def add_subscriber(self, idSensor, email, location, nif):
         self.stopListening()
+
+        sensor = PatientSensor(idSensor=idSensor, nif=nif)
+        sensor.save()
         # Create an instance of MyModel
-        new_instance = UserSensor(idSensor=idSensor, email=email, location=location)
+
+        new_instance = UserSensor(idSensor=sensor.idSensor, user=email, location=location)
 
         # Save the instance to the database
         new_instance.save()
