@@ -1,4 +1,4 @@
-from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, PatientSensor
+from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, PatientSensor, Patient
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
@@ -63,7 +63,11 @@ class Notifier:
     def add_subscriber(self, idSensor, email, location, nif):
         self.stopListening()
 
-        sensor = PatientSensor(idSensor=idSensor, nif=nif)
+        instances = Patient.objects.filter(nif=nif) # Retrieve all rows where name is "John"
+
+        
+
+        sensor = PatientSensor(idSensor=idSensor, nif=instances[0].nif)
         sensor.save()
         # Create an instance of MyModel
 
