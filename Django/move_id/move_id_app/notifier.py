@@ -67,11 +67,11 @@ class Notifier:
 
         
 
-        sensor = PatientSensor(idSensor=idSensor, nif=instances[0].nif)
+        sensor = PatientSensor(idSensor=idSensor, nif=instances[0])
         sensor.save()
         # Create an instance of MyModel
 
-        new_instance = UserSensor(idSensor=sensor.idSensor, user=email, location=location)
+        new_instance = UserSensor(idSensor=sensor, user=email, location=location)
 
         # Save the instance to the database
         new_instance.save()
