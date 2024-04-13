@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:move_id/screens/settings_screen.dart';
 import 'package:move_id/utils/color_utils.dart';
@@ -8,105 +6,137 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:move_id/utils/api_urls.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<Map<String, String>> addNotifierRequest(String location, String deviceid) async {
+Future<Map<String, String>> addNotifierRequest(String location, String deviceid, HomeController controller) async {
   
   const String url = ApiUrls.addNotifierUrl;
 
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String email = prefs.getString("email").toString();
+    prefs.setString('location', location);
 
-  final prefs = await SharedPreferences.getInstance();
-  String email = prefs.getString("email").toString();
-  prefs.setString('location', location);
+    final Map<String, String> userData = {
+        'email': email,
+        'idSensor': deviceid,
+        'location': location,
+      };
 
-  final Map<String, String> userData = {
-      'email': email,
-      'idSensor': deviceid,
-      'location': location,
-    };
-
-  final http.Response response = await http.post(
-    Uri.parse(url),
-    body: json.encode(userData),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    Fluttertoast.showToast(
-      msg: "Notifier added successfully",
-      toastLength: Toast.LENGTH_SHORT,
-      backgroundColor: Colors.white,
-      textColor: Colors.black
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: json.encode(userData),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
     );
 
-    final Map<String, dynamic> responseBody = json.decode(response.body);
-    
-    final Map<String, String> responseData = {};
-    responseBody.forEach((key, value) {
-      responseData[key] = value.toString();
-    });
-    return responseData;
-  } else {
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: "Notifier added successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+
+      String topic = "$location" + "\\" + "$deviceid";
+
+      controller.subscribeToTopic(topic);
+      controller.addPatient(location,deviceid);
+
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      
+      final Map<String, String> responseData = {};
+      responseBody.forEach((key, value) {
+        responseData[key] = value.toString();
+      });
+      return responseData;
+    } else {
+      Fluttertoast.showToast(
+        msg: "Failed to add Notifier with that id",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+      return {};
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
     Fluttertoast.showToast(
       msg: "Failed to add Notifier with that id",
       toastLength: Toast.LENGTH_SHORT,
       backgroundColor: Colors.white,
       textColor: Colors.black
     );
-    throw Exception('Failed to add Notifier');
+    return {}; 
   }
 }
 
-
-Future<Map<String, String>> removeNotifierRequest(String deviceid) async {
+Future<Map<String, String>> removeNotifierRequest(String deviceid, String location, HomeController controller, int index) async {
   
   const String url = ApiUrls.removeNotifierUrl;
 
-  final prefs = await SharedPreferences.getInstance();
-  String email = prefs.getString("email").toString();
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String email = prefs.getString("email").toString();
 
-  final Map<String, String> userData = {
-      'email': email,
-      'idSensor': deviceid,
-    };
+    final Map<String, String> userData = {
+        'email': email,
+        'idSensor': deviceid,
+      };
 
-  final http.Response response = await http.delete(
-    Uri.parse(url),
-    body: json.encode(userData),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
+    final http.Response response = await http.delete(
+      Uri.parse(url),
+      body: json.encode(userData),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-  if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: "Notifier removed successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+
+      String topic = "$location" + "\\" + "$deviceid";
+
+      controller.unsubscribeFromTopic(topic);
+      controller.removePatient(index);
+
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      
+      final Map<String, String> responseData = {};
+      responseBody.forEach((key, value) {
+        responseData[key] = value.toString();
+      });
+      return responseData;
+    } else {
+      Fluttertoast.showToast(
+        msg: "Failed to remove the Notifier with that id",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+      return {}; 
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
     Fluttertoast.showToast(
-      msg: "Notifier removed successfully",
+      msg: "Failed to remove the Notifier with that id",
       toastLength: Toast.LENGTH_SHORT,
       backgroundColor: Colors.white,
       textColor: Colors.black
     );
-
-    final Map<String, dynamic> responseBody = json.decode(response.body);
-    
-    final Map<String, String> responseData = {};
-    responseBody.forEach((key, value) {
-      responseData[key] = value.toString();
-    });
-    return responseData;
-  } else {
-    Fluttertoast.showToast(
-      msg: "Failed to remvove the Notifier with that id",
-      toastLength: Toast.LENGTH_SHORT,
-      backgroundColor: Colors.white,
-      textColor: Colors.black
-    );
-    throw Exception('Failed to remove Notifier');
+    return {};
   }
 }
+
 
 
 
@@ -128,6 +158,7 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid) async {
 
 
 class HomeScreen extends GetView<HomeController> {
+
   
   final List<String> dropdownOptions = [
     "Hospital Santa Maria",
@@ -136,6 +167,8 @@ class HomeScreen extends GetView<HomeController> {
   ];
 
   HomeScreen({super.key});
+
+   
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +198,6 @@ class HomeScreen extends GetView<HomeController> {
                   filled: true,
                   fillColor: Colors.white,
                   hintText: "Device ID",
-                  labelText: "Device ID",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
@@ -204,8 +236,7 @@ class HomeScreen extends GetView<HomeController> {
                 if(deviceid.isNotEmpty){
                   print(controller.selectedLocation.value.toString());
                   print(deviceid);
-                  controller.addPatient(location,deviceid);
-                  addNotifierRequest(location, deviceid);
+                  addNotifierRequest(location, deviceid,controller);
                 }else{
                   Fluttertoast.showToast(
                     msg: "Fill all the device id",
@@ -244,8 +275,8 @@ class HomeScreen extends GetView<HomeController> {
                           onTap: () {
                             print(controller.patients.value[index].location);
                             print(controller.patients.value[index].deviceid);
-                            removeNotifierRequest(controller.patients.value[index].deviceid.toString());
-                            controller.removePatient(index);
+                            removeNotifierRequest(controller.patients.value[index].deviceid.toString(),controller.patients.value[index].location.toString(),controller, index);
+                           
                           },
                         ),
                       ),
