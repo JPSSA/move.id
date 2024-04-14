@@ -6,7 +6,7 @@ import pickle
 import json
 import os
 import csv
-import move_id_app.preprocessing
+import move_id_app.preprocessing as preprocessing
 
 class Notifier:
     '''
