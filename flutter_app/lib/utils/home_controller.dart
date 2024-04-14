@@ -5,6 +5,9 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:move_id/Notification/notification_controller.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 
 
@@ -54,11 +57,31 @@ class HomeController extends GetxController{
     print('Unsubscribed from topic: $topic');
   }
 
-  void onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) {
-    final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
-    final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-    print('Received message: $message');
-  }
+ void onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) {
+  final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
+  final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+  
+  // Parse the JSON string
+  Map<String, dynamic> jsonMessage = jsonDecode(message);
+  String patientFirstName = jsonMessage['patient_fname'];
+  String patientLastName = jsonMessage['patient_lname'];
+  String alert = jsonMessage['alert'];
+  String location = jsonMessage['location'];
+
+  // Create notification using parsed information
+  String title = "Alert: $alert";
+  String body = "Patient: $patientFirstName $patientLastName\nLocation: $location";
+  
+  // Create Awesome Notification
+  AwesomeNotifications().createNotification(
+  content: NotificationContent(
+    id: 1, 
+    channelKey: "MoveID_Notification_Channel",
+    title: title,
+    body: body
+  ),
+);
+}
 
   MqttServerClient getMqttClient() {
     return client;
@@ -73,6 +96,7 @@ class HomeController extends GetxController{
   void onInit() {
     super.onInit();
     initializeMqttClient();
+    initializeAwesomeNotifications();
 
   }
 
@@ -97,6 +121,42 @@ class HomeController extends GetxController{
   removePatient(int index){
     patients.value.removeAt(index);
     itemCount.value = patients.value.length;
+  }
+
+   void initializeAwesomeNotifications() async {
+    // Initialize Awesome Notifications
+    await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelGroupKey: "MoveID_channel_group",
+          channelKey: "MoveID_Notification_Channel", 
+          channelName: "MoveID Notification", 
+          channelDescription: "MoveID Notification Channel",
+          playSound: false,
+        ),
+      ],
+      channelGroups: [
+        NotificationChannelGroup(
+          channelGroupKey: "MoveID_channel_group", 
+          channelGroupName: "MoveID Group",
+        ),
+      ],
+    );
+
+    // Check if the app is allowed to send notifications
+    bool isAllowedToSendNotifications = await AwesomeNotifications().isNotificationAllowed();
+
+    // If notifications are not allowed, request permission
+    if(!isAllowedToSendNotifications){
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.OnNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.OnNotificationDisplayedMethod
+    );
   }
   
 }
