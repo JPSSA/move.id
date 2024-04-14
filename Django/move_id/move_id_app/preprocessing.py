@@ -51,7 +51,7 @@ def calculate_statistics(window):
 
         #Aplica-se todas as metricas e junta-se ao dicionário
         for metric in metrics:
-            Dic[key+'_'+metric] = metrics[metric](data)
+            Dic[key+'_'+metric.__name__] = metrics[metric](data)
                     
     return Dic
 
