@@ -12,7 +12,7 @@ from .anomaly_detector import AnomalyDetector
 subscribed_topics = []
 
 # MQTT client configuration
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,'')
+client = mqtt.Client('')
 
 def on_connect(mqtt_client, userdata, flags, rc):
   
