@@ -173,7 +173,7 @@ class Notifier:
 
                 if data:
                     if self.classify(data):
-                        client.loop_start()
+                        self.client.loop_start()
                         self.publish(client, sub.topic)
-                        client.loop_stop()
+                        self.client.loop_stop()
 
