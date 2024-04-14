@@ -142,7 +142,8 @@ class Notifier:
         path = instances[0].path
 
         dat=pickle.load(open(path,'rb'))
-        window = dat['len_window']
+        #window = dat['len_window']
+        window = 6
 
         newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
 
