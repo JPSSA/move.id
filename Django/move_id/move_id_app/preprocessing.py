@@ -14,7 +14,7 @@ def windowed_data(data, window_size):
 def dict_flatten(dic):
     Dic = {}
     for key in dic.keys():
-        sample_dict = json.loads(dic[key])
+        sample_dict = dic[key]
         if(isinstance(sample_dict, dict)):
             axis = list(dic[key].keys())
             for x in axis:
