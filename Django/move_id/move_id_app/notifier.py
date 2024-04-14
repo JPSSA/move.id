@@ -145,7 +145,7 @@ class Notifier:
         #window = dat['len_window']
         window = 6
 
-        newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
+        newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-datetime')[:window]
 
         for row in newest_rows:
             array.append(row.message)
