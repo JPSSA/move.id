@@ -88,7 +88,7 @@ class Notifier:
             else:
                 print("Failed to connect, return code %d\n", rc)
     
-        client = mqtt_client.Client('Notifier')
+        client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1,'Notifier')
         # client.username_pw_set(username, password)
         client.on_connect = on_connect
         client.connect(self.ip, self.port)
