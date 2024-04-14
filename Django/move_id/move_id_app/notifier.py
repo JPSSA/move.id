@@ -155,7 +155,7 @@ class Notifier:
         return []
 
     def classify(self, data):
-        calculated = preprocessing.calculate_statistics(windowed)
+        calculated = preprocessing.calculate_statistics(data)
         matrix = preprocessing.to_matrix(calculated)
 
         return self.voting.predict(matrix)
