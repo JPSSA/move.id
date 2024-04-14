@@ -17,7 +17,7 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-Future<Map<String, String>> loginRequest(TextEditingController emailController,TextEditingController passwordController) async {
+Future<Map<String, String>> loginRequest(BuildContext context, emailController,TextEditingController passwordController) async {
   
   const String url = ApiUrls.loginUrl;
 
@@ -55,6 +55,12 @@ Future<Map<String, String>> loginRequest(TextEditingController emailController,T
       responseBody.forEach((key, value) {
         responseData[key] = value.toString();
       });
+
+      Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+
       return responseData;
     } else {
       Fluttertoast.showToast(
@@ -137,12 +143,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     textColor: Colors.black
                   );
                 } else {
-                  loginRequest(_emailController, _passwordController).then((response){
-                    print("logged in successfully");
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
+                  loginRequest(context,_emailController, _passwordController).then((response){
                   }).catchError((error){
                     print("Error during login: $error");
                   });

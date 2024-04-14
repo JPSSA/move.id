@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:move_id/Notification/notification_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:move_id/Notification/notification_controller.dart';
+
 
 void main() async {
   await AwesomeNotifications().initialize(
