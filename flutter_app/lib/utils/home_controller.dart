@@ -78,7 +78,7 @@ class HomeController extends GetxController{
     id: 1, 
     channelKey: "MoveID_Notification_Channel",
     title: title,
-    body: body
+    body: body,
   ),
 );
 }
@@ -133,7 +133,7 @@ class HomeController extends GetxController{
           channelKey: "MoveID_Notification_Channel", 
           channelName: "MoveID Notification", 
           channelDescription: "MoveID Notification Channel",
-          playSound: false,
+          playSound: true,
         ),
       ],
       channelGroups: [
