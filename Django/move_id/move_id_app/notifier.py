@@ -141,8 +141,8 @@ class Notifier:
         instances = Dataset.objects.all() # Retrieve all rows where name is "John"
         path = instances[0].path
 
-        Dataset=pickle.load(open(path,'rb'))
-        window = Dataset['len_window']
+        dat=pickle.load(open(path,'rb'))
+        window = dat['len_window']
 
         newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-__getattr__("datetime")')[:window]
 
