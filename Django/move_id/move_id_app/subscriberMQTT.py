@@ -21,7 +21,7 @@ class subscriberMQTT:
             else:
                 print("Failed to connect, return code %d\n", rc)
     
-        client = mqtt_client.Client( self.client_id)
+        client = mqtt_client.Client(self.client_id)
         # client.username_pw_set(username, password)
         client.on_connect = on_connect
         client.connect(self.broker, self.port)
