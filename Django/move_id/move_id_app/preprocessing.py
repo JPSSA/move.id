@@ -41,7 +41,7 @@ def calculate_statistics(window):
     
     flatten = [dict_flatten(json.loads(dic)) for dic in window]
     
-    keys = list(json.loads(flatten[0]).keys())
+    keys = list(flatten[0].keys())
 
     for key in keys:
         data = []
