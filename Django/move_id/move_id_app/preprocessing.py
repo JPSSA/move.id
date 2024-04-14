@@ -46,7 +46,7 @@ def calculate_statistics(window):
     for key in keys:
         data = []
         for sample in flatten:
-            data.append(sample[key])
+            data.append(float(sample[key]))
         
         print(key)
 
