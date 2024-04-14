@@ -48,9 +48,6 @@ def calculate_statistics(window):
         for sample in flatten:
             data.append(float(sample[key]))
         
-        print(key)
-
-        print(data)
         #Aplica-se todas as metricas e junta-se ao dicionário
         for metric in metrics:
             Dic[key+'_'+metric.__name__] = metric(data)
@@ -75,6 +72,5 @@ def to_matrix(processed_data):
 def preprocessing(data,window_size):
     windowed = windowed_data(data, window_size)
     processed_data = [calculate_statistics(window) for window in neg_windows]
-    print(processed_data)
     X2 = to_matrix(neg_processed_data)
 
