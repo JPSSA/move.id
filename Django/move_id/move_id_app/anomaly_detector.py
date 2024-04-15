@@ -9,34 +9,32 @@ from sklearn.neighbors import LocalOutlierFactor
 
 class AnomalyDetector:
     
-    def __init__(self,location,topic_id,detector_type,dataframe,score):
+    def __init__(self,detector_type,dataframe,score):
 
         self.detector_type = detector_type
-        self.topic_id = 'moveID/subscriber/'+ location + '/' + topic_id
-        self.prediction = 0
         self.score = score
-        self.anomaly_flags = []
 
 
     def predict(self):
-        self.detect_anomalies()
-        if self.is_majority_anomaly(self.anomaly_flags):
-            self.prediction = 1
-
-        return self.prediction
+        anomaly_flags = self.detect_anomalies()
+        if self.is_majority_anomaly(anomaly_flags):
+            return 1
+        return 0
 
     def get_score(self):
         return self.score
     
-    def detect_anomalies(self):
-        self.anomaly_flags = []
-        dataframe = get_sensor_data_as_dataframe(self.topic_id)
+    def detect_anomalies(self, location, topic_id):
+        anomaly_flags = []
+        dataframe = get_sensor_data_as_dataframe('moveID/subscriber/'+ location + '/' + topic_id)
         for column_name in dataframe.columns:
             column_values = dataframe[column_name]
             if self.check_detection_with_window(column_values,6,dataframe):
-                self.anomaly_flags.append(1)
+                anomaly_flags.append(1)
             else:
-                self.anomaly_flags.append(0)
+                anomaly_flags.append(0)
+
+        return anomaly_flags
 
     def getanomalyList(self,anomalies):
         non_nan_anomalies = anomalies.dropna()
