@@ -20,7 +20,7 @@ class PatientSensor(models.Model):
     nif = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
 class UserSensor(models.Model):
-    user = models.CharField(max_length=255)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     idSensor = models.ForeignKey(PatientSensor, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
 
