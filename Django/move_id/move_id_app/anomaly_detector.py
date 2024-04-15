@@ -9,7 +9,7 @@ from sklearn.neighbors import LocalOutlierFactor
 
 class AnomalyDetector:
     
-    def __init__(self,detector_type,dataframe,score):
+    def __init__(self,detector_type,score):
 
         self.detector_type = detector_type
         self.score = score
