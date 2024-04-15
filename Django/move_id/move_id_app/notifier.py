@@ -127,7 +127,7 @@ class Notifier:
         while True:
             time.sleep(1)
             msg = f"messages: {msg_count}"
-            result = client.publish('Notification', 'Alerta '+ id)
+            result = client.publish('moveID/notification', 'Alerta '+ id)
             # result: [0, 1]
             status = result[0]
             if status == 0:
