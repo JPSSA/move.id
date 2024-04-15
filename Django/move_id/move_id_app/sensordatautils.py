@@ -14,9 +14,9 @@ def delete_oldest_sensor_data(topic_id):
         oldest_sensor_data = SensorData.objects.filter(topic_id=topic_id).order_by('datetime').first()
         if oldest_sensor_data:
             oldest_sensor_data.delete()
-            print(f"Oldest SensorData record with topic_id {topic_id} deleted successfully.")
-        else:
-            print(f"No SensorData records found with topic_id {topic_id}.")
+            #print(f"Oldest SensorData record with topic_id {topic_id} deleted successfully.")
+        #else:
+            #print(f"No SensorData records found with topic_id {topic_id}.")
 
     except Exception as e:
          print("Error occurred while deleting oldest SensorData record:", e)
@@ -58,5 +58,4 @@ def appendData(msg):
         message=msg.payload.decode()
     )
     
-    print("Sensor Data saved!!")
    

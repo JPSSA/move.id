@@ -157,7 +157,7 @@ class Notifier:
 
     def classify(self, data):
         calculated = preprocessing.calculate_statistics(data)
-        print(calculated)
+        #print(calculated)
         matrix = preprocessing.to_matrix([calculated])
 
         return self.voting.predict(matrix)
