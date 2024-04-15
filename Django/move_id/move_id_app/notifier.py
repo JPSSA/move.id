@@ -60,6 +60,9 @@ class Notifier:
 
         self.voting.add_classifier(classifier,parameters, X, y)
     
+    def add_classifier_unsupervised(self, classifier):
+        self.voting.add_classifier_unsupervised(classifier)
+
     
     def add_subscriber(self, idSensor, email, location, nif):
         self.stopListening()
