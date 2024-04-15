@@ -28,10 +28,10 @@ def on_message(mqtt_client, userdata, msg):
     #appendData(msg)
     #if count_rows_with_topic_id(msg.topic) >= 120:
     #    delete_oldest_sensor_data(msg.topic)
-    #df = get_sensor_data_as_dataframe('move_id/1234')
-    #print(df.tail(6))
-    #anomaly_detector = AnomalyDetector('LevelShift', df)
-    #print('PREDICTION! -> ', anomaly_detector.predict())
+    #    df = get_sensor_data_as_dataframe('move_id/1234')
+    #    print(df.tail(6))
+    #    anomaly_detector = AnomalyDetector('LevelShift', df)
+    #    print('PREDICTION! -> ', anomaly_detector.predict())
 
    
     
@@ -49,3 +49,6 @@ client.connect(
 # Start the MQTT client loop
 # here or in __ini__.py
 client.loop_start()
+
+
+
