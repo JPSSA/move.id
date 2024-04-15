@@ -85,5 +85,5 @@ class VotingClassifier:
         
         print(predictions)
 
-        return int(np.sum(predictions) > 0.5)
+        return int(np.sum(predictions) < 0.5)
 
