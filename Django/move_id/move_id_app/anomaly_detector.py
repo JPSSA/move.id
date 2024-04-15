@@ -9,17 +9,12 @@ from sklearn.neighbors import LocalOutlierFactor
 
 class AnomalyDetector:
     
-    def __init__(self,detector_type,dataframe):
+    def __init__(self,detector_type,dataframe,score):
 
         self.detector_type = detector_type
         self.dataframe = dataframe
         self.prediction = 0
-        if self.detector_type == 'LevelShift':
-            self.score = 0.8
-        elif self.detector_type == 'Quantile':
-            self.score = 0.75
-        elif self.detector_type == 'OutlierDetection':
-            self.score = 0.7
+        self.score = score
         self.anomaly_flags = []
 
 

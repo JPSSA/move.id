@@ -44,6 +44,33 @@ class VotingClassifier:
             new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
             new_instance.save()
 
+    def add_classifier_unsupervised(self, classifier):
+        clf_name = classifier.detector_type
+        now = datetime.now()
+        model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
+
+        # Salva o classificador em um arquivo pickle
+        with open(model_file, 'wb') as f:
+            pickle.dump(classifier, f)
+
+        # Tenta recuperar o objeto Cliente pelo ID
+        cliente = Classifier.objects.filter(name=clf_name).first()  
+
+        # Verifica se o objeto foi encontrado
+        if cliente is not None:
+            # Modifica o campo 'nome'
+            cliente.path = model_file
+            cliente.score = classifier.score
+            # Salva as alterações no banco de dados
+            cliente.save()  
+        
+        else:
+            new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
+            new_instance.save()
+        
+
+
+
 
     def delete_classifier(self, classifier):
         clf_name = classifier.__class__.__name__
@@ -80,6 +107,8 @@ class VotingClassifier:
                     predictions.append(0)
                 else:
                     predictions.append(weight * clf.predict(X))
+            elif(clf.__class__.__name__ == 'AnomalyDetector'):
+                predictions.append(weight * clf.predict())
             else:
                 predictions.append(weight * clf.predict(X))
         
