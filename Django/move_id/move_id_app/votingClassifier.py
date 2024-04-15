@@ -65,7 +65,7 @@ class VotingClassifier:
             cliente.save()  
         
         else:
-            new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
+            new_instance = Classifier(name=clf_name,path=model_file, score=classifier.score)
             new_instance.save()
         
 
