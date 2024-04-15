@@ -9,10 +9,10 @@ from sklearn.neighbors import LocalOutlierFactor
 
 class AnomalyDetector:
     
-    def __init__(self,detector_type,dataframe,score):
+    def __init__(self,topic_id,detector_type,dataframe,score):
 
         self.detector_type = detector_type
-        self.dataframe = dataframe
+        self.topic_id = topic_id
         self.prediction = 0
         self.score = score
         self.anomaly_flags = []
@@ -30,9 +30,10 @@ class AnomalyDetector:
     
     def detect_anomalies(self):
         self.anomaly_flags = []
-        for column_name in self.dataframe.columns:
-            column_values = self.dataframe[column_name]
-            if self.check_detection_with_window(column_values,6):
+        dataframe = get_sensor_data_as_dataframe(self.topic_id)
+        for column_name in dataframe.columns:
+            column_values = dataframe[column_name]
+            if self.check_detection_with_window(column_values,6,dataframe):
                 self.anomaly_flags.append(1)
             else:
                 self.anomaly_flags.append(0)
@@ -46,13 +47,13 @@ class AnomalyDetector:
 
         return anomalies_dates
 
-    def check_detection_with_window(self,column_values,window):
+    def check_detection_with_window(self,column_values,window,dataframe):
         if self.detector_type == 'LevelShift':
             validated_values = validate_series(column_values)
             level_shift_ad = LevelShiftAD(c = 6.0, side = 'both', window = 3)
             anomalies = level_shift_ad.fit_detect(validated_values)
             anomalies_list = self.getanomalyList(anomalies)
-            last_rows = self.dataframe.tail(window)
+            last_rows = dataframe.tail(window)
             anomaly_detected = any(anomaly_timestamp in last_rows.index for anomaly_timestamp in anomalies_list)
             if anomaly_detected:
                 return True
@@ -64,7 +65,7 @@ class AnomalyDetector:
             quantile_ad = QuantileAD(high=0.99, low=0.02)
             anomalies = quantile_ad.fit_detect(validated_values)
             anomalies_list = self.getanomalyList(anomalies)
-            last_rows = self.dataframe.tail(window)
+            last_rows = dataframe.tail(window)
             anomaly_detected = any(anomaly_timestamp in last_rows.index for anomaly_timestamp in anomalies_list)
             if anomaly_detected:
                 return True
@@ -76,7 +77,7 @@ class AnomalyDetector:
             outlier_detector = OutlierDetector(LocalOutlierFactor(contamination=0.02))
             anomalies = outlier_detector.fit_detect(validated_values)
             anomalies_list = self.getanomalyList(anomalies)
-            last_rows = self.dataframe.tail(window)
+            last_rows = dataframe.tail(window)
             anomaly_detected = any(anomaly_timestamp in last_rows.index for anomaly_timestamp in anomalies_list)
             if anomaly_detected:
                 return True
