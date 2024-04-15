@@ -9,10 +9,10 @@ from sklearn.neighbors import LocalOutlierFactor
 
 class AnomalyDetector:
     
-    def __init__(self,topic_id,detector_type,dataframe,score):
+    def __init__(self,location,topic_id,detector_type,dataframe,score):
 
         self.detector_type = detector_type
-        self.topic_id = topic_id
+        self.topic_id = 'moveID/subscriber/'+ location + '/' + topic_id
         self.prediction = 0
         self.score = score
         self.anomaly_flags = []
