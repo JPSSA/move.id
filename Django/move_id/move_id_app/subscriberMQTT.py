@@ -4,10 +4,11 @@ import json
 import os
 
 class subscriberMQTT:
-    def __init__(self, topic, ip, port=1883):
+    def __init__(self, location, topic_id, ip, port=1883):
         self.broker = ip
         self.port = port
-        self.topic = topic
+        self.location = location
+        self.id = topic_id
         self.client_id = ''
         self.received_data = []  # Initialize an empty dictionary to store received data
         self.start_time = 0
@@ -34,7 +35,7 @@ class subscriberMQTT:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)
             
-        client.subscribe(self.topic)
+        client.subscribe('moveID/subscribe/'+ self.location + '/' + self.ip)
         client.on_message = on_message
 
 

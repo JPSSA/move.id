@@ -78,7 +78,7 @@ class VotingClassifier:
         Classifier.objects.filter(name=clf_name).delete() 
 
     
-    def predict(self, X):
+    def predict(self, X,  location, topic_id):
         predictions = []
         classifiers = []
         scores = []
@@ -108,7 +108,7 @@ class VotingClassifier:
                 else:
                     predictions.append(weight * clf.predict(X))
             elif(clf.__class__.__name__ == 'AnomalyDetector'):
-                predictions.append(weight * clf.predict())
+                predictions.append(weight * clf.predict( location, topic_id))
             else:
                 predictions.append(weight * clf.predict(X))
         

@@ -161,12 +161,12 @@ class Notifier:
             return array
         return []
 
-    def classify(self, data):
+    def classify(self, data,  location, topic_id):
         calculated = preprocessing.calculate_statistics(data)
         #print(calculated)
         matrix = preprocessing.to_matrix([calculated])
 
-        return self.voting.predict(matrix)
+        return self.voting.predict(matrix,  location, topic_id)
 
         
     
@@ -179,7 +179,8 @@ class Notifier:
                 data = self.getData(sub.topic)
 
                 if data:
-                    if self.classify(data):
+                    instance = UserSensor.objects.filter(idSensor=sub.id)[0]
+                    if self.classify(data, sub.location, sub.id):
                         self.client.loop_start()
                         self.publish(self.client, sub.topic)
                         self.client.loop_stop()

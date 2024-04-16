@@ -15,8 +15,8 @@ class AnomalyDetector:
         self.score = score
 
 
-    def predict(self):
-        anomaly_flags = self.detect_anomalies()
+    def predict(self, location, topic_id):
+        anomaly_flags = self.detect_anomalies(location, topic_id)
         if self.is_majority_anomaly(anomaly_flags):
             return 1
         return 0
