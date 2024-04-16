@@ -182,6 +182,6 @@ class Notifier:
                     instance = UserSensor.objects.filter(idSensor=sub.id)[0]
                     if self.classify(data, sub.location, sub.id):
                         self.client.loop_start()
-                        self.publish(self.client, sub.topic)
+                        self.publish(self.client, sub.id)
                         self.client.loop_stop()
 

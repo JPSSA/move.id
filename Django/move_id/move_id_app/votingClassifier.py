@@ -110,7 +110,7 @@ class VotingClassifier:
             elif(clf.__class__.__name__ == 'AnomalyDetector'):
                 predictions.append(weight * clf.predict( location, topic_id))
             else:
-                predictions.append(weight * clf.predict(X))
+                predictions.append(weight * clf.predict(X)[0])
         
         
         print(predictions)
