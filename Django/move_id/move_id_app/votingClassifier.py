@@ -113,6 +113,6 @@ class VotingClassifier:
                 predictions.append(weight * clf.predict(X)[0])
         
         
-        print(predictions)
+        #print(predictions)
         return int(np.sum(predictions) > 0.5)
 

@@ -166,7 +166,6 @@ class Notifier:
         #print(calculated)
         matrix = preprocessing.to_matrix([calculated])
 
-        print(matrix)
 
         return self.voting.predict(matrix,  location, topic_id)
 
