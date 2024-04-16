@@ -49,6 +49,3 @@ client.connect(
 # Start the MQTT client loop
 # here or in __ini__.py
 client.loop_start()
-
-
-

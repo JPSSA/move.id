@@ -45,8 +45,16 @@ def dict_flatten(dic):
     for key, value in dic.items():
         if isinstance(value, dict):
             for k, v in value.items():
+                try:
+                    v = float(v)
+                except ValueError:
+                    pass  
                 flattened_dict[key + '_' + k] = v
         else:
+            try:
+                value = float(value)
+            except ValueError:
+                pass  
             flattened_dict[key] = value
     return flattened_dict
 
