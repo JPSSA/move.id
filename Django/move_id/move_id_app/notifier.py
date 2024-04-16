@@ -166,6 +166,8 @@ class Notifier:
         #print(calculated)
         matrix = preprocessing.to_matrix([calculated])
 
+        print(matrix)
+
         return self.voting.predict(matrix,  location, topic_id)
 
         
@@ -177,6 +179,8 @@ class Notifier:
             
             for sub in self.subs:
                 data = self.getData('moveID/subscriber/' + sub.location + '/' + sub.id)
+
+                
 
                 if data:
                     instance = UserSensor.objects.filter(idSensor=sub.id)[0]
