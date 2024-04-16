@@ -1,4 +1,5 @@
 from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, PatientSensor, Patient
+from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
@@ -75,7 +76,9 @@ class Notifier:
         sensor.save()
         # Create an instance of MyModel
 
-        new_instance = UserSensor(idSensor=sensor, user=email, location=location)
+        users = User.objects.filter(email=email)
+
+        new_instance = UserSensor(idSensor=sensor, user=users[0], location=location)
 
         # Save the instance to the database
         new_instance.save()
