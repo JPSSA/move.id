@@ -35,7 +35,7 @@ class subscriberMQTT:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)
             
-        client.subscribe('moveID/subscribe/'+ self.location + '/' + self.ip)
+        client.subscribe('moveID/subscribe/'+ self.location + '/' + self.id)
         client.on_message = on_message
 
 
