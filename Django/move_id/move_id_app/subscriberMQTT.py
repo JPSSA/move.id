@@ -31,6 +31,7 @@ class subscriberMQTT:
 
     def subscribe(self,client: mqtt_client):
         def on_message(client, userdata, msg):
+            print(msg.topic)
             if count_rows_with_topic_id(msg.topic) >= 120:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)

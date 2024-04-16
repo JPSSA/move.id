@@ -133,10 +133,10 @@ class Notifier:
             result = client.publish('moveID/notification', 'Alerta '+ id)
             # result: [0, 1]
             status = result[0]
-            if status == 0:
-                print(f"Send `{msg}` to topic Notification")
-            else:
-                print(f"Failed to send message to topic Notification")
+            #if status == 0:
+                #print(f"Send `{msg}` to topic Notification")
+            #else:
+                #print(f"Failed to send message to topic Notification")
             msg_count += 1
             if msg_count > 5:
                 break
