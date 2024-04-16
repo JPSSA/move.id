@@ -125,12 +125,12 @@ class Notifier:
     
 
 
-    def publish(self,client, id):
+    def publish(self,client, location, topic_id):
         msg_count = 1
         while True:
             time.sleep(1)
             msg = f"messages: {msg_count}"
-            result = client.publish('moveID/notification', 'Alerta '+ id)
+            result = client.publish('moveID/notification/'+location+'/'+topic_id, 'Alerta')
             # result: [0, 1]
             status = result[0]
             #if status == 0:
@@ -185,6 +185,6 @@ class Notifier:
                     instance = UserSensor.objects.filter(idSensor=sub.id)[0]
                     if self.classify(data, sub.location, sub.id):
                         self.client.loop_start()
-                        self.publish(self.client, sub.id)
+                        self.publish(self.client, sub.location, sub.id)
                         self.client.loop_stop()
 
