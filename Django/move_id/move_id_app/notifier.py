@@ -176,7 +176,7 @@ class Notifier:
         while True:
             
             for sub in self.subs:
-                data = self.getData(sub.topic)
+                data = self.getData('moveID/subscriber/' + sub.location + '/' + sub.id)
 
                 if data:
                     instance = UserSensor.objects.filter(idSensor=sub.id)[0]
