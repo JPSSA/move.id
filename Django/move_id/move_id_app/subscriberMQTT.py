@@ -41,6 +41,53 @@ class subscriberMQTT:
 
     def stop(self):
         self.client.loop_stop()
+
+    def publish(self,client, location, topic_id):
+        msg_count = 1
+        while True:
+            time.sleep(1)
+            msg = f"messages: {msg_count}"
+            result = client.publish('moveID/notification/'+location+'/'+topic_id, 'Alerta')
+            # result: [0, 1]
+            status = result[0]
+            #if status == 0:
+                #print(f"Send `{msg}` to topic Notification")
+            #else:
+                #print(f"Failed to send message to topic Notification")
+            msg_count += 1
+            if msg_count > 5:
+                break
+    
+
+    def getData(self, topic_id):
+
+        array = []
+
+        instances = Dataset.objects.all() # Retrieve all rows where name is "John"
+        path = instances[0].path
+
+        dat=pickle.load(open(path,'rb'))
+        #window = dat['len_window']
+        window = 6
+
+        newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-datetime')[:window]
+
+        for row in newest_rows:
+            array.append(row.message)
+
+        if(len(array)== window):
+            return array
+        return []
+
+    def classify(self, data,  location, topic_id):
+        calculated = preprocessing.calculate_statistics(data)
+        #print(calculated)
+        matrix = preprocessing.to_matrix([calculated])
+
+
+        return self.voting.predict(matrix,  location, topic_id)
+
+    
     
     def run(self):
         self.client = self.connect_mqtt()
