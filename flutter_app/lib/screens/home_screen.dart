@@ -44,6 +44,8 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
 
       String topic = "$location" + "\\" + "$deviceid";
 
+      addToList(location,deviceid);
+
       controller.subscribeToTopic(topic);
       controller.addPatient(location,deviceid);
 
@@ -106,6 +108,8 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
 
       String topic = "$location" + "\\" + "$deviceid";
 
+      removeFromList(location,deviceid);
+
       controller.unsubscribeFromTopic(topic);
       controller.removePatient(index);
 
@@ -137,24 +141,35 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
   }
 }
 
+Future<void> fetchStoredItems(HomeController controller) async {
+  final prefs = await SharedPreferences.getInstance();
+  final itemList = prefs.getStringList('itemList') ?? [];
+  itemList.forEach((item) {
+    final itemData = item.split(',');
+    final deviceid = itemData[0];
+    final location = itemData[1];
+    // Subscribe to MQTT topic corresponding to the stored item
+    controller.subscribeToTopic('$location\\$deviceid');
+    // Add item to the list
+    controller.addPatient(location, deviceid);
+  });
+}
 
+Future<void> addToList(String location, String deviceid) async {
+  final prefs = await SharedPreferences.getInstance();
+  final itemList = prefs.getStringList('itemList') ?? [];
+  final newItem = '$deviceid,$location';
+  itemList.add(newItem);
+  await prefs.setStringList('itemList', itemList);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Future<void> removeFromList(String location, String deviceid) async {
+  final prefs = await SharedPreferences.getInstance();
+  final itemList = prefs.getStringList('itemList') ?? [];
+  final itemToRemove = '$deviceid,$location';
+  itemList.remove(itemToRemove);
+  await prefs.setStringList('itemList', itemList);
+}
 
 
 class HomeScreen extends GetView<HomeController> {
@@ -172,8 +187,9 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    print("Dropdown Options: $dropdownOptions");
-    print("Selected Hospital: ${controller.selectedLocation.value}");
+
+    fetchStoredItems(controller);
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
