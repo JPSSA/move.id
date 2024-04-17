@@ -9,6 +9,7 @@ from .anomaly_detector import AnomalyDetector
 
 
 
+
 subscribed_topics = []
 
 # MQTT client configuration
@@ -49,3 +50,9 @@ client.connect(
 # Start the MQTT client loop
 # here or in __ini__.py
 client.loop_start()
+
+
+df = get_sensor_data_as_dataframe('move_id/1234')
+print(df.tail(6))
+anomaly_detector = AnomalyDetector('LevelShift', 0.5)
+print('PREDICTION! -> ', anomaly_detector.predict("hospital","move_id/1234"))
