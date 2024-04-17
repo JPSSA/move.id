@@ -9,6 +9,7 @@ from .anomaly_detector import AnomalyDetector
 
 
 
+
 subscribed_topics = []
 
 # MQTT client configuration

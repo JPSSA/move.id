@@ -6,6 +6,7 @@ from adtk.detector import LevelShiftAD
 from adtk.detector import QuantileAD
 from adtk.detector import OutlierDetector
 from sklearn.neighbors import LocalOutlierFactor
+import pandas as pd
 
 class AnomalyDetector:
     
@@ -73,6 +74,7 @@ class AnomalyDetector:
                 
         elif self.detector_type == 'OutlierDetection':
             validated_values = validate_series(column_values)
+            validated_values = pd.DataFrame(validated_values)
             outlier_detector = OutlierDetector(LocalOutlierFactor(contamination=0.02))
             anomalies = outlier_detector.fit_detect(validated_values)
             anomalies_list = self.getanomalyList(anomalies)
