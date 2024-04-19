@@ -14,15 +14,24 @@ class SensorData(models.Model):
     topic_id = models.CharField(max_length=255)
     message = models.CharField()
     
+    class Meta:
+        db_table = 'sensor_data'
+    
     
 class PatientSensor(models.Model):
     idSensor = models.CharField(primary_key=True, max_length=50)
     nif = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'patient_sensor'
+
 class UserSensor(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     idSensor = models.ForeignKey(PatientSensor, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'user_sensor'
 
 class Classifier(models.Model):
     name = models.CharField(primary_key=True, max_length=255)
@@ -31,6 +40,9 @@ class Classifier(models.Model):
 
 class DatasetAttributes(models.Model):
     atr = models.CharField(primary_key=True, max_length=255)
+
+    class Meta:
+        db_table = 'dataset_attributes'
 
 class Dataset(models.Model):
     path = models.CharField(primary_key=True, max_length=255)
