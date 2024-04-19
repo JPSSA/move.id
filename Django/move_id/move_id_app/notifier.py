@@ -174,17 +174,18 @@ class Notifier:
     
     def run(self):
         self.client = self.connect_mqtt()
-        while True:
+        
+        # while True:
             
-            for sub in self.subs:
-                data = self.getData('moveID/subscriber/' + sub.location + '/' + sub.id)
+        #     for sub in self.subs:
+        #         data = self.getData('moveID/subscriber/' + sub.location + '/' + sub.id)
 
                 
 
-                if data:
-                    instance = UserSensor.objects.filter(idSensor=sub.id)[0]
-                    if self.classify(data, sub.location, sub.id):
-                        self.client.loop_start()
-                        self.publish(self.client, sub.location, sub.id)
-                        self.client.loop_stop()
+        #         if data:
+        #             instance = UserSensor.objects.filter(idSensor=sub.id)[0]
+        #             if self.classify(data, sub.location, sub.id):
+        #                 self.client.loop_start()
+        #                 self.publish(self.client, sub.location, sub.id)
+        #                 self.client.loop_stop()
 
