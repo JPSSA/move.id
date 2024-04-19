@@ -173,7 +173,8 @@ class Notifier:
     
     
     def run(self):
-        self.client = self.connect_mqtt()
+        print('Run')
+        #self.client = self.connect_mqtt()
         
         # while True:
             
