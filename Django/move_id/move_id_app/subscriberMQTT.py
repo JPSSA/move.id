@@ -16,7 +16,7 @@ class subscriberMQTT:
         self.start_time = 0
         self.voting = VotingClassifier()
         
-        
+    
 
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
