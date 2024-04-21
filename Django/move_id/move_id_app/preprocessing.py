@@ -3,8 +3,6 @@ import numpy as np
 import scipy
 
 
-
-
 def windowed_data(data, window_size):
     num_samples = len(data)
     num_windows = num_samples - window_size + 1
