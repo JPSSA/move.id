@@ -34,11 +34,14 @@ def on_message(mqtt_client, userdata, msg):
     #    anomaly_detector = AnomalyDetector('LevelShift', df)
     #    print('PREDICTION! -> ', anomaly_detector.predict())
 
-   
+
+def unsubscribe(topic):
+    client.unsubscribe(topic)
     
 # Set callback functions
 client.on_connect = on_connect
 client.on_message = on_message
+#client.on_unsubscribe = on_unsubscribe
 client.username_pw_set(settings.MQTT_USER, settings.MQTT_PASSWORD)
 
 # Connect to the MQTT broker
@@ -50,3 +53,6 @@ client.connect(
 # Start the MQTT client loop
 # here or in __ini__.py
 client.loop_start()
+
+
+get_subscribed_clients_count('move_id/1234')

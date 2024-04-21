@@ -5,8 +5,10 @@ from django.contrib.auth.models import User
 
 class Patient(models.Model):
     nif = models.IntegerField(primary_key=True,default=0)
-    fname = models.CharField(max_length = 50)
-    lname = models.CharField(max_length = 50)
+    first_name = models.CharField(max_length = 50)
+    last_name = models.CharField(max_length = 50)
+    room = models.CharField(max_length = 50)
+    bed = models.CharField(max_length = 50)
     
 class SensorData(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
