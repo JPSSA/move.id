@@ -15,6 +15,7 @@ class SensorData(models.Model):
     datetime = models.DateTimeField()
     topic_id = models.CharField(max_length=255)
     message = models.CharField()
+    read = models.BooleanField()
     
     class Meta:
         db_table = 'sensor_data'

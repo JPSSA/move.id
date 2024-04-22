@@ -55,4 +55,4 @@ client.connect(
 client.loop_start()
 
 
-get_subscribed_clients_count('move_id/1234')
+#get_subscribed_clients_count('move_id/1234')
