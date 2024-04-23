@@ -21,12 +21,10 @@ class SensorData(models.Model):
         db_table = 'sensor_data'
     
     
-class PatientSensor(models.Model):
+class Sensor(models.Model):
     idSensor = models.CharField(primary_key=True, max_length=50)
     nif = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
-    class Meta:
-        db_table = 'patient_sensor'
 
 class UserSensor(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)

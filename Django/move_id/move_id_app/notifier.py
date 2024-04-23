@@ -123,7 +123,7 @@ class Notifier:
 
         self.subs = []
     
-
+    
 
     def publish(self,client, location, topic_id):
         msg_count = 1
@@ -171,10 +171,9 @@ class Notifier:
 
         
     
-    
     def run(self):
         print('Run')
-        #self.client = self.connect_mqtt()
+        self.client = self.connect_mqtt()
         
         # while True:
             

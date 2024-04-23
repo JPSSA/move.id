@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .sensordatautils import appendData, count_rows_with_topic_id, delete_oldest_sensor_data
 import json
 import os
+import threading
 
 class subscriberMQTT:
     def __init__(self, location, topic_id, ip, port=1883):
@@ -38,18 +39,21 @@ class subscriberMQTT:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)
 
-            data = self.getData('moveID/subscriber/' + self.location + '/' + self.id)
+            array_data = self.getData('moveID/subscriber/' + self.location + '/' + self.id)
 
-            if data:
-                instance = UserSensor.objects.filter(idSensor=sub.id)[0]
-                if self.classify(data, sub.location, sub.id):
-                    self.publish(self.client, self.location, self.id)
+            for data in array_data:
+                if data:
+                    classification_thread = threading.Thread(target=self.classify_unread_messages, args=(data))
+                    classification_thread.start()
+
+                    
 
 
             
         client.subscribe('moveID/subscriber/'+ self.location + '/' + self.id)
         client.on_message = on_message
 
+    
 
     def stop(self):
         self.client.loop_stop()
@@ -82,14 +86,31 @@ class subscriberMQTT:
         #window = dat['len_window']
         window = 6
 
-        newest_rows = SensorData.objects.filter(topic_id='moveID/subscriber/'+self.location+'/'+self.topic_id).order_by('-datetime')[:window]
+        unread_messages = SensorData.objects.filter(topic_id='moveID/subscriber/' + self.location + '/' + self.topic_id, read=False).order_by('-datetime')
+        
 
-        for row in newest_rows:
-            array.append(row.message)
+        for message in unread_messages:
+            
+            temp = []
 
-        if(len(array)== window):
-            return array
-        return []
+            previous_messages = SensorData.objects.filter(
+                topic_id=message.topic_id,
+                datetime__lt=message.datetime,
+            ).exclude(
+                id=message.id
+            ).order_by('-datetime')[:window-1]
+
+            # Adiciona as mensagens anteriores à lista
+            for prev_message in previous_messages:
+                temp.append(prev_message.message)
+
+            # Adiciona a mensagem não lida atual à lista
+            temp.append(message.message)
+
+            array.append(temp)
+
+    
+        return array
 
     def classify(self, data):
         calculated = preprocessing.calculate_statistics(data)
@@ -97,7 +118,10 @@ class subscriberMQTT:
 
         return self.voting.predict(matrix,  self.location, self.topic_id)
 
-    
+    def classify_unread_messages(self, data):
+        instance = UserSensor.objects.filter(idSensor=self.id)[0]
+        if self.classify(data, self.location, self.id):
+            self.publish(self.client, self.location, self.id)
     
     def run(self):
         self.client = self.connect_mqtt()
