@@ -30,7 +30,7 @@ class UserSensor(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     id_sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     nif_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    location = models.CharField(max_length=255)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'user_sensor'
@@ -40,11 +40,11 @@ class Classifier(models.Model):
     path = models.CharField(max_length=255)
     score = models.FloatField(max_length=10)
 
-class DatasetAttributes(models.Model):
-    atr = models.CharField(primary_key=True, max_length=255)
-
-    class Meta:
-        db_table = 'dataset_attributes'
 
 class Dataset(models.Model):
     path = models.CharField(primary_key=True, max_length=255)
+
+class Location(models.Model):
+    name = models.CharField(max_length=255)
+
+
