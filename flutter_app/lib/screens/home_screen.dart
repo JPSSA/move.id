@@ -186,12 +186,14 @@ Future<void> removeFromList(String location, String deviceid) async {
   await prefs.setStringList('itemList', itemList);
 }
 
-Future<List<String>> getLocationNamesFromPrefs() async {
+final List<String> dropdownOptions = [];
+
+Future<List<String>> getLocationNamesFromPrefs(dropdownOptions) async {
   final prefs = await SharedPreferences.getInstance();
-  final List<String>? locationNames = prefs.getStringList('location_names');
-  if (locationNames != null) {
+  dropdownOptions = prefs.getStringList('location_names');
+  if (dropdownOptions != null) {
       print('Location names retrieved from SharedPreferences.');
-      return locationNames;
+      return dropdownOptions;
     } else {
       print('Location names not found in SharedPreferences.');
       return []; // or throw an error, depending on your requirement
@@ -202,7 +204,7 @@ Future<List<String>> getLocationNamesFromPrefs() async {
 
 
 Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
-  const String url = 'YOUR_API_URL_HERE'; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
+  const String url = ApiUrls.locationGetterUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
   
   try {
     final http.Response response = await http.get(Uri.parse(url));
@@ -310,7 +312,7 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
 
     getAllLocationsAndIdsAndSaveToPrefs();
-    final List<String> dropdownOptions = getLocationNamesFromPrefs() as List<String>;
+    getLocationNamesFromPrefs(dropdownOptions);
     fetchStoredItems(controller);
     
     return Scaffold(

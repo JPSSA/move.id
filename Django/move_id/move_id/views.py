@@ -128,6 +128,7 @@ class NotifierAPI(APIView):
 class LocationGetterAPI(APIView):
 
     def get(self, request):
+        print("Entrou no location Getter")
         try:
             locations = Location.objects.all()
             locations_data = [{'name': location.name, 'id': location.id} for location in locations]
