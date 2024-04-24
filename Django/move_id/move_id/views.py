@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from move_id_app.models import UserSensor
-from move_id_app.models import PatientSensor
+from move_id_app.models import Sensor
 
 class RegisterAPI(APIView):
 
@@ -81,7 +81,7 @@ class NotifierAPI(APIView):
             if not user:
                 return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-            sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+            sensor = Sensor.objects.filter(idSensor=idSensor).first()
             if not sensor:
                 return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
         
@@ -106,7 +106,7 @@ class NotifierAPI(APIView):
                 if not user:
                     return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-                sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+                sensor = Sensor.objects.filter(idSensor=idSensor).first()
                 if not sensor:
                     return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
 
