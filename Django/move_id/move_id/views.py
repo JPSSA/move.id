@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from move_id_app.models import UserSensor
-from move_id_app.models import PatientSensor
+from move_id_app.models import Patient
+from move_id_app.models import Sensor
 
 class RegisterAPI(APIView):
 
@@ -75,17 +76,23 @@ class NotifierAPI(APIView):
 
             email = data.get('email')
             idSensor = data.get('idSensor')
-            location = data.get('location')
+            idLocation = data.get('location')
 
+            
             user = User.objects.filter(email=email).first()
             if not user:
                 return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-            sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+            sensor = Sensor.objects.filter(idSensor=idSensor).first()
             if not sensor:
                 return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
-        
-            user_sensor = UserSensor(user=user, idSensor=sensor, location=location)
+
+            location = Location.objects.filter(id=idLocation).first()
+            if not sensor:
+                return JsonResponse({'error': 'Location with this id does not exist'}, status=404)
+
+
+            user_sensor = UserSensor(user=user, idSensor=sensor, patient=sensor.patient, location=location)
             user_sensor.save()
 
 

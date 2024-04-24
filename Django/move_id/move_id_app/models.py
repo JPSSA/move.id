@@ -23,13 +23,13 @@ class SensorData(models.Model):
     
 class Sensor(models.Model):
     id_sensor = models.CharField(primary_key=True, max_length=50)
-    nif_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
 
 class UserSensor(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     id_sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    nif_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     class Meta:
