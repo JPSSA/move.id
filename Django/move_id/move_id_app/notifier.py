@@ -1,4 +1,4 @@
-from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, PatientSensor, Patient
+from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, Sensor, Patient
 from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
@@ -72,7 +72,7 @@ class Notifier:
 
         
 
-        sensor = PatientSensor(idSensor=idSensor, nif=instances[0])
+        sensor = Sensor(idSensor=idSensor, nif=instances[0])
         sensor.save()
         # Create an instance of MyModel
 

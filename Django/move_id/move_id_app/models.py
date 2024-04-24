@@ -19,7 +19,9 @@ class SensorData(models.Model):
     
     class Meta:
         db_table = 'sensor_data'
-    
+
+class Location(models.Model):
+    name = models.CharField(max_length=255)
     
 class Sensor(models.Model):
     id_sensor = models.CharField(primary_key=True, max_length=50)
@@ -44,7 +46,6 @@ class Classifier(models.Model):
 class Dataset(models.Model):
     path = models.CharField(primary_key=True, max_length=255)
 
-class Location(models.Model):
-    name = models.CharField(max_length=255)
+
 
 

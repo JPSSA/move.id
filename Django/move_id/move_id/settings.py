@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.1.68', '127.0.0.1','172.20.10.2','10.11.75.156', '192.168.1.78', '192.168.1.86', '192.168.24.177','10.11.65.134','192.168.43.85']
 
 # Configuration items for the MQTT broker
-MQTT_SERVER = 'broker.emqx.io'
+
 MQTT_PORT = 1883
 MQTT_KEEPALIVE = 60
 MQTT_USER = ''

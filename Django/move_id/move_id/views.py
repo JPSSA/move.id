@@ -113,7 +113,7 @@ class NotifierAPI(APIView):
                 if not user:
                     return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-                sensor = PatientSensor.objects.filter(idSensor=idSensor).first()
+                sensor = Sensor.objects.filter(idSensor=idSensor).first()
                 if not sensor:
                     return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
 
