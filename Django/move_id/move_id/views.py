@@ -1,12 +1,12 @@
 import json
 from django.http import JsonResponse
-from move_id_app.mqtt import client as mqtt_client
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from move_id_app.models import UserSensor
 from move_id_app.models import Patient
 from move_id_app.models import Sensor
+from move_id_app.models import Location
 
 class RegisterAPI(APIView):
 

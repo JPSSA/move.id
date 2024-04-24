@@ -1,4 +1,4 @@
-import paho.mqtt.client as mqtt # type: ignore
+"""import paho.mqtt.client as mqtt # type: ignore
 from django.conf import settings
 import pandas as pd
 from .sensordatautils import appendData
@@ -56,3 +56,4 @@ client.loop_start()
 
 
 #get_subscribed_clients_count('move_id/1234')
+"""
