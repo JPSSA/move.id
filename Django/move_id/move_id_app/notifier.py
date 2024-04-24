@@ -110,7 +110,7 @@ class Notifier:
         # Loop through all instances and print their attributes
         for idSensor in ids_values:
             instance = UserSensor.objects.filter(idSensor=idSensor)[0]
-            self.subs.append(subscriberMQTT(instance.location, idSensor , self.ip, self.port))
+            self.subs.append(subscriberMQTT(instance.location.id, idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()
