@@ -34,9 +34,6 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
       },
     );
 
-    print("ESTA A STATUS");
-    print(response.statusCode);
-
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
         msg: "Notifier added successfully",
@@ -87,10 +84,24 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
   try {
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email").toString();
+    final Map<String, dynamic>? locationsAndIds = json.decode(prefs.getString('locations_and_ids') ?? '{}');
+    final String? idLocation = locationsAndIds?[location];
+
+    if (idLocation == null) {
+      print('Location ID not found for $location');
+      Fluttertoast.showToast(
+        msg: "Location ID not found for $location",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+      return {};
+    }
 
     final Map<String, String> userData = {
         'email': email,
-        'idSensor': deviceid,
+        'idSensor':deviceid,
+        'idLocation': idLocation,
       };
 
     final http.Response response = await http.delete(
@@ -175,15 +186,121 @@ Future<void> removeFromList(String location, String deviceid) async {
   await prefs.setStringList('itemList', itemList);
 }
 
+Future<List<String>> getLocationNamesFromPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  final List<String>? locationNames = prefs.getStringList('location_names');
+  if (locationNames != null) {
+      print('Location names retrieved from SharedPreferences.');
+      return locationNames;
+    } else {
+      print('Location names not found in SharedPreferences.');
+      return []; // or throw an error, depending on your requirement
+    }
+}
+
+
+
+
+Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
+  const String url = 'YOUR_API_URL_HERE'; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
+  
+  try {
+    final http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+
+      // Assuming the response body is in the format { "locations": [{ "name": "Location1", "id": "ID1" }, { "name": "Location2", "id": "ID2" }, ... ]}
+      final List<dynamic> locationsData = responseBody['locations'];
+
+      final Map<String, String> locationsAndIds = {};
+      final List<String> locationNames = [];
+
+      for (final locationData in locationsData) {
+        final String locationName = locationData['name'];
+        final String locationId = locationData['id'];
+        locationsAndIds[locationName] = locationId;
+        locationNames.add(locationName);
+      }
+
+      // Store the locations and IDs dictionary in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('locations_and_ids', json.encode(locationsAndIds));
+      prefs.setStringList('location_names', locationNames); // Store the list of location names
+      
+      print('Locations and IDs saved to SharedPreferences.');
+    } else {
+      print('Failed to fetch locations and IDs. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class HomeScreen extends GetView<HomeController> {
 
   
-  final List<String> dropdownOptions = [
-    "Hospital Santa Maria",
-    "Hospital Lusíadas",
-    "Hospital da Luz",
-  ];
+  
 
   HomeScreen({super.key});
 
@@ -192,6 +309,8 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
 
+    getAllLocationsAndIdsAndSaveToPrefs();
+    final List<String> dropdownOptions = getLocationNamesFromPrefs() as List<String>;
     fetchStoredItems(controller);
     
     return Scaffold(

@@ -76,7 +76,7 @@ class NotifierAPI(APIView):
 
             email = data.get('email')
             idSensor = data.get('idSensor')
-            idLocation = data.get('location')
+            idLocation = data.get('idLocation')
 
             
             user = User.objects.filter(email=email).first()
@@ -127,9 +127,12 @@ class NotifierAPI(APIView):
 
 class LocationGetterAPI(APIView):
 
-    def post(self,request):
-
-        if request.method == 'POST':
-
+    def get(self, request):
+        try:
+            locations = Location.objects.all()
+            locations_data = [{'name': location.name, 'id': location.id} for location in locations]
+            return JsonResponse({'locations': locations_data}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': 'Couldnt query the table'}, status=404)
 
 

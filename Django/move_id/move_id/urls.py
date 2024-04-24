@@ -19,6 +19,7 @@ from django.urls import path
 from .views import RegisterAPI
 from .views import LoginAPI
 from .views import NotifierAPI
+from .views import LocationGetterAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +27,5 @@ urlpatterns = [
     path('loginAPI/',LoginAPI.as_view()),  
     path('removeNotifierAPI/',NotifierAPI.as_view()),   
     path('addNotifierAPI/',NotifierAPI.as_view()),    
+    path('LocationGetterAPI/',LocationGetterAPI.as_view()),  
 ]
