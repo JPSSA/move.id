@@ -78,21 +78,28 @@ class NotifierAPI(APIView):
             idSensor = data.get('idSensor')
             idLocation = data.get('idLocation')
 
+
+            print(idSensor)
+            print(idLocation)
+
             
             user = User.objects.filter(email=email).first()
             if not user:
+                print("1")
                 return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-            sensor = Sensor.objects.filter(idSensor=idSensor).first()
+            sensor = Sensor.objects.filter(id_sensor=idSensor).first()
             if not sensor:
+                print("2")
                 return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
 
             location = Location.objects.filter(id=idLocation).first()
-            if not sensor:
+            if not location:
+                print("3")
                 return JsonResponse({'error': 'Location with this id does not exist'}, status=404)
 
 
-            user_sensor = UserSensor(user=user, idSensor=sensor, patient=sensor.patient, location=location)
+            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient, location=location)
             user_sensor.save()
 
 
@@ -113,12 +120,12 @@ class NotifierAPI(APIView):
                 if not user:
                     return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-                sensor = Sensor.objects.filter(idSensor=idSensor).first()
+                sensor = Sensor.objects.filter(id_sensor=idSensor).first()
                 if not sensor:
                     return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
 
                 try:
-                    user_sensor = UserSensor.objects.get(user=user, idSensor=sensor)
+                    user_sensor = UserSensor.objects.get(user=user, id_sensor=sensor)
                     user_sensor.delete()
                     return JsonResponse({'message': 'Notifier removed successfully'}, status=200)
                 except UserSensor.DoesNotExist:
@@ -131,7 +138,9 @@ class LocationGetterAPI(APIView):
         print("Entrou no location Getter")
         try:
             locations = Location.objects.all()
-            locations_data = [{'name': location.name, 'id': location.id} for location in locations]
+            locations_data = [{'name': str(location.name), 'id': str(location.id)} for location in locations]
+
+            print(locations_data)
             return JsonResponse({'locations': locations_data}, status=200)
         except Exception as e:
             return JsonResponse({'error': 'Couldnt query the table'}, status=404)

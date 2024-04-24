@@ -19,11 +19,13 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email").toString();
     prefs.setString('location', location);
+    final Map<String, dynamic>? locationsAndIds = json.decode(prefs.getString('locations_and_ids') ?? '{}');
+    final String? idLocation = locationsAndIds?[location] as String?;
 
     final Map<String, String> userData = {
         'email': email,
         'idSensor': deviceid,
-        'location': location,
+        'idLocation': idLocation ?? "",
       };
 
     final http.Response response = await http.post(
@@ -42,7 +44,7 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
         textColor: Colors.black
       );
 
-      String topic = "$location" + "\\" + "$deviceid";
+      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
 
       addToList(location,deviceid);
 
@@ -120,7 +122,7 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
         textColor: Colors.black
       );
 
-      String topic = "$location" + "\\" + "$deviceid";
+      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
 
       removeFromList(location,deviceid);
 
@@ -163,10 +165,12 @@ Future<void> fetchStoredItems(HomeController controller) async {
     final itemData = item.split(',');
     final deviceid = itemData[0];
     final location = itemData[1];
+
+    //TO DO 
     // Subscribe to MQTT topic corresponding to the stored item
-    controller.subscribeToTopic('$location\\$deviceid');
+    //controller.subscribeToTopic('$location\\$deviceid');
     // Add item to the list
-    controller.addPatient(location, deviceid);
+    //controller.addPatient(location, deviceid);
   });
 }
 
@@ -188,17 +192,18 @@ Future<void> removeFromList(String location, String deviceid) async {
 
 final List<String> dropdownOptions = [];
 
-Future<List<String>> getLocationNamesFromPrefs(dropdownOptions) async {
+Future<List<String>> getLocationNamesFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
-  dropdownOptions = prefs.getStringList('location_names');
-  if (dropdownOptions != null) {
-      print('Location names retrieved from SharedPreferences.');
-      return dropdownOptions;
-    } else {
-      print('Location names not found in SharedPreferences.');
-      return []; // or throw an error, depending on your requirement
-    }
+  final List<String>? locationNames = prefs.getStringList('location_names');
+  if (locationNames != null) {
+    print('Location names retrieved from SharedPreferences.');
+    return locationNames;
+  } else {
+    print('Location names not found in SharedPreferences.');
+    return []; // or throw an error, depending on your requirement
+  }
 }
+
 
 
 
@@ -209,8 +214,11 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
   try {
     final http.Response response = await http.get(Uri.parse(url));
 
+   
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
+       print(responseBody);
 
       // Assuming the response body is in the format { "locations": [{ "name": "Location1", "id": "ID1" }, { "name": "Location2", "id": "ID2" }, ... ]}
       final List<dynamic> locationsData = responseBody['locations'];
@@ -224,6 +232,8 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
         locationsAndIds[locationName] = locationId;
         locationNames.add(locationName);
       }
+
+      print("lista de localizacoes " + locationNames.toString());
 
       // Store the locations and IDs dictionary in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -301,21 +311,25 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
 
 class HomeScreen extends GetView<HomeController> {
 
-  
-  
+HomeScreen({super.key});
 
-  HomeScreen({super.key});
+@override
+Widget build(BuildContext context) {
 
-   
-
-  @override
-  Widget build(BuildContext context) {
-
-    getAllLocationsAndIdsAndSaveToPrefs();
-    getLocationNamesFromPrefs(dropdownOptions);
-    fetchStoredItems(controller);
-    
-    return Scaffold(
+  getAllLocationsAndIdsAndSaveToPrefs();
+  return FutureBuilder<List<String>>(
+    future: getLocationNamesFromPrefs(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // Return a loading indicator while data is being fetched
+        return CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        // Return an error message if an error occurs
+        return Text('Error: ${snapshot.error}');
+      } else {
+        // If data is successfully fetched, build the widget tree
+        final List<String> dropdownOptions = snapshot.data!;
+        return Scaffold(
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -458,5 +472,10 @@ class HomeScreen extends GetView<HomeController> {
         },
       ),
     );
-  }
+      }
+    },
+  );
 }
+}
+
+

@@ -18,7 +18,7 @@ class HomeController extends GetxController{
 
      Future<void> initializeMqttClient() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    const String broker = 'broker.emqx.io';
+    const String broker = '10.11.69.120';
     const int port = 1883;
     String clientId = prefs.getString("email") ?? "";
 
