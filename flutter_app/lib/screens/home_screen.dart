@@ -34,6 +34,9 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
       },
     );
 
+    print("ESTA A STATUS");
+    print(response.statusCode);
+
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
         msg: "Notifier added successfully",
@@ -127,6 +130,7 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
         backgroundColor: Colors.white,
         textColor: Colors.black
       );
+      print(response);
       return {}; 
     }
   } catch (e) {
