@@ -80,112 +80,156 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _password1Controller = TextEditingController();
   final TextEditingController _password2Controller = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-       appBar: AppBar(
-        title: const Text('Sign Up',
-        style: TextStyle(fontFamily: 'RobotoMono')
-        ),
-        backgroundColor: hexStringToColor("#3b75d7"),
-        ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                hexStringToColor("#3b75d7"),
-                hexStringToColor("#4f5eff"),
-                hexStringToColor("#8b31b1"),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter, 
+  // Dentro do método build de _SignUpScreenState
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(
+        'Sign Up',
+        style: TextStyle(fontFamily: 'RobotoMono'),
+      ),
+      backgroundColor: hexStringToColor("#3b75d7"),
+    ),
+    body: LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    hexStringToColor("#3b75d7"),
+                    hexStringToColor("#4f5eff"),
+                    hexStringToColor("#8b31b1"),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 30),
+                  buildInputField(
+                    controller: _fnameController,
+                    hintText: "First Name",
+                    obscureText: false,
+                    icon: const Icon(Icons.text_fields),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _lnameController,
+                    hintText: "Last Name",
+                    obscureText: false,
+                    icon: const Icon(Icons.text_fields),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _usernameController,
+                    hintText: "Username",
+                    obscureText: false,
+                    icon: const Icon(Icons.account_circle),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _emailController,
+                    hintText: "Email",
+                    obscureText: false,
+                    icon: const Icon(Icons.email),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _password1Controller,
+                    hintText: "Password",
+                    obscureText: true,
+                    icon: const Icon(Icons.lock),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _password2Controller,
+                    hintText: "Verify Password",
+                    obscureText: true,
+                    icon: const Icon(Icons.lock),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignInScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Already have an account? Sign up here!",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontFamily: 'RobotoMono',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_fnameController.text.isEmpty ||
+                          _lnameController.text.isEmpty ||
+                          _emailController.text.isEmpty ||
+                          _usernameController.text.isEmpty ||
+                          _password1Controller.text.isEmpty ||
+                          _password2Controller.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: "Forgot to fill all the fields!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black,
+                        );
+                      } else if (_password1Controller.text != _password2Controller.text) {
+                        Fluttertoast.showToast(
+                          msg: "Passwords don't match!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black,
+                        );
+                      } else {
+                        registerRequest(
+                          _fnameController,
+                          _lnameController,
+                          _usernameController,
+                          _emailController,
+                          _password1Controller,
+                        ).then((response) {
+                          print("Register successful");
+                        }).catchError((error) {
+                          print("Error during registration: $error");
+                          Fluttertoast.showToast(
+                            msg: "Failed to register user: $error",
+                            toastLength: Toast.LENGTH_SHORT,
+                            backgroundColor: Colors.white,
+                            textColor: Colors.black,
+                          );
+                        });
+                      }
+                    },
+                    child: const Text(
+                      "Register",
+                      style: TextStyle(fontSize: 16, fontFamily: 'RobotoMono'),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
-          child:Column(
-            children: <Widget>[
-               const SizedBox(height: 30),
-               buildInputField(controller: _fnameController, hintText: "First Name", obscureText: false, icon: const Icon(Icons.text_fields)),
-               const SizedBox(height: 20),
-               buildInputField(controller: _lnameController, hintText: "Last Name", obscureText: false, icon: const Icon(Icons.text_fields)),
-               const SizedBox(height: 20),
-               buildInputField(controller: _usernameController, hintText: "Username", obscureText: false, icon: const Icon(Icons.account_circle)),
-               const SizedBox(height: 20),
-               buildInputField(controller: _emailController, hintText: "Email", obscureText: false, icon: const Icon(Icons.email)),
-               const SizedBox(height: 20),
-               buildInputField(controller: _password1Controller, hintText: "Password", obscureText: true, icon: const Icon(Icons.lock)),
-               const SizedBox(height: 20),
-               buildInputField(controller: _password2Controller, hintText: "Verify Password", obscureText: true, icon: const Icon(Icons.lock)),
-               const SizedBox(height: 20),
-               GestureDetector(
-                onTap: () {
-                  // Navigate to the new page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignInScreen()),
-                  );
-                },
-                child: const Text(
-                  "Already have and account? Sign up here!",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontFamily: 'RobotoMono',
-                    ),
-                ),
-              ),
-              const SizedBox(height: 20),
-             ElevatedButton(
-              onPressed: () {
-                if (_fnameController.text.isEmpty || _lnameController.text.isEmpty ||
-                    _emailController.text.isEmpty || _usernameController.text.isEmpty ||
-                    _password1Controller.text.isEmpty || _password2Controller.text.isEmpty) {
-                  Fluttertoast.showToast(
-                    msg: "Forgot to fill all the fields!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    backgroundColor: Colors.white,
-                    textColor: Colors.black
-                  );
-                } else if (_password1Controller.text != _password2Controller.text) {
-                  Fluttertoast.showToast(
-                    msg: "Passwords don't match!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    backgroundColor: Colors.white,
-                    textColor: Colors.black
-                  );
-                } else {
-                  registerRequest(
-                    _fnameController, _lnameController,
-                    _usernameController, _emailController, _password1Controller
-                  ).then((response) {
-                    print("Register successful");
-                  }).catchError((error) {
-                    print("Error during registration: $error");
-                    Fluttertoast.showToast(
-                      msg: "Failed to register user: $error",
-                      toastLength: Toast.LENGTH_SHORT,
-                      backgroundColor: Colors.white,
-                      textColor: Colors.black
-                    );
-                  });
-                }
-              },
-              child: const Text(
-                "Register",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'RobotoMono'
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            ],
-          )
-        ),
-       
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
+}
+
 }

@@ -132,7 +132,7 @@ class NotifierAPI(APIView):
                     return JsonResponse({'error': 'Notifier does not exist'}, status=404)
 
 
-#class LocationGetterAPI(APIView):
+class LocationGetterAPI(APIView):
 
     def get(self, request):
         print("Entrou no location Getter")

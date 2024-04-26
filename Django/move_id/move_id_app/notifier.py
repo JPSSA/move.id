@@ -1,4 +1,4 @@
-from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Sensor, Patient
+from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Sensor, Patient, Location
 from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
@@ -47,6 +47,10 @@ class Notifier:
             new_instance = DatasetAttributes(atr=data)
             new_instance.save()'''
 
+
+    def add_location(self, name):
+        new_instance = Location(name=name)
+        new_instance.save()
 
         
     def add_classifier(self, classifier, parameters):

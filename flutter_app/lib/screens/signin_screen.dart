@@ -89,79 +89,100 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child:Container(
-          padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                hexStringToColor("#3b75d7"),
-                hexStringToColor("#4f5eff"),
-                hexStringToColor("#8b31b1"),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter, 
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    hexStringToColor("#3b75d7"),
+                    hexStringToColor("#4f5eff"),
+                    hexStringToColor("#8b31b1"),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 100),
+                  Image.asset("assets/images/move_id_logo.png"),
+                  const SizedBox(height: 10),
+                  buildInputField(
+                    controller: _emailController,
+                    hintText: "Email",
+                    obscureText: false,
+                    icon: const Icon(Icons.account_circle),
+                  ),
+                  const SizedBox(height: 20),
+                  buildInputField(
+                    controller: _passwordController,
+                    hintText: "Password",
+                    obscureText: true,
+                    icon: const Icon(Icons.lock),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Don't have an account? Click here!",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontFamily: 'RobotoMono',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: "Forgot to fill all the fields",
+                          toastLength: Toast.LENGTH_SHORT,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black,
+                        );
+                      } else {
+                        loginRequest(context, _emailController, _passwordController).then((response) {}).catchError((error) {
+                          print("Error during login: $error");
+                        });
+                      }
+                    },
+                    child: const Text(
+                      "Sign in",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'RobotoMono',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
-          child:Column(
-            children: <Widget>[
-               const SizedBox(height: 100),
-              Image.asset("assets/images/move_id_logo.png"),
-              const SizedBox(height: 10),
-              buildInputField(controller: _emailController, hintText: "Email", obscureText: false, icon: const Icon(Icons.account_circle)),
-              const SizedBox(height: 20),
-              buildInputField(controller: _passwordController, hintText: "Password", obscureText: true, icon: const Icon(Icons.lock)),
-              const SizedBox(height:20),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
-                  );
-                },
-                child: const Text(
-                  "Don't have an account? Click here!",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontFamily: 'RobotoMono',
-                    ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-              onPressed: () {
-                if(_emailController.text.isEmpty || _passwordController.text.isEmpty){
-                  Fluttertoast.showToast(
-                    msg: "Forgot to fill all the fields",
-                    toastLength: Toast.LENGTH_SHORT,
-                    backgroundColor: Colors.white,
-                    textColor: Colors.black
-                  );
-                } else {
-                  loginRequest(context,_emailController, _passwordController).then((response){
-                  }).catchError((error){
-                    print("Error during login: $error");
-                  });
-                }
-              },
-              child: const Text(
-                "Sign up",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'RobotoMono'
-                ),
-              ),
-            ),
-              const SizedBox(height: 100),
-            ],
-        ),
-      ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
+}
+
+
 }
