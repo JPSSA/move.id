@@ -125,11 +125,11 @@ class NotifierAPI(APIView):
                     return JsonResponse({'error': 'Notifier does not exist'}, status=404)
 
 
-class LocationGetterAPI(APIView):
+#class LocationGetterAPI(APIView):
 
-    def post(self,request):
+ #   def post(self,request):
 
-        if request.method == 'POST':
+  #      if request.method == 'POST':
 
 
 

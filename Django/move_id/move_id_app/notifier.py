@@ -1,4 +1,4 @@
-from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, Sensor, Patient
+from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Sensor, Patient
 from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
@@ -34,8 +34,7 @@ class Notifier:
         new_instance = Dataset(path=path)
         new_instance.save()
 
-        #Delete the existing data that the dataset requires
-        DatasetAttributes.objects.all().delete()
+        
 
         '''#Open that dataset
         dset=pickle.load(open(path,'rb'))

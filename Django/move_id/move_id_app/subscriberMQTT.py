@@ -1,5 +1,5 @@
 from paho.mqtt import client as mqtt_client
-from move_id_app.models import Classifier, Dataset, DatasetAttributes, UserSensor, SensorData, Patient
+from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Patient
 from django.contrib.auth.models import User
 from .sensordatautils import appendData, count_rows_with_topic_id, delete_oldest_sensor_data
 import json
