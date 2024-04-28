@@ -18,7 +18,7 @@ class HomeController extends GetxController{
 
      Future<void> initializeMqttClient() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    const String broker = '10.11.69.120';
+    const String broker = '192.168.1.78';
     const int port = 1883;
     String clientId = prefs.getString("email") ?? "";
 
@@ -87,7 +87,7 @@ class HomeController extends GetxController{
     return client;
   }
 
-  RxString selectedLocation = RxString("Hospital Santa Maria");
+  RxString? selectedLocation = RxString('');
   Rx<List<PatientModel>> patients = Rx<List<PatientModel>>([]);
   TextEditingController deviceIDTextEditingController = TextEditingController();
   late PatientModel patientModel;
@@ -111,10 +111,9 @@ class HomeController extends GetxController{
     deviceIDTextEditingController.dispose();
   }
   addPatient(String location, String deviceid){
-    patientModel = PatientModel(deviceid: deviceid,location: selectedLocation);
+    patientModel = PatientModel(deviceid: deviceid,location: RxString(location));
     patients.value.add(patientModel);
     itemCount.value = patients.value.length;
-    selectedLocation.value = "Hospital Santa Maria"; 
     deviceIDTextEditingController.clear();
   }
 

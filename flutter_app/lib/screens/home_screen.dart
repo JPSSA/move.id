@@ -362,9 +362,9 @@ Widget build(BuildContext context) {
               ),
               const SizedBox(height: 30),
               DropdownButtonFormField<String>(
-                value: controller.selectedLocation.value,
+                
                 onChanged: (String? value) {
-                  controller.selectedLocation.value = value!;
+                  controller.selectedLocation = RxString(value!);
                 },
                 items: dropdownOptions.map((String value) {
                   return DropdownMenuItem<String>(
@@ -387,9 +387,9 @@ Widget build(BuildContext context) {
              ElevatedButton(
               onPressed: () {
                 String deviceid = controller.deviceIDTextEditingController.text;
-                String location = controller.selectedLocation.value.toString();
+                String location = controller.selectedLocation!.value.toString();
                 if(deviceid.isNotEmpty){
-                  print(controller.selectedLocation.value.toString());
+                  print(controller.selectedLocation!.value.toString());
                   print(deviceid);
                   addNotifierRequest(location, deviceid,controller);
                 }else{
