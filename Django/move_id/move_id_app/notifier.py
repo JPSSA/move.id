@@ -34,23 +34,19 @@ class Notifier:
         new_instance = Dataset(path=path)
         new_instance.save()
 
-        
-
-        '''#Open that dataset
-        dset=pickle.load(open(path,'rb'))
-
-        #Get the data names that is required to work with this new dataset
-        data_used = dset['data_used']
-
-        for data in data_used:
-            #Add each one to the data required table
-            new_instance = DatasetAttributes(atr=data)
-            new_instance.save()'''
-
+    def add_patient(self, nif, first_name, last_name, room, bed):
+        new_instance = Patient(nif=nif, first_name=first_name, last_name=last_name,room=room, bed=bed)
+        new_instance.save()
+    
+    def delete_patient(self, nif):
+        Patient.objects.filter(nif=nif).delete()
 
     def add_location(self, name):
         new_instance = Location(name=name)
         new_instance.save()
+
+    def delete_location(self,id):
+        Location.objects.filter(id=id).delete()
 
         
     def add_classifier(self, classifier, parameters):
@@ -67,6 +63,8 @@ class Notifier:
     def add_classifier_unsupervised(self, classifier):
         self.voting.add_classifier_unsupervised(classifier)
 
+    def delete_classifier(self, id):
+        self.voting.delete_classifier(id)
     
     def add_subscriber(self, idSensor, email, location, nif):
         self.stopListening()
@@ -127,68 +125,4 @@ class Notifier:
         self.subs = []
     
     
-
-    def publish(self,client, location, topic_id):
-        msg_count = 1
-        while True:
-            time.sleep(1)
-            msg = f"messages: {msg_count}"
-            result = client.publish('moveID/notification/'+location+'/'+topic_id, 'Alerta')
-            # result: [0, 1]
-            status = result[0]
-            #if status == 0:
-                #print(f"Send `{msg}` to topic Notification")
-            #else:
-                #print(f"Failed to send message to topic Notification")
-            msg_count += 1
-            if msg_count > 5:
-                break
-
-    def getData(self, topic_id):
-
-        array = []
-
-        instances = Dataset.objects.all() # Retrieve all rows where name is "John"
-        path = instances[0].path
-
-        dat=pickle.load(open(path,'rb'))
-        #window = dat['len_window']
-        window = 6
-
-        newest_rows = SensorData.objects.filter(topic_id=topic_id).order_by('-datetime')[:window]
-
-        for row in newest_rows:
-            array.append(row.message)
-
-        if(len(array)== window):
-            return array
-        return []
-
-    def classify(self, data,  location, topic_id):
-        calculated = preprocessing.calculate_statistics(data)
-        #print(calculated)
-        matrix = preprocessing.to_matrix([calculated])
-
-
-        return self.voting.predict(matrix,  location, topic_id)
-
-        
-    
-    def run(self):
-        print('Run')
-        self.client = self.connect_mqtt()
-        
-        # while True:
-            
-        #     for sub in self.subs:
-        #         data = self.getData('moveID/subscriber/' + sub.location + '/' + sub.id)
-
-                
-
-        #         if data:
-        #             instance = UserSensor.objects.filter(idSensor=sub.id)[0]
-        #             if self.classify(data, sub.location, sub.id):
-        #                 self.client.loop_start()
-        #                 self.publish(self.client, sub.location, sub.id)
-        #                 self.client.loop_stop()
 

@@ -70,12 +70,9 @@ class VotingClassifier:
         
 
 
+    def delete_classifier(self, id):
 
-
-    def delete_classifier(self, classifier):
-        clf_name = classifier.__class__.__name__
-
-        Classifier.objects.filter(name=clf_name).delete() 
+        Classifier.objects.filter(id=id).delete() 
 
     
     def predict(self, X,  location, topic_id):
