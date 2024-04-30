@@ -101,7 +101,7 @@ class NotifierAPI(APIView):
 
             print(idLocation)
 
-            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient, location=location)
+            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient)
             user_sensor.save()
 
 

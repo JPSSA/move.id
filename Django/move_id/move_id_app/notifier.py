@@ -21,10 +21,10 @@ class Notifier:
     '''
 
     def __init__(self, ip, port=1883):
-        self.voting = VotingClassifier()
         self.subs = []
         self.ip = ip
         self.port = port
+        self.voting = VotingClassifier()
 
     def new_dataset(self, path):
         #Delete the existing dataset path saved on the database
@@ -106,14 +106,14 @@ class Notifier:
 
     def startListening(self):
 
-        ids_values = UserSensor.objects.values_list('idSensor', flat=True).distinct()
+        ids_values = UserSensor.objects.values_list('id_sensor', flat=True).distinct()
         
         self.subs = []
 
         # Loop through all instances and print their attributes
         for idSensor in ids_values:
-            instance = UserSensor.objects.filter(idSensor=idSensor)[0]
-            self.subs.append(subscriberMQTT(instance.location.id, idSensor , self.ip, self.port))
+            instance = UserSensor.objects.filter(id_sensor=idSensor)[0]
+            self.subs.append(subscriberMQTT(instance.id_sensor.location.id, idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()

@@ -27,7 +27,7 @@ class AnomalyDetector:
     
     def detect_anomalies(self, location, topic_id):
         anomaly_flags = []
-        dataframe = get_sensor_data_as_dataframe('moveID/subscriber/'+ location + '/' + topic_id)
+        dataframe = get_sensor_data_as_dataframe('moveID/subscriber/'+ str(location) + '/' + str(topic_id))
         #dataframe = get_sensor_data_as_dataframe(topic_id)
         for column_name in dataframe.columns:
             column_values = dataframe[column_name]

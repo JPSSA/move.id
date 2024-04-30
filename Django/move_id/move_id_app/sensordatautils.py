@@ -63,7 +63,8 @@ def appendData(msg):
     sensor_data_instance = SensorData.objects.create(
         datetime=datetime_utc,
         topic_id=msg.topic,
-        message=msg.payload.decode()
+        message=msg.payload.decode(),
+        read=False
     )
     
    

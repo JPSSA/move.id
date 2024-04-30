@@ -1,10 +1,14 @@
 from paho.mqtt import client as mqtt_client
-from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Patient
+from .votingClassifier import VotingClassifier
+from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Patient, Location
 from django.contrib.auth.models import User
+import move_id_app.preprocessing as preprocessing
 from .sensordatautils import appendData, count_rows_with_topic_id, delete_oldest_sensor_data
 import json
 import os
 import threading
+import pickle
+import time
 
 class subscriberMQTT:
     def __init__(self, location, topic_id, ip, port=1883):
@@ -16,6 +20,8 @@ class subscriberMQTT:
         self.received_data = []  # Initialize an empty dictionary to store received data
         self.start_time = 0
         self.voting = VotingClassifier()
+        self.user = UserSensor.objects.filter(id_sensor=self.id).first()
+        self.location = Location.objects.filter(id=self.location).first()
         
     
 
@@ -39,18 +45,19 @@ class subscriberMQTT:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)
 
-            array_data = self.getData('moveID/subscriber/' + self.location + '/' + self.id)
+            array_data = self.getData()
 
-            for data in array_data:
-                if data:
-                    classification_thread = threading.Thread(target=self.classify_unread_messages, args=(data))
-                    classification_thread.start()
+            if array_data:
+                for data in array_data:
+                    if data:
+                        classification_thread = threading.Thread(target=self.classify_unread_messages, args=(data,))
+                        classification_thread.start()
 
                     
 
 
             
-        client.subscribe('moveID/subscriber/'+ self.location + '/' + self.id)
+        client.subscribe('moveID/subscriber/'+ str(self.location) + '/' + str(self.id))
         client.on_message = on_message
 
     
@@ -58,18 +65,27 @@ class subscriberMQTT:
     def stop(self):
         self.client.loop_stop()
 
-    def publish(self,client):
+    def publish(self, client):
         msg_count = 1
         while True:
             time.sleep(1)
             msg = f"messages: {msg_count}"
-            result = client.publish('moveID/notification/'+self.location+'/'+self.topic_id, 'Alerta')
-            # result: [0, 1]
+            
+
+            payload = {
+                "patient_fname": self.user.patient.first_name,
+                "patient_lname": self.user.patient.last_name,
+                "alert": "Patient is moving, Room:" + self.user.patient.room + ", Bed:"+ self.user.patient.bed,
+                "location": self.location.name
+            }
+            # Convert payload to JSON string
+            payload_str = json.dumps(payload)
+            result = client.publish('moveID/notification/' + str(self.location) + '/' + str(self.id), payload_str)
             status = result[0]
-            #if status == 0:
-                #print(f"Send `{msg}` to topic Notification")
-            #else:
-                #print(f"Failed to send message to topic Notification")
+            if status == 0:
+                print(f"Send `{msg}` to topic Notification")
+            else:
+                print(f"Failed to send message to topic Notification")
             msg_count += 1
             if msg_count > 5:
                 break
@@ -86,12 +102,30 @@ class subscriberMQTT:
         #window = dat['len_window']
         window = 6
 
-        unread_messages = SensorData.objects.filter(topic_id='moveID/subscriber/' + self.location + '/' + self.topic_id, read=False).order_by('-datetime')
-        
+        number_messages = SensorData.objects.count()
 
-        for message in unread_messages:
+        if(number_messages < 120):
+            SensorData.objects.all().update(read=True)
+            return
+
+        unread_messages = SensorData.objects.filter(topic_id='moveID/subscriber/' + str(self.location) + '/' + str(self.id), read=False).order_by('-datetime')
+
+
+        previous_messages = SensorData.objects.filter(
+                topic_id=unread_messages[-1].topic_id,
+                datetime__lt=unread_messages[-1].datetime,
+            ).order_by('-datetime')[:window-1]
+
+        messages = unread_messages + previous_messages
+
+        for indice, message in enumerate(messages):
+            if(indice <= len(messages) - window):
+                array.append(messages[indice:indice+window])
+
+                
+        """for message in unread_messages:
             
-            temp = []
+            
 
             previous_messages = SensorData.objects.filter(
                 topic_id=message.topic_id,
@@ -107,7 +141,7 @@ class subscriberMQTT:
             # Adiciona a mensagem não lida atual à lista
             temp.append(message.message)
 
-            array.append(temp)
+            array.append(temp)"""
 
     
         return array
@@ -116,12 +150,11 @@ class subscriberMQTT:
         calculated = preprocessing.calculate_statistics(data)
         matrix = preprocessing.to_matrix([calculated])
 
-        return self.voting.predict(matrix,  self.location, self.topic_id)
+        return self.voting.predict(matrix,  self.location, self.id)
 
     def classify_unread_messages(self, data):
-        instance = UserSensor.objects.filter(idSensor=self.id)[0]
-        if self.classify(data, self.location, self.id):
-            self.publish(self.client, self.location, self.id)
+        if self.classify(data):
+            self.publish(self.client)
     
     def run(self):
         self.client = self.connect_mqtt()
