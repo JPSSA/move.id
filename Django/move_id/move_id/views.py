@@ -120,11 +120,12 @@ class NotifierAPI(APIView):
 
 
         try:
-            sensors = UserSensor.objects.filter(user=user).all()
-            sensors_data = [{'name': str(location.name), 'id': str(location.id)} for location in locations]
+            usersensors = UserSensor.objects.filter(user=user).all()
+            data = [{'id_sensor':str(us.sensor.id_sensor),'name_location': str(us.sensor.location.name), 'id_location': str(us.sensor.location.id)} for us in usersensors]
 
-            print(locations_data)
-            return JsonResponse({'locations': locations_data}, status=200)
+
+
+            return JsonResponse({'listeners': data}, status=200)
         except Exception as e:
             return JsonResponse({'error': 'Couldnt query the table'}, status=404)
 
@@ -168,3 +169,42 @@ class LocationGetterAPI(APIView):
         except Exception as e:
             return JsonResponse({'error': 'Couldnt query the table'}, status=404)
 
+
+class ClassificationAPI(APIView):
+    def post(self, request):
+        if request.method == 'POST':
+           
+            data = json.loads(request.body)
+
+            email = data.get('email')
+            idSensor = data.get('idSensor')
+            idLocation = data.get('idLocation')
+            
+            user = User.objects.filter(email=email).first()
+
+            if not user:
+                #print("1")
+                return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+
+
+            sensor = Sensor.objects.filter(id_sensor=idSensor).first()
+            if not sensor:
+                
+                return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
+            
+            print(idSensor)
+
+            location = Location.objects.filter(id=idLocation).first()
+            print(idLocation)
+            if not location:
+
+                #print("3")
+                return JsonResponse({'error': 'Location with this id does not exist'}, status=404)
+
+            print(idLocation)
+
+            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient)
+            user_sensor.save()
+
+
+            return JsonResponse({'message': 'Notifier added succesfully'}, status=200)

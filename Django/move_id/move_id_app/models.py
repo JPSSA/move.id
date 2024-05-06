@@ -20,6 +20,16 @@ class SensorData(models.Model):
     class Meta:
         db_table = 'sensor_data'
 
+class SensorDataClassification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    datetime = models.DateTimeField()
+    message = models.CharField()
+    classification = models.BooleanField()
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    
+    class Meta:
+        db_table = 'sensor_data_classification'
+
 class Location(models.Model):
     name = models.CharField(max_length=255)
     
@@ -31,8 +41,7 @@ class Sensor(models.Model):
 
 class UserSensor(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    id_sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'user_sensor'

@@ -117,11 +117,6 @@ class HomeController extends GetxController{
     deviceIDTextEditingController.clear();
   }
 
-  removePatient(int index){
-    patients.value.removeAt(index);
-    itemCount.value = patients.value.length;
-  }
-
    void initializeAwesomeNotifications() async {
     // Initialize Awesome Notifications
     await AwesomeNotifications().initialize(

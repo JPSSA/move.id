@@ -11,21 +11,19 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<Map<String, String>> addNotifierRequest(String location, String deviceid, HomeController controller) async {
+void addNotifierRequest(String idLocation, String deviceid, HomeController controller) async {
   
   const String url = ApiUrls.addNotifierUrl;
 
   try {
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email").toString();
-    prefs.setString('location', location);
-    final Map<String, dynamic>? locationsAndIds = json.decode(prefs.getString('locations_and_ids') ?? '{}');
-    final String? idLocation = locationsAndIds?[location] as String?;
+    
 
     final Map<String, String> userData = {
         'email': email,
         'idSensor': deviceid,
-        'idLocation': idLocation ?? "",
+        'idLocation': idLocation,
       };
 
     final http.Response response = await http.post(
@@ -43,21 +41,7 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
         backgroundColor: Colors.white,
         textColor: Colors.black
       );
-
-      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
-
-      addToList(location,deviceid);
-
-      controller.subscribeToTopic(topic);
-      controller.addPatient(location,deviceid);
-
-      final Map<String, dynamic> responseBody = json.decode(response.body);
       
-      final Map<String, String> responseData = {};
-      responseBody.forEach((key, value) {
-        responseData[key] = value.toString();
-      });
-      return responseData;
     } else {
       Fluttertoast.showToast(
         msg: "Failed to add Notifier with that id",
@@ -65,7 +49,6 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
         backgroundColor: Colors.white,
         textColor: Colors.black
       );
-      return {};
     }
   } catch (e) {
     print('Exception occurred: $e');
@@ -75,30 +58,17 @@ Future<Map<String, String>> addNotifierRequest(String location, String deviceid,
       backgroundColor: Colors.white,
       textColor: Colors.black
     );
-    return {}; 
   }
 }
 
-Future<Map<String, String>> removeNotifierRequest(String deviceid, String location, HomeController controller, int index) async {
+void removeNotifierRequest(String deviceid, String idLocation, HomeController controller) async {
   
   const String url = ApiUrls.removeNotifierUrl;
 
   try {
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email").toString();
-    final Map<String, dynamic>? locationsAndIds = json.decode(prefs.getString('locations_and_ids') ?? '{}');
-    final String? idLocation = locationsAndIds?[location];
-
-    if (idLocation == null) {
-      print('Location ID not found for $location');
-      Fluttertoast.showToast(
-        msg: "Location ID not found for $location",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
-      );
-      return {};
-    }
+    
 
     final Map<String, String> userData = {
         'email': email,
@@ -115,6 +85,8 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
     );
 
     if (response.statusCode == 200) {
+      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
+      controller.unsubscribeFromTopic(topic);
       Fluttertoast.showToast(
         msg: "Notifier removed successfully",
         toastLength: Toast.LENGTH_SHORT,
@@ -122,20 +94,6 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
         textColor: Colors.black
       );
 
-      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
-
-      removeFromList(location,deviceid);
-
-      controller.unsubscribeFromTopic(topic);
-      controller.removePatient(index);
-
-      final Map<String, dynamic> responseBody = json.decode(response.body);
-      
-      final Map<String, String> responseData = {};
-      responseBody.forEach((key, value) {
-        responseData[key] = value.toString();
-      });
-      return responseData;
     } else {
       Fluttertoast.showToast(
         msg: "Failed to remove the Notifier with that id",
@@ -143,8 +101,9 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
         backgroundColor: Colors.white,
         textColor: Colors.black
       );
-      print(response);
-      return {}; 
+
+
+
     }
   } catch (e) {
     print('Exception occurred: $e');
@@ -154,7 +113,7 @@ Future<Map<String, String>> removeNotifierRequest(String deviceid, String locati
       backgroundColor: Colors.white,
       textColor: Colors.black
     );
-    return {};
+    
   }
 }
 
@@ -204,11 +163,27 @@ Future<List<String>> getLocationNamesFromPrefs() async {
   }
 }
 
+Future<List<Map>> getListenersInfoFromPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  final String? idSensor_idLocation_json = prefs.getString('idSensor_idLocation');
+  final String? idLocation_nameLocation_json = prefs.getString('idLocation_nameLocation');
+  if (idSensor_idLocation_json != null && idLocation_nameLocation_json != null) {
+    Map<String, String> idSensor_idLocation = json.decode(idSensor_idLocation_json);
+    Map<String, String> idLocation_nameLocation = json.decode(idLocation_nameLocation_json);
+    print('Location names retrieved from SharedPreferences.');
+    return [idSensor_idLocation, idLocation_nameLocation];
+  } else {
+    print('Listeners Info not found in SharedPreferences.');
+    return []; // or throw an error, depending on your requirement
+  }
+}
 
 
 
 
-Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
+
+
+void getAllLocationsAndIdsAndSaveToPrefs() async {
   const String url = ApiUrls.locationGetterUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
   
   try {
@@ -247,13 +222,62 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
   } catch (e) {
     print('Exception occurred: $e');
   }
+
+  
+}
+
+void getAllListenersAndSaveToPrefs(HomeController controller) async {
+  const String url = ApiUrls.addNotifierUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
+  
+  try {
+    final http.Response response = await http.get(Uri.parse(url));
+
+   
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+       print(responseBody);
+
+      // Assuming the response body is in the format { "locations": [{ "name": "Location1", "id": "ID1" }, { "name": "Location2", "id": "ID2" }, ... ]}
+      final List<dynamic> data = responseBody['listeners'];
+
+      final Map<String, String> idSensor_idLocation = {};
+      final Map<String, String> idLocation_nameLocation = {};
+
+      for (final dt in data) {
+        final String id = dt['id_sensor'];
+        final String locationId = dt['id_location'];
+        final String location = dt['name_location'];
+        idLocation_nameLocation[locationId] = location;
+        idSensor_idLocation[id] = locationId;
+        String topic =  "moveID/notification/" + "$locationId" + "/" + "$id";
+        controller.subscribeToTopic(topic);
+      }
+
+      //print("lista de localizacoes " + locationNames.toString());
+
+      // Store the locations and IDs dictionary in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('idSensor_idLocation', json.encode(idSensor_idLocation));
+      prefs.setString('idLocation_nameLocation', json.encode(idLocation_nameLocation)); // Store the list of location names
+      
+      print('Locations and IDs saved to SharedPreferences.');
+    } else {
+      print('Failed to fetch locations and IDs. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
+  }
 }
 
 
 
+void refreshData(HomeController ctrl){
+  getAllLocationsAndIdsAndSaveToPrefs();
+  getAllListenersAndSaveToPrefs(ctrl);
 
 
-
+}
 
 
 
@@ -317,18 +341,26 @@ HomeScreen({super.key});
 Widget build(BuildContext context) {
 
   getAllLocationsAndIdsAndSaveToPrefs();
-  return FutureBuilder<List<String>>(
-    future: getLocationNamesFromPrefs(),
+  getAllListenersAndSaveToPrefs(controller);
+  return FutureBuilder<List<dynamic>>(
+    future:Future.wait([
+    getLocationNamesFromPrefs(),
+    getListenersInfoFromPrefs(), // Suponha que essa função retorna uma lista de dados para o ListView
+    ]),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        // Return a loading indicator while data is being fetched
         return CircularProgressIndicator();
       } else if (snapshot.hasError) {
         // Return an error message if an error occurs
         return Text('Error: ${snapshot.error}');
       } else {
+        final List<dynamic> results = snapshot.data!;
+        final List<String> locationNamesFuture = results[0];
+        final Map<String,String> listeners_idSensor_idLocation = results[1][0];
+        final Map<String,String> listeners_idLocation_nameLocation = results[1][1];
+
         // If data is successfully fetched, build the widget tree
-        final List<String> dropdownOptions = snapshot.data!;
+        final List<String> dropdownOptions = locationNamesFuture;
         return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -413,24 +445,22 @@ Widget build(BuildContext context) {
                 () => Container(
                   height: 320,
                   child: ListView.builder(
-                    itemCount: controller.itemCount.value,
+                    itemCount: listeners_idSensor_idLocation.entries.toList().length,
                     itemBuilder: (context, index) {
                      return Container(
                       color: Colors.white,
                       child: ListTile(
-                        title: Text(controller.patients.value[index].deviceid!),
+                        title: Text(listeners_idSensor_idLocation.entries.toList()[index].key),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(controller.patients.value[index].location.toString()),
+                            Text(listeners_idLocation_nameLocation[listeners_idSensor_idLocation.entries.toList()[index].value]!),
                           ],
                         ),
                         trailing: GestureDetector(
                           child: const Icon(Icons.delete, color: Colors.red),
                           onTap: () {
-                            print(controller.patients.value[index].location);
-                            print(controller.patients.value[index].deviceid);
-                            removeNotifierRequest(controller.patients.value[index].deviceid.toString(),controller.patients.value[index].location.toString(),controller, index);
+                            removeNotifierRequest(controller.patients.value[index].deviceid.toString(),controller.patients.value[index].location.toString(),controller);
                            
                           },
                         ),
