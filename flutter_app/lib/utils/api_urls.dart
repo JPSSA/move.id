@@ -5,5 +5,7 @@ class ApiUrls {
   static const String addNotifierUrl = '$baseUrl/addNotifierAPI/';
   static const String removeNotifierUrl = '$baseUrl/removeNotifierAPI/';
   static const String locationGetterUrl = '$baseUrl/LocationGetterAPI/';
+  static const String notificationHistoryUrl = '$baseUrl/notificationHistory/';
+
 
 }

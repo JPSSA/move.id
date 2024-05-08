@@ -27,5 +27,6 @@ urlpatterns = [
     path('loginAPI/',LoginAPI.as_view()),  
     path('removeNotifierAPI/',NotifierAPI.as_view()),   
     path('addNotifierAPI/',NotifierAPI.as_view()),    
-    path('LocationGetterAPI/',LocationGetterAPI.as_view()),  
+    path('LocationGetterAPI/',LocationGetterAPI.as_view()),
+    path('notificationHistory/',ClassificationAPI.as_view())
 ]

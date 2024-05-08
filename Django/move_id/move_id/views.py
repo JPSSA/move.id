@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from move_id_app.models import UserSensor
 from move_id_app.models import Patient
 from move_id_app.models import Sensor
-from move_id_app.models import Location
+from move_id_app.models import Location, SensorDataClassification
 
 class RegisterAPI(APIView):
 
@@ -177,8 +177,8 @@ class ClassificationAPI(APIView):
             data = json.loads(request.body)
 
             email = data.get('email')
-            idSensor = data.get('idSensor')
-            idLocation = data.get('idLocation')
+            id = data.get('id')
+            classification = data.get('classification')
             
             user = User.objects.filter(email=email).first()
 
@@ -187,24 +187,57 @@ class ClassificationAPI(APIView):
                 return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
 
-            sensor = Sensor.objects.filter(id_sensor=idSensor).first()
-            if not sensor:
+            notification = SensorDataClassification.objects.filter(id=id, user=user).first()
+            if not notification:
                 
-                return JsonResponse({'error': 'Sensor with this idSensor does not exist'}, status=404)
+                return JsonResponse({'error': 'Notification with this id does not exist'}, status=404)
             
-            print(idSensor)
 
-            location = Location.objects.filter(id=idLocation).first()
-            print(idLocation)
-            if not location:
-
-                #print("3")
-                return JsonResponse({'error': 'Location with this id does not exist'}, status=404)
-
-            print(idLocation)
-
-            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient)
-            user_sensor.save()
+            notification.classification = classification
+            notification.save()
 
 
-            return JsonResponse({'message': 'Notifier added succesfully'}, status=200)
+            return JsonResponse({'message': 'Classification added succesfully'}, status=200)
+
+    def get(self, request):
+        
+        data = json.loads(request.body)
+
+        email = data.get('email')
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+        
+
+        try:
+            notifications = SensorDataClassification.objects.filter(user=user, classification=null).all()
+
+            data = []
+
+            for notification in notifications:
+                idSensor = notification.sensor
+
+                sensor = Sensor.objects.filter(id_sensor=idSensor).first()
+                if not sensor:
+                    return JsonResponse({'error': 'Sensor with this id does not exist'}, status=404)
+                
+                patient = Patient.objects.filter(nif=sensor.patient).first()
+                if not patient:
+                    return JsonResponse({'error': 'Patient with this NIF does not exist'}, status=404)
+
+                location = Location.objects.filter(id=sensor.location).first
+
+                data.append({'id': str(notification.id), 
+                'datetime': str(notification.datetime),
+                'idSensor': str(idSensor), 
+                'fname': str(patient.first_name), 
+                'lname': str(patient.last_name),
+                'room':str(patient.room), 
+                'bed':str(patient.bed), 
+                'location':str(location.name)})
+            
+            return JsonResponse({'notifications': data}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': 'Couldnt query the table'}, status=404)

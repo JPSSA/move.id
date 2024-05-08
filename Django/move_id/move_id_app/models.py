@@ -26,6 +26,7 @@ class SensorDataClassification(models.Model):
     message = models.CharField()
     classification = models.BooleanField()
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    sensor = models.ForeignKey(Sensor,on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'sensor_data_classification'
