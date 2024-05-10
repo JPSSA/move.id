@@ -46,9 +46,9 @@ Widget build(BuildContext context) {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                hexStringToColor("#3b75d7"),
-                hexStringToColor("#4f5eff"),
-                hexStringToColor("#8b31b1"),
+                hexStringToColor("#D8F3DC"),
+                hexStringToColor("#B7E4C7"),
+                hexStringToColor("#95D5B2"),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -152,43 +152,7 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home,color: Colors.purple),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: 0, // Set the current index of the selected item
-        onTap: (index) {
-          // Handle navigation when a tab is tapped
-          switch (index) {
-            case 0:
-              // Navigate to HomeScreen
-              break;
-            case 1:
-              Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NotificationHistoryScreen()),
-                    );
-                break;
-            case 2:
-              Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                  );
-              break;
-          }
-        },
-      ),
+      
     );
       }
     },
