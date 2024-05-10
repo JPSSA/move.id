@@ -19,7 +19,7 @@ from django.urls import path
 from .views import RegisterAPI
 from .views import LoginAPI
 from .views import NotifierAPI
-from .views import LocationGetterAPI
+from .views import LocationGetterAPI, ClassificationAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),

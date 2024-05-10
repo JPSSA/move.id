@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:move_id/Notification/notification_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:move_id/Notification/notification_controller.dart';
 
 
 void main() async {
@@ -32,10 +31,12 @@ void main() async {
   if(!isAllowedToSendNotifications){
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -60,16 +61,16 @@ class _MyAppState extends State<MyApp> {
 
  
     
-  final String broker = 'broker.emqx.io'; // MQTT broker hostname or IP address
-  final int port = 1883; // Default MQTT port
-  final String clientId = 'my_flutter_app'; // Unique client identifier
+  const String broker = 'broker.emqx.io'; // MQTT broker hostname or IP address
+  const int port = 1883; // Default MQTT port
+  const String clientId = 'my_flutter_app'; // Unique client identifier
  
 
   client = MqttServerClient(broker, clientId);
   client.port = port;
   client.secure = false;
 
-  if (client == null || client.connectionStatus == MqttConnectionState.connected) {
+  if (client.connectionStatus == MqttConnectionState.connected) {
     return;
   }
  
@@ -121,7 +122,7 @@ class _MyAppState extends State<MyApp> {
     id: 1, 
     channelKey: "MoveID_Notification_Channel",
     title: "OH JOCA OH JOCA JURO QUE É FACIL",
-    body: "$message"),
+    body: message),
     );
 
   print('Received message: $message');
@@ -147,7 +148,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter MQTT Test',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Flutter MQTT Test'),
+          title: const Text('Flutter MQTT Test'),
         ),
         body: Center(
           child: Text('MQTT Connection Status: ${client.connectionStatus}'),

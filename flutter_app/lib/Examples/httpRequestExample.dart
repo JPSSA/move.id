@@ -3,10 +3,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,19 +17,21 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Map<String, String>> sendData() async {
-  final url = 'http://192.168.1.75:8000/basic/';
+  const url = 'http://192.168.1.75:8000/basic/';
   final data = {"first_name": "John", "last_name": "Doe"};
 
   final response = await http.post(
@@ -55,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Django Test'),
+        title: const Text('Flutter Django Test'),
       ),
       body: Center(
         child: ElevatedButton(
@@ -67,20 +71,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(message),
-                  duration: Duration(seconds: 2),
+                  duration: const Duration(seconds: 2),
                 ),
               );
             }).catchError((error) {
               print('Error: $error');
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Failed to send POST request'),
                   duration: Duration(seconds: 2),
                 ),
               );
             });
           },
-          child: Text('Send Data'),
+          child: const Text('Send Data'),
         ),
       ),
     );

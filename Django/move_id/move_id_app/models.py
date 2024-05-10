@@ -20,17 +20,6 @@ class SensorData(models.Model):
     class Meta:
         db_table = 'sensor_data'
 
-class SensorDataClassification(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    datetime = models.DateTimeField()
-    message = models.CharField()
-    classification = models.BooleanField()
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    sensor = models.ForeignKey(Sensor,on_delete=models.CASCADE)
-    
-    class Meta:
-        db_table = 'sensor_data_classification'
-
 class Location(models.Model):
     name = models.CharField(max_length=255)
     
@@ -55,6 +44,17 @@ class Classifier(models.Model):
 
 class Dataset(models.Model):
     path = models.CharField(primary_key=True, max_length=255)
+
+class SensorDataClassification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    datetime = models.DateTimeField()
+    message = models.CharField()
+    classification = models.BooleanField()
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    sensor = models.ForeignKey(Sensor,on_delete=models.CASCADE)
+    
+    class Meta:
+        db_table = 'sensor_data_classification'
 
 
 

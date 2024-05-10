@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:move_id/utils/api_urls.dart';
@@ -104,10 +103,6 @@ class HomeController extends GetxController{
 
   }
 
-  @override
-  void onReady(){
-    super.onReady();
-  }
 
   @override
   void onClose(){
@@ -231,7 +226,7 @@ void removeNotifierRequest(String deviceid, String idLocation) async {
     );
 
     if (response.statusCode == 200) {
-      String topic =  "moveID/notification/" + "$idLocation" + "/" + "$deviceid";
+      String topic =  "moveID/notification/$idLocation/$deviceid";
       unsubscribeFromTopic(topic);
       Fluttertoast.showToast(
         msg: "Notifier removed successfully",
@@ -280,13 +275,13 @@ Future<List<String>> getLocationNamesFromPrefs() async {
 
 Future<List<Map>> getListenersInfoFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
-  final String? idSensor_idLocation_json = prefs.getString('idSensor_idLocation');
-  final String? idLocation_nameLocation_json = prefs.getString('idLocation_nameLocation');
-  if (idSensor_idLocation_json != null && idLocation_nameLocation_json != null) {
-    Map<String, String> idSensor_idLocation = json.decode(idSensor_idLocation_json);
-    Map<String, String> idLocation_nameLocation = json.decode(idLocation_nameLocation_json);
+  final String? idsensorIdlocationJson = prefs.getString('idSensor_idLocation');
+  final String? idlocationNamelocationJson = prefs.getString('idLocation_nameLocation');
+  if (idsensorIdlocationJson != null && idlocationNamelocationJson != null) {
+    Map<String, String> idsensorIdlocation = json.decode(idsensorIdlocationJson);
+    Map<String, String> idlocationNamelocation = json.decode(idlocationNamelocationJson);
     print('Location names retrieved from SharedPreferences.');
-    return [idSensor_idLocation, idLocation_nameLocation];
+    return [idsensorIdlocation, idlocationNamelocation];
   } else {
     print('Listeners Info not found in SharedPreferences.');
     return []; // or throw an error, depending on your requirement
@@ -323,7 +318,7 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
         locationNames.add(locationName);
       }
 
-      print("lista de localizacoes " + locationNames.toString());
+      print("lista de localizacoes $locationNames");
 
       // Store the locations and IDs dictionary in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -356,16 +351,16 @@ Future<void> getAllListenersAndSaveToPrefs() async {
       // Assuming the response body is in the format { "locations": [{ "name": "Location1", "id": "ID1" }, { "name": "Location2", "id": "ID2" }, ... ]}
       final List<dynamic> data = responseBody['listeners'];
 
-      final Map<String, String> idSensor_idLocation = {};
-      final Map<String, String> idLocation_nameLocation = {};
+      final Map<String, String> idsensorIdlocation = {};
+      final Map<String, String> idlocationNamelocation = {};
 
       for (final dt in data) {
         final String id = dt['id_sensor'];
         final String locationId = dt['id_location'];
         final String location = dt['name_location'];
-        idLocation_nameLocation[locationId] = location;
-        idSensor_idLocation[id] = locationId;
-        String topic =  "moveID/notification/" + "$locationId" + "/" + "$id";
+        idlocationNamelocation[locationId] = location;
+        idsensorIdlocation[id] = locationId;
+        String topic =  "moveID/notification/$locationId/$id";
         subscribeToTopic(topic);
       }
 
@@ -373,8 +368,8 @@ Future<void> getAllListenersAndSaveToPrefs() async {
 
       // Store the locations and IDs dictionary in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      prefs.setString('idSensor_idLocation', json.encode(idSensor_idLocation));
-      prefs.setString('idLocation_nameLocation', json.encode(idLocation_nameLocation)); // Store the list of location names
+      prefs.setString('idSensor_idLocation', json.encode(idsensorIdlocation));
+      prefs.setString('idLocation_nameLocation', json.encode(idlocationNamelocation)); // Store the list of location names
       
       print('Locations and IDs saved to SharedPreferences.');
     } else {

@@ -1,30 +1,17 @@
 
 
 import 'dart:convert';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:move_id/utils/api_urls.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class NotificationHistoryController extends GetxController{
 
-  @override
-  void onInit() {
-    super.onInit();
-    
 
-  }
 
-  @override
-  void onReady(){
-    super.onReady();
-  }
-
-  @override
-  void onClose(){
-    super.onClose();
-  }
 
   Future<void> getNotificationHistoryAndSaveToPrefs() async {
     const String url = ApiUrls.notificationHistoryUrl;
@@ -51,13 +38,66 @@ class NotificationHistoryController extends GetxController{
 
   Future<List<dynamic>> getNotificationHistoryFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? notifications_json = prefs.getString('notifications');
+    final String? notificationsJson = prefs.getString('notifications');
 
-    final Map<String, dynamic> responseBody = json.decode(notifications_json!);
+    final Map<String, dynamic> responseBody = json.decode(notificationsJson!);
 
 
     return responseBody['notification'];
   }
+
+  void evaluateNotification(String id, bool classification) async{
+    const String url = ApiUrls.notificationHistoryUrl;
+
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      String email = prefs.getString("email").toString();
+
+      final Map<String, String> notification = {
+        'id': id,
+        'email': email,
+        'classification': classification.toString()
+      };
+
+      final http.Response response = await http.post(
+      Uri.parse(url),
+      body: json.encode(notification),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      );
+
+      if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: "Notification classified successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+      
+    } else {
+      Fluttertoast.showToast(
+        msg: "Failed to classify the notification with that id",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+      );
+    }
+
+
+    }catch (e) {
+    print('Exception occurred: $e');
+    Fluttertoast.showToast(
+      msg: "Failed to classify the notification with that id",
+      toastLength: Toast.LENGTH_SHORT,
+      backgroundColor: Colors.white,
+      textColor: Colors.black
+    );
+    }
+
+  }
+
+
 
 
 

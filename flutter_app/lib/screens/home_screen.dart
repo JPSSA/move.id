@@ -3,17 +3,12 @@ import 'package:move_id/screens/settings_screen.dart';
 import 'package:move_id/utils/color_utils.dart';
 import 'package:move_id/utils/home_controller.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:move_id/utils/api_urls.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends GetView<HomeController> {
 
-HomeScreen({super.key});
+const HomeScreen({super.key});
 
 @override
 Widget build(BuildContext context) {
@@ -27,15 +22,15 @@ Widget build(BuildContext context) {
     ]),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       } else if (snapshot.hasError) {
         // Return an error message if an error occurs
         return Text('Error: ${snapshot.error}');
       } else {
         final List<dynamic> results = snapshot.data!;
         final List<String> locationNamesFuture = results[0];
-        final Map<String,String> listeners_idSensor_idLocation = results[1][0];
-        final Map<String,String> listeners_idLocation_nameLocation = results[1][1];
+        final Map<String,String> listenersIdsensorIdlocation = results[1][0];
+        final Map<String,String> listenersIdlocationNamelocation = results[1][1];
 
         // If data is successfully fetched, build the widget tree
         final List<String> dropdownOptions = locationNamesFuture;
@@ -119,25 +114,25 @@ Widget build(BuildContext context) {
               ),
             ),
               Obx(
-                () => Container(
+                () => SizedBox(
                   height: 320,
                   child: ListView.builder(
-                    itemCount: listeners_idSensor_idLocation.entries.toList().length,
+                    itemCount: listenersIdsensorIdlocation.entries.toList().length,
                     itemBuilder: (context, index) {
                      return Container(
                       color: Colors.white,
                       child: ListTile(
-                        title: Text(listeners_idSensor_idLocation.entries.toList()[index].key),
+                        title: Text(listenersIdsensorIdlocation.entries.toList()[index].key),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(listeners_idLocation_nameLocation[listeners_idSensor_idLocation.entries.toList()[index].value]!),
+                            Text(listenersIdlocationNamelocation[listenersIdsensorIdlocation.entries.toList()[index].value]!),
                           ],
                         ),
                         trailing: GestureDetector(
                           child: const Icon(Icons.delete, color: Colors.red),
                           onTap: () {
-                            controller.removeNotifierRequest(listeners_idSensor_idLocation.entries.toList()[index].key,listeners_idSensor_idLocation.entries.toList()[index].value);
+                            controller.removeNotifierRequest(listenersIdsensorIdlocation.entries.toList()[index].key,listenersIdsensorIdlocation.entries.toList()[index].value);
                             controller.refreshData();
                            
                           },
@@ -173,7 +168,7 @@ Widget build(BuildContext context) {
             case 1:
               Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
                   );
               break;
           }
