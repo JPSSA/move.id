@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:move_id/screens/notification_history_screen.dart';
 import 'package:move_id/screens/settings_screen.dart';
 import 'package:move_id/utils/color_utils.dart';
 import 'package:move_id/utils/home_controller.dart';
@@ -29,8 +30,12 @@ Widget build(BuildContext context) {
       } else {
         final List<dynamic> results = snapshot.data!;
         final List<String> locationNamesFuture = results[0];
-        final Map<String,String> listenersIdsensorIdlocation = results[1][0];
-        final Map<String,String> listenersIdlocationNamelocation = results[1][1];
+        final RxMap<dynamic, dynamic> listenersIdsensorIdlocation = RxMap<dynamic, dynamic>();
+        final RxMap<dynamic, dynamic> listenersIdlocationNamelocation = RxMap<dynamic, dynamic>();
+
+        // Inside the else block
+        listenersIdsensorIdlocation.addAll(results[1][0]);
+        listenersIdlocationNamelocation.addAll(results[1][1]);
 
         // If data is successfully fetched, build the widget tree
         final List<String> dropdownOptions = locationNamesFuture;
@@ -154,6 +159,10 @@ Widget build(BuildContext context) {
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.assignment),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
           ),
@@ -166,6 +175,12 @@ Widget build(BuildContext context) {
               // Navigate to HomeScreen
               break;
             case 1:
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificationHistoryScreen()),
+                    );
+                break;
+            case 2:
               Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const SettingsScreen()),

@@ -32,35 +32,7 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-
-                
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings, color: Colors.purple),
-                label: 'Settings'
-              ),
-            ],
-            currentIndex: 1, 
-            onTap: (index) {
-          
-              switch (index) {
-                case 0:
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                  break;
-                case 1:
-                 
-                  break;
-              }
-            },
-          ),
+        
         ],
       ),
     );

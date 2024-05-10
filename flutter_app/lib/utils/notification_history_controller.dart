@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 class NotificationHistoryController extends GetxController{
 
 
-
-
   Future<void> getNotificationHistoryAndSaveToPrefs() async {
     const String url = ApiUrls.notificationHistoryUrl;
 

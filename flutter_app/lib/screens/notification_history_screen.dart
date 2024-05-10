@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../utils/notification_history_controller.dart';
-import 'package:intl/intl.dart';
+import 'package:move_id/utils/notification_history_controller.dart';
+
 
 
 

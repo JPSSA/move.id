@@ -1,5 +1,5 @@
 class ApiUrls {
-  static const String baseUrl = 'http://192.168.1.78:8000/';
+  static const String baseUrl = 'http://192.168.24.177:8000/';
   static const String loginUrl = '$baseUrl/loginAPI/';
   static const String registerUrl = '$baseUrl/registerAPI/';
   static const String addNotifierUrl = '$baseUrl/addNotifierAPI/';

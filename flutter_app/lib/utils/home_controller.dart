@@ -284,7 +284,7 @@ Future<List<Map>> getListenersInfoFromPrefs() async {
     return [idsensorIdlocation, idlocationNamelocation];
   } else {
     print('Listeners Info not found in SharedPreferences.');
-    return []; // or throw an error, depending on your requirement
+    return [{},{}]; // or throw an error, depending on your requirement
   }
 }
 
