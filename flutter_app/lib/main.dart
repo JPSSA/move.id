@@ -34,13 +34,16 @@ class MyApp extends StatelessWidget {
             child: Scaffold(
               appBar: AppBar(
                 title: const Text("Move ID"),
-                backgroundColor: hexStringToColor("#F0EAD2"),
+                backgroundColor: hexStringToColor("#eff1ed"),
+                
                 bottom: const TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.home)),
                     Tab(icon: Icon(Icons.assignment)),
                     Tab(icon: Icon(Icons.settings)),
                   ],
+                  indicatorColor: Color.fromARGB(255, 183, 228, 199),
+                  labelColor: Color.fromARGB(255, 183, 228, 199),
                 ),
               ),
               body: const TabBarView(
