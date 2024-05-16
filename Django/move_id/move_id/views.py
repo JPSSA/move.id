@@ -64,6 +64,31 @@ class LoginAPI(APIView):
             
             return JsonResponse({'message': 'Login successful', 'user_id': user.id}, status=200)
 
+class ListenersAPI(APIView):
+
+    def post(self, request):
+
+        data = json.loads(request.body)
+        email = data.get('email')
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+                #print("1")
+                return JsonResponse({'error': 'User with this email does not exist'}, status=404)
+
+
+        try:
+            usersensors = UserSensor.objects.filter(user=user).all()
+            data = [{'id_sensor':str(us.sensor.id_sensor),'name_location': str(us.sensor.location.name), 'id_location': str(us.sensor.location.id)} for us in usersensors]
+
+
+
+            return JsonResponse({'listeners': data}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': 'Couldnt query the table'}, status=404)
+
+    
 
 class NotifierAPI(APIView):
 
@@ -101,34 +126,13 @@ class NotifierAPI(APIView):
 
             print(idLocation)
 
-            user_sensor = UserSensor(user=user, id_sensor=sensor, patient=sensor.patient)
+            user_sensor = UserSensor(user=user, sensor=sensor)
             user_sensor.save()
 
 
             return JsonResponse({'message': 'Notifier added succesfully'}, status=200)
     
-    def get(self, request):
-
-        data = json.loads(request.body)
-        email = data.get('email')
-
-        user = User.objects.filter(email=email).first()
-
-        if not user:
-                #print("1")
-                return JsonResponse({'error': 'User with this email does not exist'}, status=404)
-
-
-        try:
-            usersensors = UserSensor.objects.filter(user=user).all()
-            data = [{'id_sensor':str(us.sensor.id_sensor),'name_location': str(us.sensor.location.name), 'id_location': str(us.sensor.location.id)} for us in usersensors]
-
-
-
-            return JsonResponse({'listeners': data}, status=200)
-        except Exception as e:
-            return JsonResponse({'error': 'Couldnt query the table'}, status=404)
-
+    
 
     def delete(self, request):
             if request.method == 'DELETE':

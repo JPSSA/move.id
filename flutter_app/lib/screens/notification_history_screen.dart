@@ -33,9 +33,9 @@ class NotificationHistoryScreen extends GetView<NotificationHistoryController> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      hexStringToColor("#3b75d7"),
-                      hexStringToColor("#4f5eff"),
-                      hexStringToColor("#8b31b1"),
+                      hexStringToColor("#D8F3DC"),
+                      hexStringToColor("#B7E4C7"),
+                      hexStringToColor("#95D5B2"),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,

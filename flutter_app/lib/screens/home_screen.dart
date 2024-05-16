@@ -19,7 +19,8 @@ Widget build(BuildContext context) {
   return FutureBuilder<List<dynamic>>(
     future:Future.wait([
     controller.getLocationNamesFromPrefs(),
-    controller.getListenersInfoFromPrefs(), // Suponha que essa função retorna uma lista de dados para o ListView
+    controller.getListenersInfoFromPrefs(),
+    controller.getLocationNamesAndIDsFromPrefs(), // Suponha que essa função retorna uma lista de dados para o ListView
     ]),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -28,14 +29,26 @@ Widget build(BuildContext context) {
         // Return an error message if an error occurs
         return Text('Error: ${snapshot.error}');
       } else {
+        
         final List<dynamic> results = snapshot.data!;
+        
         final List<String> locationNamesFuture = results[0];
         final RxMap<dynamic, dynamic> listenersIdsensorIdlocation = RxMap<dynamic, dynamic>();
         final RxMap<dynamic, dynamic> listenersIdlocationNamelocation = RxMap<dynamic, dynamic>();
+        
+        print("LISTENERS LIST");
+
+        final Map<String,String> locationAndIds = results[2];
+
+        print("LISTENERS LIST");
 
         // Inside the else block
+        
         listenersIdsensorIdlocation.addAll(results[1][0]);
         listenersIdlocationNamelocation.addAll(results[1][1]);
+
+        print("LISTENERS LIST");
+        print(listenersIdsensorIdlocation);
 
         // If data is successfully fetched, build the widget tree
         final List<String> dropdownOptions = locationNamesFuture;
@@ -99,7 +112,9 @@ Widget build(BuildContext context) {
                 String deviceid = controller.deviceIDTextEditingController.text;
                 String location = controller.selectedLocation!.value.toString();
                 if(deviceid.isNotEmpty){
-                  controller.addNotifierRequest(location, deviceid);
+
+
+                  controller.addNotifierRequest(locationAndIds[location]!, deviceid);
                   controller.refreshData();
                 }else{
                   Fluttertoast.showToast(
@@ -115,6 +130,7 @@ Widget build(BuildContext context) {
                 style: TextStyle(
                   fontSize: 16,
                   fontFamily: 'RobotoMono',
+                  color: Colors.black
                 ),
               ),
             ),

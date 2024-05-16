@@ -104,9 +104,9 @@ Widget build(BuildContext context) {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    hexStringToColor("#3b75d7"),
-                    hexStringToColor("#4f5eff"),
-                    hexStringToColor("#8b31b1"),
+                    hexStringToColor("#D8F3DC"),
+                    hexStringToColor("#B7E4C7"),
+                    hexStringToColor("#95D5B2"),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -116,7 +116,7 @@ Widget build(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 100),
-                  Image.asset("assets/images/move_id_logo.png"),
+                  Image.asset("assets/images/move_id_logo_green.png"),
                   const SizedBox(height: 10),
                   buildInputField(
                     controller: _emailController,
