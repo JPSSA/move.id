@@ -1,55 +1,59 @@
-### Introduction
-Final project of Informatics and Multimedia Engineering Bsc.​
+# move.id - Outlier Detection in Human Activity Data
 
-The project titled "move.id - Outlier Detection in Human Activity Data" aims to leverage data from bands (in our case we used a phone) that are in patients that have risk of falling.
+## Introduction
+Final project of Informatics and Multimedia Engineering BSc.
 
-By accquiring this data from theese sensors, the project seeks to build representative datasets of both standard and non-standard movements. Utilizing these datasets, the project will create classifiers capable of detecting outlier movements. 
-When such out-of-the-ordinary movements are identified by these classifiers, notifications will be sent to predefined users such as healthcare teams, via phone application, to alert them of anomalies in the patients movement.
+The project titled "move.id - Outlier Detection in Human Activity Data" aims to leverage data from bands (in our case we used a phone) that are in patients at risk of falling.
 
-This system indends to enchance patient monitoring and provide timely alerts for potential issues detected through the analysis of sensor data.
+By acquiring this data from these sensors, the project seeks to build representative datasets of both standard and non-standard movements. Utilizing these datasets, the project will create classifiers capable of detecting outlier movements. When such out-of-the-ordinary movements are identified by these classifiers, notifications will be sent to predefined users such as healthcare teams, via a phone application, to alert them of anomalies in the patients' movement.
 
-### Table of Contents 
-- Installation
-- Usage
-- Features
-- Project Structure
-- About
-- Contacts
+This system intends to enhance patient monitoring and provide timely alerts for potential issues detected through the analysis of sensor data.
 
-### Installation
+## Table of Contents 
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [About](#about)
+- [Contacts](#contacts)
+
+## Installation
 
 To set up the project locally, follow these steps:
 
-1. `Clone` the repository:
+1. **Clone the repository**:
+    ```sh
+    git clone https://github.com/Hugana/move.id-
+    ```
 
--git clone https://github.com/Hugana/move.id-
-2. Navigate to the project directory:
-```
-cd move.id
-```
+2. **Navigate to the project directory**:
+    ```sh
+    cd move.id
+    ```
 
-3. Activate the existing virtual enviroment in the Django directory
-```
-cd Django
-```
-- on Windows:
-```
-.\virtual\Scripts\activate
-```
+3. **Activate the existing virtual environment in the Django directory**:
+    ```sh
+    cd Django
+    ```
+    - On Windows:
+        ```sh
+        .\virtual\Scripts\activate
+        ```
+    - On macOS and Linux:
+        ```sh
+        source virtual/bin/activate
+        ```
 
-4.Install the required dependencies within the virtual environment:
-- Use the requiremetns file:
-```
-pip install -r requirements.txt
-```
-- or install the following pip comands:
-```
-pip install django djangorestframework paho-mqtt psycopg2 pandas adtk
-```
+4. **Install the required dependencies within the virtual environment**:
+    - Using the `requirements.txt` file:
+        ```sh
+        pip install -r requirements.txt
+        ```
+    - Or install the following packages individually:
+        ```sh
+        pip install django djangorestframework paho-mqtt psycopg2 pandas adtk
+        ```
 
-Now every thing in the Django backoffice is configurated. Lets proceed to the Flutter instalation.
-
-
+Now everything in the Django back office is configured. Let's proceed to the Flutter installation.
 
 
-   
