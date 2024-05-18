@@ -40,12 +40,16 @@ cd Django
 4.Install the required dependencies within the virtual environment:
 - Use the requiremetns file:
 ```
-pip isntall -r requirements.txt
+pip install -r requirements.txt
 ```
 - or install the following pip comands:
 ```
-pip install pip install django,djangorestframework,paho-mqtt,psycopg2,pandas,adtk
+pip install django djangorestframework paho-mqtt psycopg2 pandas adtk
 ```
+
+Now every thing in the Django backoffice is configurated. Lets proceed to the Flutter instalation.
+
+
 
 
    
