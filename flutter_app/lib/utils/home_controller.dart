@@ -21,9 +21,9 @@ class HomeController extends GetxController{
 
      Future<void> initializeMqttClient() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    const String broker = '192.168.7.177';
+    const String broker = 'broker.emqx.io';
     const int port = 1883;
-    String clientId = prefs.getString("email") ?? "";
+    String clientId = prefs.getString("email") ?? "teste";
 
     client = MqttServerClient(broker, clientId);
     client.port = port;
@@ -36,6 +36,7 @@ class HomeController extends GetxController{
     // Connect to the MQTT broker
     try {
       await client.connect();
+      //client.subscribe("moveid/notification",MqttQos.atLeastOnce);
     } catch (e) {
       print('Failed to connect to MQTT broker: $e');
     }
@@ -422,7 +423,5 @@ Future<void> getAllListenersAndSaveToPrefs() async {
 void refreshData(){
   getAllLocationsAndIdsAndSaveToPrefs();
   getAllListenersAndSaveToPrefs();
-
-}
-  
+  }
 }
