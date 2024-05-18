@@ -24,17 +24,28 @@ To set up the project locally, follow these steps:
 
 -git clone https://github.com/Hugana/move.id-
 2. Navigate to the project directory:
-   ´´´cd move.id´´´
+```
+cd move.id
+```
 
-3. Activate the existing virtual enviroment in the Django directory:
-   - ´´´cd Django´´´
-   - on Windows:
-   ´´´.\virtual\Scripts\activate´´´
+3. Activate the existing virtual enviroment in the Django directory
+```
+cd Django
+```
+- on Windows:
+```
+.\virtual\Scripts\activate
+```
 
 4.Install the required dependencies within the virtual environment:
--Use the requiremetns file:
-```pip isntall -r requirements.txt´´´
+- Use the requiremetns file:
+```
+pip isntall -r requirements.txt
+```
 - or install the following pip comands:
+```
+pip install pip install django,djangorestframework,paho-mqtt,psycopg2,pandas,adtk
+```
 
 
    
