@@ -20,7 +20,7 @@ This system indends to enchance patient monitoring and provide timely alerts for
 
 To set up the project locally, follow these steps:
 
-1. ´Clone´ the repository:
+1. `Clone` the repository:
 
 ´´´git clone https://github.com/Hugana/move.id´´´´
 
