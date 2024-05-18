@@ -39,11 +39,6 @@ To set up the project locally, follow these steps:
         ```sh
         .\virtual\Scripts\activate
         ```
-    - On macOS and Linux:
-        ```sh
-        source virtual/bin/activate
-        ```
-
 4. **Install the required dependencies within the virtual environment**:
     - Using the `requirements.txt` file:
         ```sh
