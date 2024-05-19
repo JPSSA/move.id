@@ -51,4 +51,36 @@ To set up the project locally, follow these steps:
 
 Now everything in the Django back office is configured. Let's proceed to the Flutter installation.
 
+For the Flutter installation you need: 
+1. Android Studio
+2. VisualStudioCode
+
+Once Android Studio is installed, go to open it, then go to tools>SDK Manager then go to Language & Frameworks>Android SDK>SDK Tools and tick the box that 
+says "Android SDK Command-line Tools"
+
+Then install the flutter extension the VSCode.
+
+And finally install flutter trough this link https://docs.flutter.dev/get-started/install/windows/mobile?tab=download
+
+With Flutter, and django all set up its time for the database, PostgreSQL.
+I recommend following this youtube video https://www.youtube.com/watch?v=unFGJhIvHU4&t=381s
+and set up the database like he sets up, in our case the database as this configuration:
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':'move_id',
+        'USER':'admin',
+        'PASSWORD':'admin',
+        'HOST': 'localhost'
+    }
+}
+```
+
+## Usage
+
+For the usage somethings are still going to be configurated, mainly the database table migrations and the admin super user.
+
+
+
 
