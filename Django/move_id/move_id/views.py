@@ -197,13 +197,15 @@ class ClassificationAPI(APIView):
                 return JsonResponse({'error': 'Notification with this id does not exist'}, status=404)
             
 
-            notification.classification = classification
+            notification.classification = bool(classification)
             notification.save()
 
 
             return JsonResponse({'message': 'Classification added succesfully'}, status=200)
 
-    def get(self, request):
+    
+class NotificationHistoryAPI(APIView):
+    def post(self, request):
         
         data = json.loads(request.body)
 
@@ -216,22 +218,34 @@ class ClassificationAPI(APIView):
         
 
         try:
-            notifications = SensorDataClassification.objects.filter(user=user, classification=null).all()
+            notifications = SensorDataClassification.objects.filter(user=user, classification=None).all()
 
             data = []
 
             for notification in notifications:
-                idSensor = notification.sensor
+                idSensor = notification.sensor.id_sensor
 
                 sensor = Sensor.objects.filter(id_sensor=idSensor).first()
                 if not sensor:
+                    print("NO SENSOR")
                     return JsonResponse({'error': 'Sensor with this id does not exist'}, status=404)
                 
-                patient = Patient.objects.filter(nif=sensor.patient).first()
+                patient = Patient.objects.filter(nif=sensor.patient.nif).first()
                 if not patient:
+                    print("NO PATIENT")
                     return JsonResponse({'error': 'Patient with this NIF does not exist'}, status=404)
 
-                location = Location.objects.filter(id=sensor.location).first
+                location = Location.objects.filter(id=sensor.location.id).first()
+                
+
+                print(str(notification.id))
+                print(str(notification.datetime))
+                print(str(idSensor))
+                print(str(patient.first_name))
+                print(str(patient.last_name))
+                print(str(patient.room))
+                print(str(patient.bed))
+                print(str(location.name))
 
                 data.append({'id': str(notification.id), 
                 'datetime': str(notification.datetime),
@@ -241,7 +255,10 @@ class ClassificationAPI(APIView):
                 'room':str(patient.room), 
                 'bed':str(patient.bed), 
                 'location':str(location.name)})
-            
+                
+                print("5")
+
             return JsonResponse({'notifications': data}, status=200)
         except Exception as e:
+            print("EXCEPTION")
             return JsonResponse({'error': 'Couldnt query the table'}, status=404)

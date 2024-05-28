@@ -104,14 +104,14 @@ class Notifier:
 
     def startListening(self):
 
-        ids_values = UserSensor.objects.values_list('id_sensor', flat=True).distinct()
+        ids_values = UserSensor.objects.values_list('sensor', flat=True).distinct()
         
         self.subs = []
 
         # Loop through all instances and print their attributes
         for idSensor in ids_values:
-            instance = UserSensor.objects.filter(id_sensor=idSensor)[0]
-            self.subs.append(subscriberMQTT(instance.id_sensor.location.id, idSensor , self.ip, self.port))
+            instance = UserSensor.objects.filter(sensor=idSensor)[0]
+            self.subs.append(subscriberMQTT(instance.sensor.location.id, idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()

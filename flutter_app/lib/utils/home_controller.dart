@@ -21,7 +21,7 @@ class HomeController extends GetxController{
 
      Future<void> initializeMqttClient() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    const String broker = '192.168.7.177';
+    const String broker = '192.168.1.78';
     const int port = 1883;
     String clientId = prefs.getString("email") ?? "";
 
@@ -261,62 +261,7 @@ void removeNotifierRequest(String deviceid, String idLocation) async {
 
 final List<String> dropdownOptions = [];
 
-Future<List<String>> getLocationNamesFromPrefs() async {
-  final prefs = await SharedPreferences.getInstance();
-  final List<String>? locationNames = prefs.getStringList('location_names');
-
-  if (locationNames != null) {
-    print('Location names retrieved from SharedPreferences.');
-    return locationNames;
-  } else {
-    print('Location names not found in SharedPreferences.');
-    return []; // or throw an error, depending on your requirement
-  }
-}
-
-Future<Map<String,String>> getLocationNamesAndIDsFromPrefs() async {
-  final prefs = await SharedPreferences.getInstance();
-final String? locations_and_idsJson = prefs.getString('locations_and_ids');
-print("1");
-print(locations_and_idsJson);
-
-Map<String, dynamic>? decodedMap = json.decode(locations_and_idsJson!);
-// Check if decodedMap is not null
-if (decodedMap != null) {
-  Map<String, String> idsensorIdlocation = decodedMap.map((key, value) => MapEntry(key, value.toString()));
-  print("2");
-  print(idsensorIdlocation);
-
-  print('Location names and ids retrieved from SharedPreferences.');
-  return idsensorIdlocation;
-} else {
-  // Handle the case where decoding fails or the JSON is null
-  return <String, String>{};
-}
-
-}
-
-Future<List<Map>> getListenersInfoFromPrefs() async {
-  final prefs = await SharedPreferences.getInstance();
-  final String? idsensorIdlocationJson = prefs.getString('idSensor_idLocation');
-  final String? idlocationNamelocationJson = prefs.getString('idLocation_nameLocation');
-  if (idsensorIdlocationJson != null && idlocationNamelocationJson != null) {
-    Map<String, dynamic> idsensorIdlocation = json.decode(idsensorIdlocationJson);
-    Map<String, dynamic> idlocationNamelocation = json.decode(idlocationNamelocationJson);
-    print('Listeners Info retrieved from SharedPreferences.');
-    return [idsensorIdlocation, idlocationNamelocation];
-  } else {
-    print('Listeners Info not found in SharedPreferences.');
-    return [{},{}]; // or throw an error, depending on your requirement
-  }
-}
-
-
-
-
-
-
-Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
+Future<Map<String,String>>  getAllLocationsAndIds() async {
   const String url = ApiUrls.locationGetterUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
   
   try {
@@ -332,34 +277,24 @@ Future<void> getAllLocationsAndIdsAndSaveToPrefs() async {
       final List<dynamic> locationsData = responseBody['locations'];
 
       final Map<String, String> locationsAndIds = {};
-      final List<String> locationNames = [];
 
       for (final locationData in locationsData) {
         final String locationName = locationData['name'];
         final String locationId = locationData['id'];
         locationsAndIds[locationName] = locationId;
-        locationNames.add(locationName);
       }
 
-      print("lista de localizacoes $locationNames");
+      return locationsAndIds;
 
-      // Store the locations and IDs dictionary in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('locations_and_ids', json.encode(locationsAndIds));
-      prefs.setStringList('location_names', locationNames); // Store the list of location names
-      
-      print('Locations and IDs saved to SharedPreferences.');
-    } else {
-      print('Failed to fetch locations and IDs. Status code: ${response.statusCode}');
-    }
+    }  
   } catch (e) {
     print('Exception occurred: $e');
   }
-
+  return {};
   
 }
 
-Future<void> getAllListenersAndSaveToPrefs() async {
+Future<Map<String,String>> getAllListeners() async {
   const String url = ApiUrls.getListenersUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
   
   try {
@@ -389,39 +324,33 @@ Future<void> getAllListenersAndSaveToPrefs() async {
       print(data);
 
       final Map<String, String> idsensorIdlocation = {};
-      final Map<String, String> idlocationNamelocation = {};
 
       for (final dt in data) {
         final String id = dt['id_sensor'];
         final String locationId = dt['id_location'];
-        final String location = dt['name_location'];
-        idlocationNamelocation[locationId] = location;
         idsensorIdlocation[id] = locationId;
         String topic =  "moveID/notification/$locationId/$id";
         subscribeToTopic(topic);
       }
 
-      //print("lista de localizacoes " + locationNames.toString());
-
-      // Store the locations and IDs dictionary in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('idSensor_idLocation', json.encode(idsensorIdlocation));
-      prefs.setString('idLocation_nameLocation', json.encode(idlocationNamelocation)); // Store the list of location names
-      
       print('Listeners saved to SharedPreferences.');
+
+      return idsensorIdlocation;
+      
     } else {
       print('Failed to fetch Listeners. Status code: ${response.statusCode}');
     }
   } catch (e) {
     print('Exception occurred: $e');
   }
+  return {};
 }
 
 
 
 void refreshData(){
-  getAllLocationsAndIdsAndSaveToPrefs();
-  getAllListenersAndSaveToPrefs();
+  getAllLocationsAndIds();
+  getAllListeners();
 
 }
   

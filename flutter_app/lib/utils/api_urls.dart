@@ -1,5 +1,5 @@
 class ApiUrls {
-  static const String baseUrl = 'http://192.168.7.177:8000/';
+  static const String baseUrl = 'http://192.168.35.177:8000/';
   static const String loginUrl = '$baseUrl/loginAPI/';
   static const String registerUrl = '$baseUrl/registerAPI/';
   static const String getListenersUrl = '$baseUrl/listenersAPI/';
@@ -7,6 +7,7 @@ class ApiUrls {
   static const String removeNotifierUrl = '$baseUrl/removeNotifierAPI/';
   static const String locationGetterUrl = '$baseUrl/LocationGetterAPI/';
   static const String notificationHistoryUrl = '$baseUrl/notificationHistory/';
+  static const String getNotificationHistoryUrl = '$baseUrl/getNotificationHistory/';
 
 
 }

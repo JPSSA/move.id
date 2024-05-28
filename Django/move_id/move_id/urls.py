@@ -19,7 +19,7 @@ from django.urls import path
 from .views import RegisterAPI
 from .views import LoginAPI
 from .views import NotifierAPI
-from .views import LocationGetterAPI, ClassificationAPI, ListenersAPI
+from .views import LocationGetterAPI, ClassificationAPI, ListenersAPI, NotificationHistoryAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +29,6 @@ urlpatterns = [
     path('removeNotifierAPI/',NotifierAPI.as_view()),   
     path('addNotifierAPI/',NotifierAPI.as_view()),    
     path('LocationGetterAPI/',LocationGetterAPI.as_view()),
-    path('notificationHistory/',ClassificationAPI.as_view())
+    path('notificationHistory/',ClassificationAPI.as_view()),
+    path('getNotificationHistory/', NotificationHistoryAPI.as_view())
 ]

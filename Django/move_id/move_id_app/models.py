@@ -49,7 +49,7 @@ class SensorDataClassification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     datetime = models.DateTimeField()
     message = models.CharField()
-    classification = models.BooleanField()
+    classification = models.BooleanField(default=None, null=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     sensor = models.ForeignKey(Sensor,on_delete=models.CASCADE)
     

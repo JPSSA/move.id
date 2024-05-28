@@ -10,6 +10,31 @@ class VotingClassifier:
     def __init__(self, models_dir='/home/joao/move.id/move.id/Django/move_id/move_id_app/models'):
         self.models_dir = models_dir
 
+        classifiers = []
+        scores = []
+        
+
+        instances = Classifier.objects.all()
+
+        for instance in instances:
+            
+            scores.append(float(instance.score))
+            with open(instance.path, 'rb') as f:
+                clf = pickle.load(f)
+                classifiers.append(clf)
+
+        self.classifiers = classifiers
+        
+
+        total_scores = np.sum(scores)
+
+        weights = []
+        
+        for score in scores:
+            weights.append(score/total_scores)
+
+        self.weights = weights
+
 
     def add_classifier(self, classifier, parameters, X_train, y_train):
         clf_name = classifier.__class__.__name__
@@ -77,28 +102,9 @@ class VotingClassifier:
     
     def predict(self, X,  location, topic_id):
         predictions = []
-        classifiers = []
-        scores = []
         
-
-        instances = Classifier.objects.all()
-
-        for instance in instances:
-            
-            scores.append(float(instance.score))
-            with open(instance.path, 'rb') as f:
-                clf = pickle.load(f)
-                classifiers.append(clf)
         
-
-        total_scores = np.sum(scores)
-
-        weights = []
-        
-        for score in scores:
-            weights.append(score/total_scores)
-        
-        for clf, weight in zip(classifiers, weights):
+        for clf, weight in zip(self.classifiers, self.weights):
             if(clf.__class__.__name__ == 'OneClassSVM'):
                 if(clf.predict(X) == -1):
                     predictions.append(0)

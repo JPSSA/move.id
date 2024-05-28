@@ -89,7 +89,7 @@ Widget build(BuildContext context) {
         'Sign Up',
         style: TextStyle(fontFamily: 'RobotoMono'),
       ),
-      backgroundColor: hexStringToColor("#3b75d7"),
+      backgroundColor: hexStringToColor("#eff1ed"),
     ),
     body: LayoutBuilder(
       builder: (context, constraints) {
@@ -218,7 +218,7 @@ Widget build(BuildContext context) {
                     },
                     child: const Text(
                       "Register",
-                      style: TextStyle(fontSize: 16, fontFamily: 'RobotoMono'),
+                      style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'RobotoMono'),
                     ),
                   ),
                   const SizedBox(height: 40),

@@ -24,14 +24,18 @@ def delete_oldest_sensor_data(topic_id):
 def get_sensor_data_as_dataframe(topic_id):
     sensor_data_queryset = SensorData.objects.filter(topic_id=topic_id).order_by('datetime')
 
+    
+
     flattened_data_list = []
 
     for sensor_data in sensor_data_queryset:
+        print(sensor_data)
         data = json.loads(sensor_data.message)
         flattened_data = dict_flatten(data)
         datetime_utc = sensor_data.datetime.astimezone(pytz.UTC)
         flattened_data['datetime'] = datetime_utc
         flattened_data_list.append(flattened_data)
+    
 
     sensor_data_df = pd.DataFrame(flattened_data_list)
     sensor_data_df['datetime'] = pd.to_datetime(sensor_data_df['datetime'])

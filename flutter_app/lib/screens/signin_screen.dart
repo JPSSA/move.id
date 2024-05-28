@@ -170,6 +170,7 @@ Widget build(BuildContext context) {
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'RobotoMono',
+                        color: Colors.black,
                       ),
                     ),
                   ),
