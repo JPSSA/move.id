@@ -57,13 +57,13 @@ class MainActivity : AppCompatActivity() {
                         Log.d("ya mano", message)
                         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                     } else {
-                        Log.d("ya mano","fodeu1")
+                        Log.d("ya mano","not ok 1")
                         Toast.makeText(this@MainActivity, "Failed to send POST request", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                    Log.d("ya mano","fodeu2")
+                    Log.d("ya mano","not ok 2")
                     Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })

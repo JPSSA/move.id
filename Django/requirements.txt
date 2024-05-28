@@ -1,11 +1,9 @@
-pip install django
-pip install djangorestframework
-pip install paho-mqtt
-pip install psycopg2
-pip install pandas
-pip install adtk
+django
+djangorestframework
+paho-mqtt
+psycopg2
+pandas
+adtk
 
 
-django account
-user : admin
-pass : 1234
+
