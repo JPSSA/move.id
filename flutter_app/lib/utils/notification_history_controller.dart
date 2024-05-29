@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 class NotificationHistoryController extends GetxController{
 
   List<dynamic> allNotifications = [];
+  List<dynamic> filteredNotifications = [];
 
   Future<List<dynamic>> getNotificationHistory() async {
     const String url = ApiUrls.getNotificationHistoryUrl;
@@ -104,8 +105,88 @@ class NotificationHistoryController extends GetxController{
 
   }
 
-
-
-
-
+  List<dynamic> filterNotifications(List<dynamic> notifications, DateTime start, DateTime end) {
+  return notifications.where((notification) {
+    DateTime notificationTime = DateTime.parse(notification['datetime']).toLocal();
+    int notificationHour = notificationTime.hour;
+    int notificationMinute = notificationTime.minute;
+    int startHour = start.hour;
+    int startMinute = start.minute;
+    int endHour = end.hour;
+    int endMinute = end.minute;
+    if (notificationHour > startHour && notificationHour < endHour) {
+      return true;
+    } else if (notificationHour == startHour && notificationHour == endHour) {
+      return notificationMinute >= startMinute && notificationMinute <= endMinute;
+    } else if (notificationHour == startHour) {
+      return notificationMinute >= startMinute;
+    } else if (notificationHour == endHour) {
+      return notificationMinute <= endMinute;
+    }
+    return false;
+  }).toList();
 }
+
+  Future<List<dynamic>> getNotificationHistoryDummy() async {
+    await Future.delayed(Duration(seconds: 1)); // Simulate a network delay
+    return [
+      {
+        'id': 1,
+        'fname': 'John',
+        'lname': 'Doe',
+        'location': 'Room A',
+        'datetime': '2024-05-29T14:30:00Z',
+        'room': '101',
+        'bed': '1'
+      },
+      {
+        'id': 2,
+        'fname': 'Jane',
+        'lname': 'Doe',
+        'location': 'Room B',
+        'datetime': '2024-05-29T15:45:00Z',
+        'room': '102',
+        'bed': '2'
+      },
+      // Add more dummy data here...
+      {
+        'id': 3,
+        'fname': 'Alice',
+        'lname': 'Smith',
+        'location': 'Room C',
+        'datetime': '2024-05-29T16:00:00Z',
+        'room': '103',
+        'bed': '3'
+      },
+    ];
+  }
+  }
+
+
+
+
+
+   
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
