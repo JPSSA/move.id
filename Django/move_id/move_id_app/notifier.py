@@ -3,12 +3,16 @@ from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
 from paho.mqtt import client as mqtt_client
+from datetime import datetime
 import pickle
 import json
 import os
 import csv
 import move_id_app.preprocessing as preprocessing
 import time
+import sys
+from django.db import transaction
+
 
 class Notifier:
     '''
@@ -26,13 +30,94 @@ class Notifier:
         self.port = port
         self.voting = VotingClassifier()
 
-    def new_dataset(self, path):
-        #Delete the existing dataset path saved on the database
-        Dataset.objects.all().delete()
+    
+    def add_new_dataset(self, path):
+    
+        try:
+            # Iniciar uma transação
+            with transaction.atomic():
+                # Verificar se já existe um dataset na tabela
+                existing_dataset = Dataset.objects.first()
 
-        #Add the new dataset path
-        new_instance = Dataset(path=path)
-        new_instance.save()
+                if existing_dataset:
+
+                    # Atualizar o caminho do dataset existente
+                    existing_dataset.path = path
+                    existing_dataset.save()
+
+                    # Obter todos os classificadores existentes
+                    classifiers = Classifier.objects.all()
+
+                    # Dicionário para armazenar os scores
+                    scores = {}
+
+                    scores['old_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
+
+                    # Treinar cada classificador com o novo dataset e os parâmetros existentes
+                    for cl in classifiers:
+                        class_name = cl.name
+                        module_name = cl.module
+                        classifier = getattr(sys.modules[module_name], class_name)
+
+                        self.add_classifier(classifier, cl.params)
+
+                    classifiers = Classifier.objects.all()
+
+                    scores['new_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
+
+                    now = datetime.now()
+
+                    file_name = 'dataset' +'/' + 'dataset_change' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
+
+                
+
+                    # Salva o classificador em um arquivo pickle
+                    with open(file_name, 'wb') as f: 
+                        pickle.dump(scores, f)
+
+                    print('New dataset ready to use! We provided a file "'+ file_name +'" with the score differences in each one classifier.')
+
+                else:
+                    # Se não houver um dataset existente, criar um novo
+                    new_instance = Dataset(path=path)
+                    new_instance.save()
+
+                    print("New dataset ready to use!")
+
+                    # Opcional: Treinar novos classificadores aqui, se necessário
+
+                
+
+        except Exception as e:
+            # Lidar com erros, se necessário
+            print(f"An error occurred: {e}")
+            raise
+
+    def make_new_dataset():
+        existing_dataset = Dataset.objects.first()
+        
+
+        path = existing_dataset.path
+
+        dataset=pickle.load(open(path,'rb'))
+        X = dataset['X']
+        y = dataset['y']
+
+        notification_with_avaliation = SensorDataClassification.objects.filter(classification != None)
+
+        for notification in notification_with_avaliation:
+            X.append(notification.message)
+            y.append(notification.classification)
+
+        file_name = 'dataset' +'/' + 'dataset_with_users_classifications_' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
+        
+        with open(file_name, 'wb') as f: 
+            pickle.dump({'X':X,'y':y}, f)
+        
+        print('New dataset with users classification saved on path: ' + file_name)
+
+
+
 
     def add_patient(self, nif, first_name, last_name, room, bed):
         new_instance = Patient(nif=nif, first_name=first_name, last_name=last_name,room=room, bed=bed)

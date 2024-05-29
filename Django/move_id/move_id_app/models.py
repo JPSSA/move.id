@@ -37,9 +37,11 @@ class UserSensor(models.Model):
         db_table = 'user_sensor'
 
 class Classifier(models.Model):
-    name = models.CharField(primary_key=True, max_length=255)
-    path = models.CharField(max_length=255)
-    score = models.FloatField(max_length=10)
+    name   = models.CharField(primary_key=True, max_length=255)
+    path   = models.CharField(max_length=255)
+    score  = models.FloatField(max_length=10)
+    params = models.CharField()
+    module = models.CharField(max_length=255)
 
 
 class Dataset(models.Model):

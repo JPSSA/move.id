@@ -16,6 +16,7 @@ void main() async {
   // Initialize controllers
   Get.put(HomeController());
   Get.put(NotificationHistoryController());
+  
 
   // Run the app
   runApp(const MyApp());

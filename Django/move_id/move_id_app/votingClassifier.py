@@ -54,14 +54,15 @@ class VotingClassifier:
 
         
 
-        # Tenta recuperar o objeto Cliente pelo ID
-        cliente = Classifier.objects.filter(name=clf_name).first()  
+        
+        cl = Classifier.objects.filter(name=clf_name).first()  
 
         # Verifica se o objeto foi encontrado
-        if cliente is not None:
+        if cl is not None:
             # Modifica o campo 'nome'
-            cliente.path = model_file
-            cliente.score = best_score
+            cl.path = model_file
+            cl.score = best_score
+            cl.params = parameters
             # Salva as alterações no banco de dados
             cliente.save()  
         

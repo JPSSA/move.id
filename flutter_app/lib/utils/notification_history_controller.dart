@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 
 class NotificationHistoryController extends GetxController{
 
+  List<dynamic> allNotifications = [];
 
   Future<List<dynamic>> getNotificationHistory() async {
     const String url = ApiUrls.getNotificationHistoryUrl;
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email").toString();
+    bool group = prefs.getBool('groupNotifications')?? false;
 
     try {
 
@@ -33,8 +35,11 @@ class NotificationHistoryController extends GetxController{
       final Map<String, dynamic> responseBody = json.decode(response.body);
 
       print('Notification history saved to SharedPreferences.');
-
+      
+      
       return responseBody['notifications'];
+
+      
 
     } else {
       print('Failed to fetch notification history. Status code: ${response.statusCode}');
@@ -47,14 +52,15 @@ class NotificationHistoryController extends GetxController{
 
   }
 
-  void evaluateNotification(String id, bool classification) async{
+  void evaluateNotification(List<String> ids, bool classification) async{
     const String url = ApiUrls.notificationHistoryUrl;
 
     try{
       final prefs = await SharedPreferences.getInstance();
       String email = prefs.getString("email").toString();
 
-      final Map<String, String> notification = {
+      for (String id in ids) {
+        final Map<String, String> notification = {
         'id': id,
         'email': email,
         'classification': classification.toString()
@@ -76,16 +82,16 @@ class NotificationHistoryController extends GetxController{
         textColor: Colors.black
       );
       
-    } else {
-      Fluttertoast.showToast(
-        msg: "Failed to classify the notification with that id",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
-      );
-    }
-
-
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to classify the notification with that id",
+          toastLength: Toast.LENGTH_SHORT,
+          backgroundColor: Colors.white,
+          textColor: Colors.black
+        );
+      }
+      }
+      
     }catch (e) {
     print('Exception occurred: $e');
     Fluttertoast.showToast(
