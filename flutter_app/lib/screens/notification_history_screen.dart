@@ -17,7 +17,7 @@ class NotificationHistoryScreen extends GetView<NotificationHistoryController> {
         surfaceTintColor: hexStringToColor('#D8F3DC')
       ),
       body: FutureBuilder<List<dynamic>>(
-        future: controller.getNotificationHistory(),
+        future: controller.getNotificationHistoryDummy(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

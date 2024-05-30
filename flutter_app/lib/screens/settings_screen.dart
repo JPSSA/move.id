@@ -12,6 +12,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _groupNotifications = false;
+  final TextEditingController _startHourController = TextEditingController();
+  final TextEditingController _endHourController = TextEditingController();
 
   @override
   void initState() {
@@ -23,19 +25,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _groupNotifications = prefs.getBool('groupNotifications') ?? false;
+      _startHourController.text = prefs.getString('startHour') ?? '';
+      _endHourController.text = prefs.getString('endHour') ?? '';
     });
   }
 
-  Future<void> _savePreferences(bool value) async {
+  Future<void> _savePreferences(bool groupNotifications, String startHour, String endHour) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('groupNotifications', value);
+    await prefs.setBool('groupNotifications', groupNotifications);
+    await prefs.setString('startHour', startHour);
+    await prefs.setString('endHour', endHour);
   }
 
   void _onSwitchChanged(bool value) {
     setState(() {
       _groupNotifications = value;
     });
-    _savePreferences(value);
+    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text);
+  }
+
+  void _onSaveTimePreferences() {
+    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text);
   }
 
   @override
@@ -81,6 +91,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Group Notifications'),
                     value: _groupNotifications,
                     onChanged: _onSwitchChanged,
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Notification Filter',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'RobotoMono',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _startHourController,
+                          decoration: InputDecoration(
+                            labelText: 'Start Hour (HH:MM)',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.datetime,
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _endHourController,
+                          decoration: InputDecoration(
+                            labelText: 'End Hour (HH:MM)',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.datetime,
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: _onSaveTimePreferences,
+                          child: const Text('Save Preferences'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
