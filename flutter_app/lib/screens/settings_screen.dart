@@ -14,6 +14,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _groupNotifications = false;
   final TextEditingController _startHourController = TextEditingController();
   final TextEditingController _endHourController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -27,25 +28,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _groupNotifications = prefs.getBool('groupNotifications') ?? false;
       _startHourController.text = prefs.getString('startHour') ?? '';
       _endHourController.text = prefs.getString('endHour') ?? '';
+      _nameController.text = prefs.getString('nameFilter') ?? '';
     });
   }
 
-  Future<void> _savePreferences(bool groupNotifications, String startHour, String endHour) async {
+  Future<void> _savePreferences(bool groupNotifications, String startHour, String endHour, String nameFilter) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('groupNotifications', groupNotifications);
-    await prefs.setString('startHour', startHour);
-    await prefs.setString('endHour', endHour);
+    if (startHour.isNotEmpty) {
+      await prefs.setString('startHour', startHour);
+    } else {
+      await prefs.remove('startHour');
+    }
+    if (endHour.isNotEmpty) {
+      await prefs.setString('endHour', endHour);
+    } else {
+      await prefs.remove('endHour');
+    }
+    if (nameFilter.isNotEmpty) {
+      await prefs.setString('nameFilter', nameFilter);
+    } else {
+      await prefs.remove('nameFilter');
+    }
   }
 
   void _onSwitchChanged(bool value) {
     setState(() {
       _groupNotifications = value;
     });
-    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text);
+    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text, _nameController.text);
   }
 
   void _onSaveTimePreferences() {
-    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text);
+    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text, _nameController.text);
   }
 
   @override
@@ -135,6 +150,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.datetime,
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Name Filter',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                         const SizedBox(height: 10),
                         ElevatedButton(
