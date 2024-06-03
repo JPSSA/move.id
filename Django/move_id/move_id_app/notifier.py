@@ -105,14 +105,21 @@ class Notifier:
 
         notification_with_avaliation = SensorDataClassification.objects.filter(classification != None)
 
-        for notification in notification_with_avaliation:
-            X.append(notification.message)
-            y.append(notification.classification)
+        data = [notif.message for notif in notification_with_avaliation]
+        classifications = [notif.classification for notif in notification_with_avaliation]
+
+        calculated = preprocessing.calculate_statistics(data)
+        matrix = preprocessing.to_matrix([calculated])
+
+        new_X = np.vstack((X,matrix))
+        new_y = np.hstack((y,classifications))
+
+        
 
         file_name = 'dataset' +'/' + 'dataset_with_users_classifications_' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
         
         with open(file_name, 'wb') as f: 
-            pickle.dump({'X':X,'y':y}, f)
+            pickle.dump({'X':new_X,'y':new_y}, f)
         
         print('New dataset with users classification saved on path: ' + file_name)
 

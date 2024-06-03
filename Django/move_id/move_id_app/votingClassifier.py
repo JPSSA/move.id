@@ -63,8 +63,9 @@ class VotingClassifier:
             cl.path = model_file
             cl.score = best_score
             cl.params = parameters
+            cl.module = classifier.__module__
             # Salva as alterações no banco de dados
-            cliente.save()  
+            cl.save()  
         
         else:
             new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
