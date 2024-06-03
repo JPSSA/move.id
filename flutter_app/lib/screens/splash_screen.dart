@@ -11,10 +11,13 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
+
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    saveEmail("hugo.dn.ferreira");
     _checkEmail();
   }
 
@@ -55,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/images/move_id_logo.png"),
+              Image.asset("assets/images/move_id_logo_green.png"),
               const SizedBox(height: 20),
               const CircularProgressIndicator(color: Colors.white,),
             ],
@@ -64,4 +67,9 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+}
+
+Future<void> saveEmail(String email) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('email', email);
 }
