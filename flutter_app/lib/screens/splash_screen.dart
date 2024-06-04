@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    saveEmail("hugo.dn.ferreira");
+    //saveEmail("hugo.dn.ferreira");
     _checkEmail();
   }
 
