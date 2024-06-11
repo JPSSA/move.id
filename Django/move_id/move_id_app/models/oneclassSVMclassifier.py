@@ -1,4 +1,4 @@
-from Classifiers import OneClassClassifier
+from classifiers import OneClassClassifier
 from sklearn.svm import OneClassSVM
 
 class OneClassSVMClassifier(OneClassClassifier):
