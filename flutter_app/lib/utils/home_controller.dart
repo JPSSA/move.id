@@ -36,6 +36,7 @@ class HomeController extends GetxController{
     // Connect to the MQTT broker
     try {
       await client.connect();
+      print('Conectou');
       //client.subscribe("moveid/notification",MqttQos.atLeastOnce);
     } catch (e) {
       print('Failed to connect to MQTT broker: $e');
@@ -71,6 +72,8 @@ class HomeController extends GetxController{
   String patientLastName = jsonMessage['patient_lname'];
   String alert = jsonMessage['alert'];
   String location = jsonMessage['location'];
+  String id_sensor = jsonMessage['sensor_id'];
+  String id_location = jsonMessage['location_id'];
 
   // Create notification using parsed information
   String title = "Alert: $alert";
@@ -84,8 +87,42 @@ class HomeController extends GetxController{
     title: title,
     body: body,
   ),
+  actionButtons: [
+      NotificationActionButton(
+        key: 'DISABLE_NOTIFICATIONS',
+        label: 'Disable for 2 minutes',
+      ),
+    ],
 );
+AwesomeNotifications().setListeners(
+    onActionReceivedMethod: (receivedNotification) async {
+      if (receivedNotification.buttonKeyPressed == 'DISABLE_NOTIFICATIONS') {
+        await pauseMqttSubscription("moveID/notification/"+id_location+"/"+id_sensor);
+      }
+      
+    },
+  );
+  
 }
+
+
+Future<void> pauseMqttSubscription(String topic) async {
+    unsubscribeFromTopic(topic);
+
+    // Pausar por 2 minutos
+    await Future.delayed(Duration(minutes: 2));
+
+    // Reinscrever-se no tópico
+    subscribeToTopic(topic);
+    
+  }
+
+  
+
+  
+
+
+  
 
   MqttServerClient getMqttClient() {
     return client;
@@ -99,6 +136,7 @@ class HomeController extends GetxController{
   @override
   void onInit() {
     super.onInit();
+    print("Inciair");
     initializeMqttClient();
     initializeAwesomeNotifications();
 
@@ -282,7 +320,7 @@ Future<Map<String,String>>  getAllLocationsAndIds() async {
       for (final locationData in locationsData) {
         final String locationName = locationData['name'];
         final String locationId = locationData['id'];
-        locationsAndIds[locationName] = locationId;
+        locationsAndIds[locationId] = locationName;
       }
 
       return locationsAndIds;
@@ -331,6 +369,7 @@ Future<Map<String,String>> getAllListeners() async {
         final String locationId = dt['id_location'];
         idsensorIdlocation[id] = locationId;
         String topic =  "moveID/notification/$locationId/$id";
+        print(topic);
         subscribeToTopic(topic);
       }
 

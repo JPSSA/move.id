@@ -71,18 +71,24 @@ class ListenersAPI(APIView):
         data = json.loads(request.body)
         email = data.get('email')
 
-        user = User.objects.filter(email=email).first()
+        print('email: ' + email)
 
+        user = User.objects.filter(email=email).first()
+        
+        print("user" + str(user.id))
+        print('antes')
         if not user:
-                #print("1")
+                print("1")
                 return JsonResponse({'error': 'User with this email does not exist'}, status=404)
 
-
+        print('antes')
+        
         try:
+            print("user:"+str(user.id))
             usersensors = UserSensor.objects.filter(user=user).all()
-            data = [{'id_sensor':str(us.sensor.id_sensor),'name_location': str(us.sensor.location.name), 'id_location': str(us.sensor.location.id)} for us in usersensors]
+            data = [{'id_sensor':str(us.sensor.id_sensor),'id_location': str(us.sensor.location.id)} for us in usersensors]
 
-
+            print(data)
 
             return JsonResponse({'listeners': data}, status=200)
         except Exception as e:

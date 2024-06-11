@@ -52,16 +52,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _onSwitchChanged(bool value) {
-    setState(() {
-      _groupNotifications = value;
-    });
-    _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text, _nameController.text);
-  }
-
   void _onSaveTimePreferences() {
     _savePreferences(_groupNotifications, _startHourController.text, _endHourController.text, _nameController.text);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,19 +96,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       );
                     },
                   ),
-                  SwitchListTile(
-                    title: const Text('Group Notifications'),
-                    value: _groupNotifications,
-                    onChanged: _onSwitchChanged,
-                  ),
-                  const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.all(10),
                     margin: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 6,
@@ -133,10 +121,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             fontFamily: 'RobotoMono',
                           ),
                         ),
+                        SwitchListTile(
+                          title: const Text('Group Notifications'),
+                          value: _groupNotifications,
+                          activeColor: Color.fromARGB(255, 183, 228, 199),
+                          onChanged: (value) {
+                            setState(() {
+                              _groupNotifications = value;
+                            });
+                          },
+                        ),
                         const SizedBox(height: 10),
                         TextField(
                           controller: _startHourController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Start Hour (HH:MM)',
                             border: OutlineInputBorder(),
                           ),
@@ -145,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 10),
                         TextField(
                           controller: _endHourController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'End Hour (HH:MM)',
                             border: OutlineInputBorder(),
                           ),
@@ -154,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 10),
                         TextField(
                           controller: _nameController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Name Filter',
                             border: OutlineInputBorder(),
                           ),
@@ -162,7 +160,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: _onSaveTimePreferences,
-                          child: const Text('Save Preferences'),
+                        
+                          child: const Text('Save Preferences', 
+                          style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'RobotoMono',
+                          color: Colors.black,
+                        ),),
+                          
                         ),
                       ],
                     ),

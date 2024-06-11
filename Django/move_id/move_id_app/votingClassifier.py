@@ -68,7 +68,7 @@ class VotingClassifier:
             cl.save()  
         
         else:
-            new_instance = Classifier(name=clf_name,path=model_file, score=best_score)
+            new_instance = Classifier(name=clf_name,path=model_file, score=best_score,params=parameters,module=classifier.__module__)
             new_instance.save()
 
     def add_classifier_unsupervised(self, classifier):

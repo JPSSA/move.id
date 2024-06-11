@@ -15,16 +15,13 @@ from django.db import transaction
 
 
 class Notifier:
-    '''
-    Implementa todo o processo desde a subscrição a tópicos até ao processamento
-    de dados e envio de notificações para os respetivos canais.
-
-    Argumentos:
-    - "ip", do servidor MQTT
-    - "port", do servidor MQTT
-    '''
+    
 
     def __init__(self, ip, port=1883):
+        """
+        Initializes the Notifier class with broker IP and port.
+        Sets up an empty list of subscribers and an instance of VotingClassifier, just to have acess to functions .
+        """
         self.subs = []
         self.ip = ip
         self.port = port
@@ -32,9 +29,12 @@ class Notifier:
 
     
     def add_new_dataset(self, path):
-    
+        """
+        Adds a new dataset to the system. If an existing dataset is found, it updates it
+        and retrains the classifiers with the new dataset. Scores of old and new datasets
+        are saved in a pickle file.
+        """
         try:
-            # Iniciar uma transação
             with transaction.atomic():
                 # Verificar se já existe um dataset na tabela
                 existing_dataset = Dataset.objects.first()
@@ -69,31 +69,28 @@ class Notifier:
 
                     file_name = 'dataset' +'/' + 'dataset_change' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
-                
-
-                    # Salva o classificador em um arquivo pickle
+    
                     with open(file_name, 'wb') as f: 
                         pickle.dump(scores, f)
 
                     print('New dataset ready to use! We provided a file "'+ file_name +'" with the score differences in each one classifier.')
 
                 else:
-                    # Se não houver um dataset existente, criar um novo
                     new_instance = Dataset(path=path)
                     new_instance.save()
 
                     print("New dataset ready to use!")
 
-                    # Opcional: Treinar novos classificadores aqui, se necessário
-
                 
 
         except Exception as e:
-            # Lidar com erros, se necessário
             print(f"An error occurred: {e}")
             raise
 
     def make_new_dataset():
+        """
+        Creates a new dataset by combining existing dataset with user classifications.
+        """
         existing_dataset = Dataset.objects.first()
         
 
@@ -127,21 +124,36 @@ class Notifier:
 
 
     def add_patient(self, nif, first_name, last_name, room, bed):
+        """
+        Adds a new patient to the system.
+        """
         new_instance = Patient(nif=nif, first_name=first_name, last_name=last_name,room=room, bed=bed)
         new_instance.save()
     
     def delete_patient(self, nif):
+        """
+        Deletes a patient from the system using their NIF.
+        """
         Patient.objects.filter(nif=nif).delete()
 
     def add_location(self, name):
+        """
+        Adds a new location to the system.
+        """
         new_instance = Location(name=name)
         new_instance.save()
 
     def delete_location(self,id):
+        """
+        Deletes a location from the system using its ID.
+        """
         Location.objects.filter(id=id).delete()
 
         
     def add_classifier(self, classifier, parameters):
+        """
+        Adds a new classifier to the voting system and trains it with the existing dataset.
+        """
         instances = Dataset.objects.all() # Retrieve all rows where name is "John"
 
         path = instances[0].path
@@ -156,32 +168,71 @@ class Notifier:
         self.voting.add_classifier_unsupervised(classifier)
 
     def delete_classifier(self, id):
+        """
+        Deletes a classifier from the voting system using its ID.
+        """
         self.voting.delete_classifier(id)
     
-    def add_subscriber(self, idSensor, email, location, nif):
-        self.stopListening()
+    def add_subscriber(self, idSensor, email, nif, start_running=False):
+        """
+        Adds a new subscriber to receive notification from a sensor.
+        Optionally starts the MQTT subscriber, if there isnt already a MQTT subscriber listening
+        that sensor.
+        """
 
-        instances = Patient.objects.filter(nif=nif) # Retrieve all rows where name is "John"
+        user = User.objects.filter(email=email).first()
 
-        
+        sensor = Sensor.objects.filter(id_sensor=idSensor).first()
 
-        sensor = Sensor(idSensor=idSensor, nif=instances[0])
-        sensor.save()
-        # Create an instance of MyModel
-
-        users = User.objects.filter(email=email)
-
-        new_instance = UserSensor(idSensor=sensor, user=users[0], location=location)
+        new_instance = UserSensor(sensor=sensor, user=user)
 
         # Save the instance to the database
         new_instance.save()
-    
-    def delete_subscriber(self, idSensor, email, location):
-        self.stopListening()
-        UserSensor.objects.filter(idSensor=idSensor, email=email, location=location).delete()
 
+        already_exists = False
+
+        for sub in self.subs:
+            if(sub.id == idSensor):
+                already_exists = True
+        
+
+            
+        if not already_exists:
+            self.subs.append(subscriberMQTT(new_instance.user.email ,new_instance.sensor.location.id, idSensor , self.ip, self.port))
+            if(start_running):
+                self.subs[len(self.subs)-1].run()
+        
     
+    def delete_subscriber(self, idSensor, email):
+        """
+        Deletes a subscriber from a sensor. 
+        If there are no other users interested in that sensor, the MQTT subscriber is terminated.
+        """
+
+        user = User.objects.filter(email=email).delete()
+        sensor = Sensor.objects.filter(id_sensor=idSensor).first()
+
+        UserSensor.objects.filter(sensor=sensor, user=user).delete()
+
+        
+        if UserSensor.objects.filter(sensor=sensor) is None:
+            index = -1
+            count = 0
+            for sub in self.subs:
+                if(sub.id == idSensor):
+                    index = count
+                count += 1
+            
+            if(index != -1):
+                self.subs[index].stop()
+                self.subs.pop(index)
+
+            
     def connect_mqtt(self) -> mqtt_client:
+        """
+        Connects to the MQTT broker and returns the client object.
+        Defines the on_connect callback to handle connection status.
+        """
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
                 print("Connected to MQTT Broker!")
@@ -195,7 +246,10 @@ class Notifier:
         return client
 
     def startListening(self):
-
+        """
+        Starts listening for MQTT messages from all user sensors.
+        Creates and runs MQTT subscribers for each sensor.
+        """
         ids_values = UserSensor.objects.values_list('sensor', flat=True).distinct()
         
         self.subs = []
@@ -203,7 +257,7 @@ class Notifier:
         # Loop through all instances and print their attributes
         for idSensor in ids_values:
             instance = UserSensor.objects.filter(sensor=idSensor)[0]
-            self.subs.append(subscriberMQTT(instance.sensor.location.id, idSensor , self.ip, self.port))
+            self.subs.append(subscriberMQTT(instance.user.email ,instance.sensor.location.id, idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()
@@ -211,6 +265,9 @@ class Notifier:
         
                 
     def stopListening(self):
+        """
+        Stops listening for MQTT messages and clears the list of subscribers.
+        """
         for sub in self.subs:
             sub.stop()
 

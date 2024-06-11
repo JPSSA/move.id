@@ -14,21 +14,36 @@ import pytz
 from datetime import datetime
 
 class subscriberMQTT:
-    def __init__(self, location, topic_id, ip, port=1883):
+    def __init__(self, email, location, id, ip, port=1883):
+        """
+        Initializes the subscriberMQTT class with:
+        - location - location id where the sensor is located
+        - topic_id - sensor id
+        - ip - ip where the MQTT broker is located
+        - port - port where the MQTT broker is located.
+
+        Also sets up necessary attributes like:
+        - voting - class responsible for voting for the classifiers.
+        - sensor - instance of the Sensor model with the respetive sensor id given 
+        - location - instance of the Location model with the respetive location id given
+        """
         self.broker = ip
         self.port = port
-        self.id = topic_id
-        self.client_id = ''
-        self.received_data = []  # Initialize an empty dictionary to store received data
+        self.id = id
+        self.client_id = 'admin'
+        self.received_data = [] 
         self.start_time = 0
         self.voting = VotingClassifier()
         self.sensor = Sensor.objects.filter(id_sensor = self.id).first()
-        self.user = UserSensor.objects.filter(sensor=self.sensor).first()
         self.location = Location.objects.filter(id=location).first()
         
     
 
     def connect_mqtt(self) -> mqtt_client:
+        """
+        Connects to the MQTT broker and returns the client object.
+        Defines the on_connect callback to handle connection status.
+        """
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
                 print("Connected to MQTT Broker!")
@@ -36,15 +51,23 @@ class subscriberMQTT:
                 print("Failed to connect, return code %d\n", rc)
     
         client = mqtt_client.Client(self.client_id)
-        # client.username_pw_set(username, password)
         client.on_connect = on_connect
         client.connect(self.broker, self.port)
         return client
 
 
     def subscribe(self,client: mqtt_client):
+        """
+        Subscribes to the MQTT topic for the sensor and location.
+        Defines the on_message callback to handle incoming messages.
+        """
         def on_message(client, userdata, msg):
-            
+            """
+            Handles incoming messages. Checks the number of rows for the topic,
+            deletes the oldest data if necessary, appends new data, and starts a thread
+            for classifying unread messages.
+            """
+
             if count_rows_with_topic_id(msg.topic) >= 120:
                 delete_oldest_sensor_data(msg.topic)
             appendData(msg)
@@ -68,15 +91,24 @@ class subscriberMQTT:
     
 
     def stop(self):
+        """
+        Stops the MQTT client loop.
+        """
         self.client.loop_stop()
 
     def publish(self, client):
+        """
+        Publishes a notification message to the MQTT topic if a certain condition is met.
+        Contains patient and location information in the payload.
+        """
         msg_count = 1
-        fname = self.user.sensor.patient.first_name
-        lname = self.user.sensor.patient.last_name
-        room =self.user.sensor.patient.room
-        bed = self.user.sensor.patient.bed
+        sensor_id = self.sensor.patient.id
+        fname = self.sensor.patient.first_name
+        lname = self.sensor.patient.last_name
+        room =self.sensor.patient.room
+        bed = self.sensor.patient.bed
         location_name = self.location.name
+        location_id = self.location.id
 
         while True:
             time.sleep(1)
@@ -84,10 +116,12 @@ class subscriberMQTT:
             
 
             payload = {
+                "sensor_id": sensor_id,
                 "patient_fname": fname,
                 "patient_lname": lname,
                 "alert": "Patient is moving, Room:" + room + ", Bed:"+ bed,
-                "location": location_name
+                "location": location_name,
+                "location_id": location_id
             }
             # Convert payload to JSON string
             payload_str = json.dumps(payload)
@@ -103,6 +137,10 @@ class subscriberMQTT:
     
 
     def getData(self):
+        """
+        Retrieves and processes unread messages from the database.
+        Forms an array of message windows for classification.
+        """
 
         array = []
 
@@ -134,44 +172,39 @@ class subscriberMQTT:
                 array.append(messages[indice:indice+window])
 
                 
-        """for message in unread_messages:
-            
-            
-
-            previous_messages = SensorData.objects.filter(
-                topic_id=message.topic_id,
-                datetime__lt=message.datetime,
-            ).exclude(
-                id=message.id
-            ).order_by('-datetime')[:window-1]
-
-            # Adiciona as mensagens anteriores à lista
-            for prev_message in previous_messages:
-                temp.append(prev_message.message)
-
-            # Adiciona a mensagem não lida atual à lista
-            temp.append(message.message)
-
-            array.append(temp)"""
-
     
         return array
 
     def classify(self, data):
+        """
+        Classifies the given data using the voting classifier.
+        """
         calculated = preprocessing.calculate_statistics(data)
         matrix = preprocessing.to_matrix([calculated])
 
         return self.voting.predict(matrix,  self.location.id, self.id)
 
     def classify_unread_messages(self, data,msg):
+        """
+        Classifies unread messages. If classification is positive, saves the data, in
+        a table for later classification, and calls the function to publish a notification.
+        """
         if self.classify(data):
+            
+            instances = UserSensor.objects.filter(sensor=self.sensor)
 
-            data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=msg, user = self.user.user, sensor = self.sensor)
-            data_classif.save()
+            for instance in instances:
+
+                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=msg, user = instance.user, sensor = self.sensor)
+                data_classif.save()
 
             self.publish(self.client)
     
     def run(self):
+        """
+        Runs the MQTT client by connecting to the broker, subscribing to the topic,
+        and starting the client loop.
+        """
         self.client = self.connect_mqtt()
         self.subscribe(self.client)
         self.client.loop_start()

@@ -77,7 +77,7 @@ class HomeScreen extends GetView<HomeController> {
                       items: dropdownOptions.map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(idLocation_nameLocation[value]!),
                         );
                       }).toList(),
                       decoration: const InputDecoration(
@@ -118,8 +118,7 @@ class HomeScreen extends GetView<HomeController> {
                       ),
                     ),
                     const SizedBox(height: 20), // Added space here
-                    Obx(
-                      () => SizedBox(
+                    SizedBox(
                         height: 320,
                         child: ListView.builder(
                           itemCount: listeners.entries.toList().length,
@@ -158,7 +157,7 @@ class HomeScreen extends GetView<HomeController> {
                           },
                         ),
                       ),
-                    ),
+                    
                   ],
                 ),
               ),
