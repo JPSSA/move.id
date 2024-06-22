@@ -121,34 +121,6 @@ class Notifier:
         print('New dataset with users classification saved on path: ' + file_name)
 
 
-
-
-    def add_patient(self, nif, first_name, last_name, room, bed):
-        """
-        Adds a new patient to the system.
-        """
-        new_instance = Patient(nif=nif, first_name=first_name, last_name=last_name,room=room, bed=bed)
-        new_instance.save()
-    
-    def delete_patient(self, nif):
-        """
-        Deletes a patient from the system using their NIF.
-        """
-        Patient.objects.filter(nif=nif).delete()
-
-    def add_location(self, name):
-        """
-        Adds a new location to the system.
-        """
-        new_instance = Location(name=name)
-        new_instance.save()
-
-    def delete_location(self,id):
-        """
-        Deletes a location from the system using its ID.
-        """
-        Location.objects.filter(id=id).delete()
-
         
     def add_classifier(self, classifier, parameters):
         """
@@ -228,22 +200,22 @@ class Notifier:
                 self.subs.pop(index)
 
             
-    def connect_mqtt(self) -> mqtt_client:
-        """
-        Connects to the MQTT broker and returns the client object.
-        Defines the on_connect callback to handle connection status.
-        """
-        def on_connect(client, userdata, flags, rc):
-            if rc == 0:
-                print("Connected to MQTT Broker!")
-            else:
-                print("Failed to connect, return code %d\n", rc)
+    # def connect_mqtt(self) -> mqtt_client:
+    #     """
+    #     Connects to the MQTT broker and returns the client object.
+    #     Defines the on_connect callback to handle connection status.
+    #     """
+    #     def on_connect(client, userdata, flags, rc):
+    #         if rc == 0:
+    #             print("Connected to MQTT Broker!")
+    #         else:
+    #             print("Failed to connect, return code %d\n", rc)
     
-        client = mqtt_client.Client('Notifier')
-        # client.username_pw_set(username, password)
-        client.on_connect = on_connect
-        client.connect(self.ip, self.port)
-        return client
+    #     client = mqtt_client.Client('Notifier')
+    #     # client.username_pw_set(username, password)
+    #     client.on_connect = on_connect
+    #     client.connect(self.ip, self.port)
+    #     return client
 
     def startListening(self):
         """

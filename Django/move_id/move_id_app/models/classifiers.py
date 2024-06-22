@@ -27,7 +27,8 @@ class OneClassClassifier(ABC):
 
 class AnomalyDetector(ABC):
 
-    
+    def __init__(self,score):
+        self.score = model
 
     def is_majority_anomaly(self,anomaly_flags):
         count_ones = sum(anomaly_flags)

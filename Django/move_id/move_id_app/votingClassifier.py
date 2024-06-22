@@ -41,35 +41,33 @@ class VotingClassifier:
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
-        clf = GridSearchCV(classifier, parameters, cv=5, scoring='accuracy')
-        clf.fit(X_train, y_train)
+        for param_combination in combinations:
+            model = classification_model(**param_combination)
 
-        best_clf = clf.best_estimator_
-        best_score = clf.best_score_
+            model.fit(X_train_scalled)
 
-
-        # Salva o classificador em um arquivo pickle
-        with open(model_file, 'wb') as f:
-            pickle.dump(best_clf, f)
-
+            # Salva o classificador em um arquivo pickle
+            with open(model_file, 'wb') as f:
+                pickle.dump(model, f)
         
-
         
-        cl = Classifier.objects.filter(name=clf_name).first()  
+            cl = Classifier.objects.filter(name=clf_name).first()  
 
-        # Verifica se o objeto foi encontrado
-        if cl is not None:
-            # Modifica o campo 'nome'
-            cl.path = model_file
-            cl.score = best_score
-            cl.params = parameters
-            cl.module = classifier.__module__
-            # Salva as alterações no banco de dados
-            cl.save()  
-        
-        else:
-            new_instance = Classifier(name=clf_name,path=model_file, score=best_score,params=parameters,module=classifier.__module__)
-            new_instance.save()
+            # Verifica se o objeto foi encontrado
+            if cl is not None:
+                # Modifica o campo 'nome'
+                cl.path = model_file
+                cl.score = classifier.score
+                cl.params = param_combination
+                cl.module = classifier.__module__
+                # Salva as alterações no banco de dados
+                cl.save()  
+            
+            else:
+                new_instance = Classifier(name=clf_name,path=model_file, score=best_score,params=parameters,module=classifier.__module__)
+                new_instance.save()
+            
+            break
 
     def add_classifier_unsupervised(self, classifier):
         clf_name = classifier.detector_type

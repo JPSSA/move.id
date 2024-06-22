@@ -69,6 +69,6 @@ def to_matrix(processed_data):
 
 def preprocessing(data,window_size):
     windowed = windowed_data(data, window_size)
-    processed_data = [calculate_statistics(window) for window in neg_windows]
+    processed_data = [calculate_statistics(window) for window in windowed]
     X2 = to_matrix(neg_processed_data)
 

@@ -13,5 +13,5 @@ class OneClassSVMClassifier(OneClassClassifier):
     def predict(self,X):
         y_pred = self.model.predict(X)
 
-        return [v if(v == 1) else 0 for v in y_pred]
+        return [1 if(v == -1) else 0 for v in y_pred]
 
