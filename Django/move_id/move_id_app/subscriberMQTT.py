@@ -2,7 +2,6 @@ from paho.mqtt import client as mqtt_client
 from .votingClassifier import VotingClassifier
 from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Patient, Location, Sensor, SensorDataClassification
 from django.contrib.auth.models import User
-import move_id_app.preprocessing as preprocessing
 from .sensordatautils import appendData, count_rows_with_topic_id, delete_oldest_sensor_data
 import json
 import os
@@ -14,7 +13,7 @@ import pytz
 from datetime import datetime
 
 class subscriberMQTT:
-    def __init__(self, email, location, id, ip, port=1883):
+    def __init__(self, preprocessing, email, location, id, ip, port=1883):
         """
         Initializes the subscriberMQTT class with:
         - location - location id where the sensor is located
@@ -30,6 +29,7 @@ class subscriberMQTT:
         self.broker = ip
         self.port = port
         self.id = id
+        self.preprocessing = preprocessing
         self.client_id = 'admin'
         self.received_data = [] 
         self.start_time = 0
@@ -179,8 +179,8 @@ class subscriberMQTT:
         """
         Classifies the given data using the voting classifier.
         """
-        calculated = preprocessing.calculate_statistics(data)
-        matrix = preprocessing.to_matrix([calculated])
+        
+        matrix = self.preprocessing.fit(data)
 
         return self.voting.predict(matrix,  self.location.id, self.id)
 

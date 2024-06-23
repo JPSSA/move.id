@@ -8,7 +8,7 @@ import pickle
 import json
 import os
 import csv
-import move_id_app.preprocessing as preprocessing
+import move_id_app.preprocessing.preprocessing as preprocessing
 import time
 import sys
 from django.db import transaction
@@ -17,7 +17,7 @@ from django.db import transaction
 class Notifier:
     
 
-    def __init__(self, ip, port=1883):
+    def __init__(self,preprocessing, ip, port=1883):
         """
         Initializes the Notifier class with broker IP and port.
         Sets up an empty list of subscribers and an instance of VotingClassifier, just to have acess to functions .
@@ -26,6 +26,7 @@ class Notifier:
         self.ip = ip
         self.port = port
         self.voting = VotingClassifier()
+        self.preprocessing = preprocessing
 
     
     def add_new_dataset(self, path):
@@ -173,7 +174,7 @@ class Notifier:
 
             
         if not already_exists:
-            self.subs.append(subscriberMQTT(new_instance.user.email ,new_instance.sensor.location.id, idSensor , self.ip, self.port))
+            self.subs.append(subscriberMQTT(self.preprocessing, new_instance.user.email ,new_instance.sensor.location.id, idSensor , self.ip, self.port))
             if(start_running):
                 self.subs[len(self.subs)-1].run()
         
