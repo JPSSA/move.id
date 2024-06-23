@@ -37,6 +37,9 @@ class VotingClassifier:
 
 
     def add_classifier(self, classifier, parameters, X_train, y_train):
+        """
+        Adds a new classifier to the voting system and trains it with the existing dataset.
+        """
         clf_name = classifier.__class__.__name__
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
@@ -46,21 +49,17 @@ class VotingClassifier:
 
             model.fit(X_train_scalled)
 
-            # Salva o classificador em um arquivo pickle
             with open(model_file, 'wb') as f:
                 pickle.dump(model, f)
         
         
             cl = Classifier.objects.filter(name=clf_name).first()  
 
-            # Verifica se o objeto foi encontrado
             if cl is not None:
-                # Modifica o campo 'nome'
                 cl.path = model_file
                 cl.score = classifier.score
                 cl.params = param_combination
                 cl.module = classifier.__module__
-                # Salva as alterações no banco de dados
                 cl.save()  
             
             else:
@@ -70,23 +69,21 @@ class VotingClassifier:
             break
 
     def add_classifier_unsupervised(self, classifier):
+        '''
+        Adds a new classifier to the voting system that does not require a training phase, they are unsupervised
+        '''
         clf_name = classifier.detector_type
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
-        # Salva o classificador em um arquivo pickle
         with open(model_file, 'wb') as f:
             pickle.dump(classifier, f)
 
-        # Tenta recuperar o objeto Cliente pelo ID
         cliente = Classifier.objects.filter(name=clf_name).first()  
 
-        # Verifica se o objeto foi encontrado
         if cliente is not None:
-            # Modifica o campo 'nome'
             cliente.path = model_file
             cliente.score = classifier.score
-            # Salva as alterações no banco de dados
             cliente.save()  
         
         else:
@@ -96,11 +93,18 @@ class VotingClassifier:
 
 
     def delete_classifier(self, id):
-
+        """
+        Deletes a classifier from the voting system using its ID.
+        """
         Classifier.objects.filter(id=id).delete() 
 
     
     def predict(self, X,  location, topic_id):
+        '''
+        Aggregates predictions from multiple classifiers, and return a boolean
+        which indicates whether the data to be classified is an outlier if it 
+        is True, or an inlier if it is False.
+        '''
         predictions = []
         
         
@@ -116,6 +120,5 @@ class VotingClassifier:
                 predictions.append(weight * clf.predict(X)[0])
         
         
-        #print(predictions)
         return int(np.sum(predictions) > 0.5)
 

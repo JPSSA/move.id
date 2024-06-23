@@ -122,23 +122,26 @@ class Notifier:
 
 
         
-    def add_classifier(self, classifier, parameters):
+    def add_classifier(self, classifier, parameters, unsupervised):
         """
-        Adds a new classifier to the voting system and trains it with the existing dataset.
+        Calls the respective method of the VotingClassifier instance, depending on whether the classifier is unsupervised or not.
         """
-        instances = Dataset.objects.all() # Retrieve all rows where name is "John"
 
-        path = instances[0].path
+        if(unsupervised):
+            self.voting.add_classifier_unsupervised(classifier)
+        else:
+            instances = Dataset.objects.all() # Retrieve all rows where name is "John"
 
-        dataset=pickle.load(open(path,'rb'))
-        X = dataset['X']
-        y = dataset['y']
+            path = instances[0].path
 
-        self.voting.add_classifier(classifier,parameters, X, y)
+            dataset=pickle.load(open(path,'rb'))
+            X = dataset['X']
+            y = dataset['y']
+
+            self.voting.add_classifier(classifier,parameters, X, y)
     
-    def add_classifier_unsupervised(self, classifier):
-        self.voting.add_classifier_unsupervised(classifier)
-
+    
+    
     def delete_classifier(self, id):
         """
         Deletes a classifier from the voting system using its ID.
