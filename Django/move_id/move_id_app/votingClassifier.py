@@ -109,16 +109,8 @@ class VotingClassifier:
         
         
         for clf, weight in zip(self.classifiers, self.weights):
-            if(clf.__class__.__name__ == 'OneClassSVM'):
-                if(clf.predict(X) == -1):
-                    predictions.append(0)
-                else:
-                    predictions.append(weight * clf.predict(X))
-            elif(clf.__class__.__name__ == 'AnomalyDetector'):
-                predictions.append(weight * clf.predict( location, topic_id))
-            else:
-                predictions.append(weight * clf.predict(X)[0])
+            predictions.append(clf.predict(X)[0])
         
         
-        return int(np.sum(predictions) > 0.5)
+        return int(np.sum(predictions)/len(predictions) > 0.5)
 
