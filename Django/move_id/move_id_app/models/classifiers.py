@@ -1,9 +1,26 @@
 from abc import ABC, abstractmethod
 import sensordatautils
 
-class OneClassClassifier(ABC):
+class Classifier(ABC):
+    def __init__(self,score):
+        self.score = score
 
-    def __init__(self,model):
+    @abstractmethod
+    def predict(self):
+        '''
+        Method that returns the classification of the data set provided(X).
+        To work correctly, it must comply with the protocol. 
+        It should return 1 if it is classified as an outlier and 0 
+        if it is classified as normal.
+        '''
+        pass
+    
+
+
+class OneClassClassifier(Classifier):
+
+    def __init__(self, score, model):
+        super(score)
         self.model = model
 
     @abstractmethod
@@ -14,21 +31,11 @@ class OneClassClassifier(ABC):
         pass
 
 
-    @abstractmethod
-    def predict(self, X):
-        '''
-        Method that returns the classification of the data set provided(X).
-        To work correctly, it must comply with the protocol. 
-        It should return 1 if it is classified as an outlier and 0 
-        if it is classified as normal.
-
-        '''
-        pass
-
-class AnomalyDetector(ABC):
+class AnomalyDetector(Classifier):
 
     def __init__(self,score):
-        self.score = model
+        super(score)
+        
 
     def is_majority_anomaly(self,anomaly_flags):
         count_ones = sum(anomaly_flags)

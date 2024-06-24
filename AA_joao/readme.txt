@@ -1,1 +1,0 @@
-Implementado para csv, mas em csv é preciso utilizar semaforos, portanto o melhor é ja implementar com o postgresql
