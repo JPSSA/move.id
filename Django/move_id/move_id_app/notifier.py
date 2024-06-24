@@ -39,42 +39,46 @@ class Notifier:
             with transaction.atomic():
                 # Verificar se já existe um dataset na tabela
                 existing_dataset = Dataset.objects.first()
+                # Eliminar o path ja existente 
+                Dataset.objects.first().delete()
 
                 if existing_dataset:
 
                     # Atualizar o caminho do dataset existente
-                    existing_dataset.path = path
-                    existing_dataset.save()
+                    new_instance = Dataset(path=path)
+                    new_instance.save()
 
                     # Obter todos os classificadores existentes
                     classifiers = Classifier.objects.all()
 
-                    # Dicionário para armazenar os scores
-                    scores = {}
+                    if classifiers:
 
-                    scores['old_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
+                        # Dicionário para armazenar os scores
+                        scores = {}
 
-                    # Treinar cada classificador com o novo dataset e os parâmetros existentes
-                    for cl in classifiers:
-                        class_name = cl.name
-                        module_name = cl.module
-                        classifier = getattr(sys.modules[module_name], class_name)
+                        scores['old_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
 
-                        self.add_classifier(classifier, cl.params)
+                        # Treinar cada classificador com o novo dataset e os parâmetros existentes
+                        for cl in classifiers:
+                            class_name = cl.name
+                            module_name = cl.module
+                            classifier = getattr(sys.modules[module_name], class_name)
 
-                    classifiers = Classifier.objects.all()
+                            self.add_classifier(classifier, cl.params)
 
-                    scores['new_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
+                        classifiers = Classifier.objects.all()
 
-                    now = datetime.now()
+                        scores['new_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
 
-                    file_name = 'dataset' +'/' + 'dataset_change' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
+                        now = datetime.now()
 
-    
-                    with open(file_name, 'wb') as f: 
-                        pickle.dump(scores, f)
+                        file_name = './move_id_app/dataset' +'/' + 'dataset_change' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
-                    print('New dataset ready to use! We provided a file "'+ file_name +'" with the score differences in each one classifier.')
+        
+                        with open(file_name, 'wb') as f: 
+                            pickle.dump(scores, f)
+
+                        print('New dataset ready to use! We provided a file "'+ file_name +'" with the score differences in each one classifier.')
 
                 else:
                     new_instance = Dataset(path=path)
