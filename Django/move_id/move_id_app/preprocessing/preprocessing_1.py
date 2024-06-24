@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import scipy
-from preprocessing import PreProcessing
+from move_id_app.preprocessing.preprocessing import PreProcessing
 from scipy.stats import skew, kurtosis
 
 class PreProcessing_v1(PreProcessing):
@@ -27,27 +27,27 @@ class PreProcessing_v1(PreProcessing):
         return Dic
 
 
-    def energy(array):
-        return np.sum(np.square(array))
-
-    def entropy(array):
-        return scipy.stats.entropy(np.histogram(array)[0])
-
-    def mad(array):
-        return np.mean(np.abs(array - np.mean(array)))
-
-
-    def rms(array):
-        return np.sqrt(np.mean(np.square(array)))
-
-    def skew_func(array):
-        return skew(array) if not np.isnan(skew(array)) else 0
-
-    def kurtosis_func(array):
-        return kurtosis(array) if not np.isnan(kurtosis(array)) else 0
+    
 
     def __init__(self):
-        super([np.std, np.var, mad, rms, energy, entropy, skew_func, kurtosis_func])
+        def energy(array):
+            return np.sum(np.square(array))
+
+        def entropy(array):
+            return scipy.stats.entropy(np.histogram(array)[0])
+
+        def mad(array):
+            return np.mean(np.abs(array - np.mean(array)))
+
+        def rms(array):
+            return np.sqrt(np.mean(np.square(array)))
+
+        def skew_func(array):
+            return skew(array) if not np.isnan(skew(array)) else 0
+
+        def kurtosis_func(array):
+            return kurtosis(array) if not np.isnan(kurtosis(array)) else 0
+        super().__init__([np.std, np.var, mad, rms, energy, entropy, skew_func, kurtosis_func])
 
     def calculate_statistics(window):
         
