@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import sensordatautils
+import move_id_app.sensordatautils
 
 class Classifier(ABC):
     def __init__(self,score):
@@ -20,7 +20,7 @@ class Classifier(ABC):
 class OneClassClassifier(Classifier):
 
     def __init__(self, score, model):
-        super(score)
+        super().__init__(score)
         self.model = model
 
     @abstractmethod
@@ -34,7 +34,7 @@ class OneClassClassifier(Classifier):
 class AnomalyDetector(Classifier):
 
     def __init__(self,score):
-        super(score)
+        super().__init__(score)
         
 
     def is_majority_anomaly(self,anomaly_flags):

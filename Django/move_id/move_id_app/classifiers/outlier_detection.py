@@ -1,9 +1,12 @@
-from classifiers import AnomalyDetector
+from move_id_app.classifiers.classifiers import AnomalyDetector
 from adtk.detector import OutlierDetector
 import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
 
 class OutlierDetection(AnomalyDetector):
+
+    def __init__(self):
+        super().__init__(0.6)
 
     def check_detection_with_window(self,column_values,window,dataframe):
         

@@ -1,13 +1,12 @@
 from move_id_app.classifiers.classifiers import OneClassClassifier
-from sklearn.svm import OneClassSVM
+from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
-class OneClassSVMClassifier(OneClassClassifier):
+class IsolationForestClassifier(OneClassClassifier):
     
     def __init__(self):
-        super().__init__(0.7,OneClassSVM())
+        super().__init__(0.7,IsolationForest())
         self.scaler = StandardScaler()
-        
 
     def fit(self,X_train):
         
@@ -19,5 +18,5 @@ class OneClassSVMClassifier(OneClassClassifier):
     def predict(self,X):
         X_test_scalled = self.scaler.transform(X)
         y_pred = self.model.predict(X)
-        return [1 if(v == -1) else 0 for v in y_pred]
 
+        return [1 if(v == -1) else 0 for v in y_pred]
