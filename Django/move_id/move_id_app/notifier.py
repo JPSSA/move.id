@@ -127,7 +127,7 @@ class Notifier:
 
 
         
-    def add_classifier(self, classifier, parameters, unsupervised):
+    def add_classifier(self, classifier, unsupervised):
         """
         Calls the respective method of the VotingClassifier instance, depending on whether the classifier is unsupervised or not.
         """
@@ -143,7 +143,7 @@ class Notifier:
             X = dataset['X']
             y = dataset['y']
 
-            self.voting.add_classifier(classifier,parameters, X, y)
+            self.voting.add_classifier(classifier, X)
     
     
     

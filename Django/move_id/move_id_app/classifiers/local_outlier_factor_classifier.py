@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 class LocalOutlierFactorClassifier(OneClassClassifier):
     
     def __init__(self):
-        super().__init__(0.7,LocalOutlierFactor())
+        super().__init__(0.7,LocalOutlierFactor,  {})
         self.scaler = StandardScaler()
 
     def fit(self,X_train):

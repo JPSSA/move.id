@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 class OneClassSVMClassifier(OneClassClassifier):
     
     def __init__(self):
-        super().__init__(0.7,OneClassSVM())
+        super().__init__(0.7,OneClassSVM, {})
         self.scaler = StandardScaler()
         
 

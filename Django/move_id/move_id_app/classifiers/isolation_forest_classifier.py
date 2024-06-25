@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 class IsolationForestClassifier(OneClassClassifier):
     
     def __init__(self):
-        super().__init__(0.7,IsolationForest())
+        super().__init__(0.7,IsolationForest,  {})
         self.scaler = StandardScaler()
 
     def fit(self,X_train):

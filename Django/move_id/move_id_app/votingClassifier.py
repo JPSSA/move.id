@@ -36,7 +36,7 @@ class VotingClassifier:
         self.weights = weights
 
 
-    def add_classifier(self, classifier, parameters, X_train, y_train):
+    def add_classifier(self, classifier, X_train):
         """
         Adds a new classifier to the voting system and trains it with the existing dataset.
         """
@@ -44,29 +44,28 @@ class VotingClassifier:
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
-        for param_combination in combinations:
-            model = classification_model(**param_combination)
+        
+        model = classification_model(parameters)
 
-            model.fit(X_train_scalled)
+        model.fit(X_train)
 
-            with open(model_file, 'wb') as f:
-                pickle.dump(model, f)
+        with open(model_file, 'wb') as f:
+            pickle.dump(model, f)
         
         
-            cl = Classifier.objects.filter(name=clf_name).first()  
+        cl = Classifier.objects.filter(name=clf_name).first()  
 
-            if cl is not None:
-                cl.path = model_file
-                cl.score = classifier.score
-                cl.params = param_combination
-                cl.module = classifier.__module__
-                cl.save()  
+        if cl is not None:
+            cl.path = model_file
+            cl.score = classifier.score
+            cl.params = parameters
+            cl.module = classifier.__module__
+            cl.save()  
             
-            else:
-                new_instance = Classifier(name=clf_name,path=model_file, score=best_score,params=parameters,module=classifier.__module__)
-                new_instance.save()
+        else:
+            new_instance = Classifier(name=clf_name,path=model_file, score=classifier.score,params=parameters,module=classifier.__module__)
+            new_instance.save()
             
-            break
 
     def add_classifier_unsupervised(self, classifier):
         '''

@@ -19,9 +19,9 @@ class Classifier(ABC):
 
 class OneClassClassifier(Classifier):
 
-    def __init__(self, score, model):
+    def __init__(self, score, model, params):
         super().__init__(score)
-        self.model = model
+        self.model = model(**params)
 
     @abstractmethod
     def fit(self, X_train):
