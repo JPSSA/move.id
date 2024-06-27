@@ -152,6 +152,7 @@ Future<void> onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) asy
     // Create Awesome Notification
   AwesomeNotifications().createNotification(
   content: NotificationContent(
+    icon: "assets/images/move_id_logo_green.png",
     id: 1, 
     channelKey: "MoveID_Notification_Channel",
     title: title,
