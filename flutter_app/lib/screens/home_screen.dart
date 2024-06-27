@@ -5,9 +5,11 @@ import 'package:move_id/utils/color_utils.dart';
 import 'package:move_id/utils/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 class HomeScreen extends GetView<HomeController> {
-  const HomeScreen({super.key});
+  final MqttServerClient client;
+  HomeScreen({super.key, required this.client});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class HomeScreen extends GetView<HomeController> {
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         controller.getAllLocationsAndIds(),
-        controller.getAllListeners(),
+        controller.getAllListeners(client),
       ]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -98,7 +100,7 @@ class HomeScreen extends GetView<HomeController> {
                         String location = controller.selectedLocation!.value.toString();
                         if (deviceid.isNotEmpty) {
                           controller.addNotifierRequest(idLocation_nameLocation[location]!, deviceid);
-                          controller.refreshData();
+                          controller.refreshData(client);
                         } else {
                           Fluttertoast.showToast(
                             msg: "Fill all the device id",
@@ -148,8 +150,8 @@ class HomeScreen extends GetView<HomeController> {
                                 trailing: GestureDetector(
                                   child: const Icon(Icons.delete, color: Colors.red),
                                   onTap: () {
-                                    controller.removeNotifierRequest(listeners.entries.toList()[index].key, listeners.entries.toList()[index].value);
-                                    controller.refreshData();
+                                    controller.removeNotifierRequest(listeners.entries.toList()[index].key, listeners.entries.toList()[index].value,client);
+                                    controller.refreshData(client);
                                   },
                                 ),
                               ),

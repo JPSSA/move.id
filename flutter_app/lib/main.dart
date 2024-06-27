@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:move_id/Notification/notification_controller.dart';
 import 'package:move_id/screens/home_screen.dart';
 import 'package:move_id/screens/notification_history_screen.dart';
 import 'package:move_id/screens/settings_screen.dart';
@@ -8,6 +12,8 @@ import 'package:move_id/utils/color_utils.dart';
 import 'package:move_id/utils/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:move_id/utils/notification_history_controller.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -16,14 +22,41 @@ void main() async {
   // Initialize controllers
   Get.put(HomeController());
   Get.put(NotificationHistoryController());
+
+  final MqttServerClient client;
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  const String broker = '192.168.1.78';
+  const int port = 1883;
+  String clientId = prefs.getString("email") ?? "teste";
+
+  client = MqttServerClient(broker, clientId);
+  client.port = port;
+  client.secure = false;
+
+  client.onConnected = () => onConnected(client);
+
+  await prefs.setStringList('topic_pause_mqtt', [].map((e) => e.toString()).toList());
+
+  // Connect to the MQTT broker
+    try {
+      await client.connect();
+      print('Conectou');
+      //client.subscribe("moveid/notification",MqttQos.atLeastOnce);
+    } catch (e) {
+      print('Failed to connect to MQTT broker: $e');
+    }
+
+    initializeAwesomeNotifications();
   
 
   // Run the app
-  runApp(const MyApp());
+  runApp(MyApp(client: client));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final MqttServerClient client;
+  MyApp({super.key,required this.client});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +64,10 @@ class MyApp extends StatelessWidget {
       future: _checkEmail(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MaterialApp(
+          return MaterialApp(
             title: "Move ID",
             debugShowCheckedModeBanner: false,
-            home: SplashScreen(),
+            home: SplashScreen(client: client),
           );
         } else {
           if (snapshot.data == true) {
@@ -59,11 +92,11 @@ class MyApp extends StatelessWidget {
                           labelColor: Color.fromARGB(255, 183, 228, 199),
                         ),
                       ),
-                      body: const TabBarView(
+                      body:  TabBarView(
                         children: <Widget>[
-                          HomeScreen(),
+                          HomeScreen(client: client),
                           NotificationHistoryScreen(),
-                          SettingsScreen(),
+                          SettingsScreen(client: client),
                         ],
                       ),
                     ),
@@ -72,10 +105,10 @@ class MyApp extends StatelessWidget {
               ),
             );
           } else {
-            return const MaterialApp(
+            return MaterialApp(
               title: "Move ID",
               debugShowCheckedModeBanner: false,
-              home: SignInScreen(),
+              home: SignInScreen(client: client),
             );
           }
         }
@@ -88,3 +121,111 @@ class MyApp extends StatelessWidget {
     return prefs.containsKey('email');
   }
 }
+
+
+void onConnected(MqttServerClient client) {
+    print('Connected to MQTT broker');
+    client.updates?.listen(onMessageReceived);
+  }
+
+Future<void> onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) async {
+  final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
+  final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+  
+  // Parse the JSON string
+  Map<String, dynamic> jsonMessage = jsonDecode(message);
+  String patientFirstName = jsonMessage['patient_fname'];
+  String patientLastName = jsonMessage['patient_lname'];
+  String alert = jsonMessage['alert'];
+  String location = jsonMessage['location'];
+  String id_sensor = jsonMessage['sensor_id'];
+  String id_location = jsonMessage['location_id'];
+
+  // Create notification using parsed information
+  String title = "Alert: $alert";
+  String body = "Patient: $patientFirstName $patientLastName\nLocation: $location";
+  
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final List<String> stringList = prefs.getStringList('topic_pause_mqtt')??[];
+
+  if(!stringList.contains("moveID/notification/"+id_location+"/"+id_sensor)){
+    // Create Awesome Notification
+  AwesomeNotifications().createNotification(
+  content: NotificationContent(
+    id: 1, 
+    channelKey: "MoveID_Notification_Channel",
+    title: title,
+    body: body,
+  ),
+  actionButtons: [
+      NotificationActionButton(
+        key: 'DISABLE_NOTIFICATIONS',
+        label: 'Disable for 2 minutes',
+      ),
+    ],
+);
+AwesomeNotifications().setListeners(
+    onActionReceivedMethod: (receivedNotification) async {
+      if (receivedNotification.buttonKeyPressed == 'DISABLE_NOTIFICATIONS') {
+        await pauseMqttSubscription("moveID/notification/"+id_location+"/"+id_sensor);
+      }
+      
+    },
+  );
+  }
+
+  
+  
+}
+
+
+Future<void> pauseMqttSubscription(String topic) async {
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String> stringList = prefs.getStringList('topic_pause_mqtt')??[];
+    stringList.add(topic);
+
+    
+    await Future.delayed(Duration(minutes: 2));
+
+    
+    final List<String> stringList2 = prefs.getStringList('topic_pause_mqtt')??[];
+    stringList2.remove(topic);
+    
+  }
+
+  void initializeAwesomeNotifications() async {
+    // Initialize Awesome Notifications
+    await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelGroupKey: "MoveID_channel_group",
+          channelKey: "MoveID_Notification_Channel", 
+          channelName: "MoveID Notification", 
+          channelDescription: "MoveID Notification Channel",
+          playSound: true,
+        ),
+      ],
+      channelGroups: [
+        NotificationChannelGroup(
+          channelGroupKey: "MoveID_channel_group", 
+          channelGroupName: "MoveID Group",
+        ),
+      ],
+    );
+
+    // Check if the app is allowed to send notifications
+    bool isAllowedToSendNotifications = await AwesomeNotifications().isNotificationAllowed();
+
+    // If notifications are not allowed, request permission
+    if(!isAllowedToSendNotifications){
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.OnNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.OnNotificationDisplayedMethod
+    );
+  }

@@ -1,3 +1,4 @@
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:move_id/screens/home_screen.dart';
@@ -5,7 +6,8 @@ import 'package:move_id/screens/signin_screen.dart';
 import 'package:move_id/utils/color_utils.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final MqttServerClient client;
+  const SplashScreen({super.key, required this.client});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -17,7 +19,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    saveEmail("hugo.dn.ferreira");
     _checkEmail();
   }
 
@@ -29,12 +30,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if (email == null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        MaterialPageRoute(builder: (context) => SignInScreen(client: widget.client)),
       );
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen(client: widget.client)),
       );
     }
   }

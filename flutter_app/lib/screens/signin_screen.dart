@@ -5,19 +5,21 @@ import 'package:move_id/screens/signup_screen.dart';
 import 'package:move_id/utils/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:move_id/utils/api_urls.dart';
 
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  final MqttServerClient client;
+  const SignInScreen({super.key, required this.client});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-Future<Map<String, String>> loginRequest(BuildContext context, emailController,TextEditingController passwordController) async {
+Future<Map<String, String>> loginRequest(BuildContext context, emailController,TextEditingController passwordController, MqttServerClient client) async {
   
   const String url = ApiUrls.loginUrl;
 
@@ -58,7 +60,7 @@ Future<Map<String, String>> loginRequest(BuildContext context, emailController,T
 
       Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => HomeScreen(client: client)),
                   );
 
       return responseData;
@@ -136,7 +138,7 @@ Widget build(BuildContext context) {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                        MaterialPageRoute(builder: (context) => SignUpScreen(client: widget.client)),
                       );
                     },
                     child: const Text(
@@ -160,7 +162,7 @@ Widget build(BuildContext context) {
                           textColor: Colors.black,
                         );
                       } else {
-                        loginRequest(context, _emailController, _passwordController).then((response) {}).catchError((error) {
+                        loginRequest(context, _emailController, _passwordController, widget.client).then((response) {}).catchError((error) {
                           print("Error during login: $error");
                         });
                       }

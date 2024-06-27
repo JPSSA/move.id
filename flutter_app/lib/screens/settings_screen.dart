@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:move_id/screens/signin_screen.dart';
 import 'package:move_id/utils/color_utils.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final MqttServerClient client;
+  SettingsScreen({super.key, required this.client});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -92,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       await prefs.remove('email');
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SignInScreen()),
+                        MaterialPageRoute(builder: (context) =>  SignInScreen(client: widget.client)),
                       );
                     },
                   ),

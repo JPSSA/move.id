@@ -6,10 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:move_id/utils/api_urls.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final MqttServerClient client;
+  const SignUpScreen({super.key, required this.client});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -161,7 +163,7 @@ Widget build(BuildContext context) {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SignInScreen()),
+                        MaterialPageRoute(builder: (context) => SignInScreen(client: widget.client)),
                       );
                     },
                     child: const Text(

@@ -14,120 +14,9 @@ import 'package:move_id/Notification/notification_controller.dart';
 
 
 
-late MqttServerClient client;
+
 
 class HomeController extends GetxController{
-
-
-     Future<void> initializeMqttClient() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    const String broker = '192.168.1.78';
-    const int port = 1883;
-    String clientId = prefs.getString("email") ?? "teste";
-
-    client = MqttServerClient(broker, clientId);
-    client.port = port;
-    client.secure = false;
-
-    client.onConnected = onConnected;
-    client.onDisconnected = onDisconnected;
-    client.onSubscribed = subscribeToTopic;
-
-    // Connect to the MQTT broker
-    try {
-      await client.connect();
-      print('Conectou');
-      //client.subscribe("moveid/notification",MqttQos.atLeastOnce);
-    } catch (e) {
-      print('Failed to connect to MQTT broker: $e');
-    }
-  }
-
-  void onConnected() {
-    print('Connected to MQTT broker');
-    client.updates?.listen(onMessageReceived);
-  }
-
-  void onDisconnected() {
-      print('Disconnected from MQTT broker');
-  }
-
-  void subscribeToTopic(String topic) {
-      client.subscribe(topic, MqttQos.atLeastOnce);
-      print('Subscribed to topic: $topic');
-  }
-
-  void unsubscribeFromTopic(String topic) {
-    client.unsubscribe(topic);
-    print('Unsubscribed from topic: $topic');
-  }
-
- void onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) {
-  final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
-  final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-  
-  // Parse the JSON string
-  Map<String, dynamic> jsonMessage = jsonDecode(message);
-  String patientFirstName = jsonMessage['patient_fname'];
-  String patientLastName = jsonMessage['patient_lname'];
-  String alert = jsonMessage['alert'];
-  String location = jsonMessage['location'];
-  String id_sensor = jsonMessage['sensor_id'];
-  String id_location = jsonMessage['location_id'];
-
-  // Create notification using parsed information
-  String title = "Alert: $alert";
-  String body = "Patient: $patientFirstName $patientLastName\nLocation: $location";
-  
-  // Create Awesome Notification
-  AwesomeNotifications().createNotification(
-  content: NotificationContent(
-    id: 1, 
-    channelKey: "MoveID_Notification_Channel",
-    title: title,
-    body: body,
-  ),
-  actionButtons: [
-      NotificationActionButton(
-        key: 'DISABLE_NOTIFICATIONS',
-        label: 'Disable for 2 minutes',
-      ),
-    ],
-);
-AwesomeNotifications().setListeners(
-    onActionReceivedMethod: (receivedNotification) async {
-      if (receivedNotification.buttonKeyPressed == 'DISABLE_NOTIFICATIONS') {
-        await pauseMqttSubscription("moveID/notification/"+id_location+"/"+id_sensor);
-      }
-      
-    },
-  );
-  
-}
-
-
-Future<void> pauseMqttSubscription(String topic) async {
-    unsubscribeFromTopic(topic);
-
-    // Pausar por 2 minutos
-    await Future.delayed(Duration(minutes: 2));
-
-    // Reinscrever-se no tópico
-    subscribeToTopic(topic);
-    
-  }
-
-  
-
-  
-
-
-  
-
-  MqttServerClient getMqttClient() {
-    return client;
-  }
-
   RxString? selectedLocation = RxString('');
   Rx<List<PatientModel>> patients = Rx<List<PatientModel>>([]);
   TextEditingController deviceIDTextEditingController = TextEditingController();
@@ -137,8 +26,7 @@ Future<void> pauseMqttSubscription(String topic) async {
   void onInit() {
     super.onInit();
     print("Inciair");
-    initializeMqttClient();
-    initializeAwesomeNotifications();
+    
 
   }
 
@@ -155,42 +43,7 @@ Future<void> pauseMqttSubscription(String topic) async {
     deviceIDTextEditingController.clear();
   }
 
-   void initializeAwesomeNotifications() async {
-    // Initialize Awesome Notifications
-    await AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-          channelGroupKey: "MoveID_channel_group",
-          channelKey: "MoveID_Notification_Channel", 
-          channelName: "MoveID Notification", 
-          channelDescription: "MoveID Notification Channel",
-          playSound: true,
-        ),
-      ],
-      channelGroups: [
-        NotificationChannelGroup(
-          channelGroupKey: "MoveID_channel_group", 
-          channelGroupName: "MoveID Group",
-        ),
-      ],
-    );
-
-    // Check if the app is allowed to send notifications
-    bool isAllowedToSendNotifications = await AwesomeNotifications().isNotificationAllowed();
-
-    // If notifications are not allowed, request permission
-    if(!isAllowedToSendNotifications){
-      AwesomeNotifications().requestPermissionToSendNotifications();
-    }
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationController.OnNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationController.OnNotificationDisplayedMethod
-    );
-  }
-
+   
   void addNotifierRequest(String idLocation, String deviceid) async {
   
   const String url = ApiUrls.addNotifierUrl;
@@ -241,7 +94,7 @@ Future<void> pauseMqttSubscription(String topic) async {
   }
 }
 
-void removeNotifierRequest(String deviceid, String idLocation) async {
+void removeNotifierRequest(String deviceid, String idLocation, MqttServerClient client) async {
   
   const String url = ApiUrls.removeNotifierUrl;
 
@@ -266,7 +119,7 @@ void removeNotifierRequest(String deviceid, String idLocation) async {
 
     if (response.statusCode == 200) {
       String topic =  "moveID/notification/$idLocation/$deviceid";
-      unsubscribeFromTopic(topic);
+      client.unsubscribe(topic);
       Fluttertoast.showToast(
         msg: "Notifier removed successfully",
         toastLength: Toast.LENGTH_SHORT,
@@ -333,7 +186,7 @@ Future<Map<String,String>>  getAllLocationsAndIds() async {
   
 }
 
-Future<Map<String,String>> getAllListeners() async {
+Future<Map<String,String>> getAllListeners( MqttServerClient client) async {
   const String url = ApiUrls.getListenersUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
   
   try {
@@ -370,7 +223,7 @@ Future<Map<String,String>> getAllListeners() async {
         idsensorIdlocation[id] = locationId;
         String topic =  "moveID/notification/$locationId/$id";
         print(topic);
-        subscribeToTopic(topic);
+        client.subscribe(topic, MqttQos.atLeastOnce);
       }
 
       print('Listeners saved to SharedPreferences.');
@@ -388,9 +241,9 @@ Future<Map<String,String>> getAllListeners() async {
 
 
 
-void refreshData(){
+void refreshData( MqttServerClient client){
   getAllLocationsAndIds();
-  getAllListeners();
+  getAllListeners(client);
 
 }
   
