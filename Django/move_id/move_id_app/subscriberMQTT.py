@@ -11,6 +11,8 @@ import time
 import numpy as np
 import pytz
 from datetime import datetime
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 class subscriberMQTT:
     def __init__(self, preprocessing, email, location, id, ip, port=1883):
@@ -36,6 +38,7 @@ class subscriberMQTT:
         self.voting = VotingClassifier()
         self.sensor = Sensor.objects.filter(id_sensor = self.id).first()
         self.location = Location.objects.filter(id=location).first()
+        self.executor = ThreadPoolExecutor(max_workers=4)
         
     
 
@@ -68,18 +71,18 @@ class subscriberMQTT:
             for classifying unread messages.
             """
 
-            if count_rows_with_topic_id(msg.topic) >= 120:
-                delete_oldest_sensor_data(msg.topic)
-            appendData(msg)
+            if(msg.payload.decode() != {}):
+                if count_rows_with_topic_id(msg.topic) >= 120:
+                    delete_oldest_sensor_data(msg.topic)
+                appendData(msg)
 
-            array_data = self.getData()
+                array_data = self.getData()
 
-            if array_data:
-                for data in array_data:
-                    if len(data) != 0:
-                        print("Entrou")
-                        classification_thread = threading.Thread(target=self.classify_unread_messages, args=(data,msg,))
-                        classification_thread.start()
+                if array_data:
+                    for data in array_data:
+                        if len(data) != 0:
+                            print("Entrou")
+                            self.executor.submit(self.classify_unread_messages, data, msg)
 
                     
 
@@ -184,7 +187,7 @@ class subscriberMQTT:
 
         return self.voting.predict(matrix,  self.location.id, self.id)
 
-    def classify_unread_messages(self, data,msg):
+    def classify_unread_messages(self, data):
         """
         Classifies unread messages. If classification is positive, saves the data, in
         a table for later classification, and calls the function to publish a notification.
@@ -195,7 +198,7 @@ class subscriberMQTT:
 
             for instance in instances:
 
-                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=msg, user = instance.user, sensor = self.sensor)
+                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=data, user = instance.user, sensor = self.sensor)
                 data_classif.save()
 
             self.publish(self.client)

@@ -40,12 +40,13 @@ class VotingClassifier:
         """
         Adds a new classifier to the voting system and trains it with the existing dataset.
         """
-        clf_name = classifier.__class__.__name__
+        model = classifier()
+        clf_name = model.__class__.__name__
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
         
-        model = classification_model(parameters)
+       
 
         model.fit(X_train)
 
@@ -57,13 +58,13 @@ class VotingClassifier:
 
         if cl is not None:
             cl.path = model_file
-            cl.score = classifier.score
-            cl.params = parameters
-            cl.module = classifier.__module__
+            cl.score = model.score
+            cl.params = model.params
+            cl.module = model.__module__
             cl.save()  
             
         else:
-            new_instance = Classifier(name=clf_name,path=model_file, score=classifier.score,params=parameters,module=classifier.__module__)
+            new_instance = Classifier(name=clf_name,path=model_file, score=model.score,params=model.params,module=model.__module__)
             new_instance.save()
             
 
@@ -71,7 +72,8 @@ class VotingClassifier:
         '''
         Adds a new classifier to the voting system that does not require a training phase, they are unsupervised
         '''
-        clf_name = classifier.detector_type
+        model = classifier()
+        clf_name = model.__class__.__name__
         now = datetime.now()
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
@@ -82,11 +84,12 @@ class VotingClassifier:
 
         if cliente is not None:
             cliente.path = model_file
-            cliente.score = classifier.score
+            cliente.score = model.score
+            cliente.module=model.__module__
             cliente.save()  
         
         else:
-            new_instance = Classifier(name=clf_name,path=model_file, score=classifier.score)
+            new_instance = Classifier(name=clf_name,path=model_file, score=model.score,module=model.__module__)
             new_instance.save()
         
 
