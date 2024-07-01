@@ -1,8 +1,8 @@
+from pyod.models.hbos import HBOS
 from move_id_app.classifiers.classifiers import OneClassClassifier
-from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler
 
-class HistogramBasedOutlierDetection(Classifier):
+class HistogramBasedOutlierDetection(OneClassClassifier):
     
     def __init__(self):
         super().__init__(0.7,HBOS, {})
