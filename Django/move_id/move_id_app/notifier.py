@@ -237,7 +237,7 @@ class Notifier:
         # Loop through all instances and print their attributes
         for idSensor in ids_values:
             instance = UserSensor.objects.filter(sensor=idSensor)[0]
-            self.subs.append(subscriberMQTT(instance.user.email ,instance.sensor.location.id, idSensor , self.ip, self.port))
+            self.subs.append(subscriberMQTT(self.preprocessing, instance.user.email ,instance.sensor.location.id, idSensor , self.ip, self.port))
             
         for sub in self.subs:
             sub.run()

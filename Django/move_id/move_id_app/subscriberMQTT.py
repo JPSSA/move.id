@@ -185,20 +185,26 @@ class subscriberMQTT:
         
         matrix = self.preprocessing.fit(data)
 
-        return self.voting.predict(matrix,  self.location.id, self.id)
+        return self.voting.predict(matrix,  self.location.id, self.id), matrix
 
     def classify_unread_messages(self, data):
         """
         Classifies unread messages. If classification is positive, saves the data, in
         a table for later classification, and calls the function to publish a notification.
         """
-        if self.classify(data):
+
+        for d in data:
+            d.update(read=True)
+
+        classification, matrix = self.classify(data)
+
+        if classification:
             
             instances = UserSensor.objects.filter(sensor=self.sensor)
 
             for instance in instances:
 
-                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=data, user = instance.user, sensor = self.sensor)
+                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=matrix, user = instance.user, sensor = self.sensor)
                 data_classif.save()
 
             self.publish(self.client)

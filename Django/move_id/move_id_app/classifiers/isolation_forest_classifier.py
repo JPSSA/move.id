@@ -15,7 +15,7 @@ class IsolationForestClassifier(OneClassClassifier):
         self.model.fit(X_train_scalled)
 
     
-    def predict(self,X):
+    def predict(self,info,X):
         X_test_scalled = self.scaler.transform(X)
         y_pred = self.model.predict(X)
         for y in y_pred:

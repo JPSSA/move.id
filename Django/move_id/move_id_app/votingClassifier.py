@@ -111,8 +111,10 @@ class VotingClassifier:
         
         
         for clf, weight in zip(self.classifiers, self.weights):
-            predictions.append(clf.predict(X)[0])
+            predictions.append(clf.predict(X))
         
+        print(self.classifiers)
+        print(predictions)
         
         return int(np.sum(predictions)/len(predictions) > 0.5)
 

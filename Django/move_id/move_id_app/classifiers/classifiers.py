@@ -6,7 +6,7 @@ class Classifier(ABC):
         self.score = score
 
     @abstractmethod
-    def predict(self):
+    def predict(self, info):
         '''
         Method that returns the classification of the data set provided(X).
         To work correctly, it must comply with the protocol. 
@@ -58,8 +58,8 @@ class AnomalyDetector(Classifier):
 
         return anomaly_flags  
 
-    def predict(self, location, topic_id):
-        anomaly_flags = self.detect_anomalies(location, topic_id)
+    def predict(self, info):
+        anomaly_flags = self.detect_anomalies(info['location'], info['topic_id'])
         if self.is_majority_anomaly(anomaly_flags):
             return 1
         return 0
