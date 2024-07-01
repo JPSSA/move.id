@@ -2,10 +2,10 @@ from move_id_app.classifiers.classifiers import OneClassClassifier
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler
 
-class LocalOutlierFactorClassifier(OneClassClassifier):
+class HistogramBasedOutlierDetection(OneClassClassifier):
     
     def __init__(self):
-        super().__init__(0.7,LocalOutlierFactor, {})
+        super().__init__(0.7,HBOS, {})
         self.scaler = StandardScaler()
 
     def fit(self,X_train):
@@ -16,7 +16,12 @@ class LocalOutlierFactorClassifier(OneClassClassifier):
 
     
     def predict(self,X):
-        X_test_scalled = self.scaler.transform(X)
-        y_pred = self.model.predict(X)
-
-        return [1 if(v == -1) else 0 for v in y_pred]
+        scores = model.decision_function(X_test_scalled)        
+        threshold = np.percentile(scores, p)  
+        predicitons = -(scores > threshold).astype(int)
+        y_pred = [ -1 if p == -1 else 1 for p in predicitons]
+        for y in y_pred:
+            if(y == -1):
+                return 1
+        return 0
+        
