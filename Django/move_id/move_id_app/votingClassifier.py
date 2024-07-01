@@ -111,7 +111,7 @@ class VotingClassifier:
         
         
         for clf, weight in zip(self.classifiers, self.weights):
-            predictions.append(clf.predict(X))
+            predictions.append(clf.predict({'location':location, 'topic_id' : topic_id, 'X':X}))
         
         print(self.classifiers)
         print(predictions)

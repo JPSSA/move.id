@@ -14,8 +14,8 @@ class HistogramBasedOutlierDetection(OneClassClassifier):
         self.model.fit(X_train_scalled)
 
     
-    def predict(self,info,X):
-        X_test_scalled = self.scaler.transform(X)
+    def predict(self,info):
+        X_test_scalled = self.scaler.transform(info['X'])
         scores = model.decision_function(X_test_scalled)        
         threshold = np.percentile(scores, p)  
         predicitons = -(scores > 90).astype(int)
