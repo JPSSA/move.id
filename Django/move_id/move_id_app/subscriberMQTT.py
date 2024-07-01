@@ -81,7 +81,6 @@ class subscriberMQTT:
                 if array_data:
                     for data in array_data:
                         if len(data) != 0:
-                            print("Entrou")
                             self.executor.submit(self.classify_unread_messages, data, msg)
 
                     
