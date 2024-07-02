@@ -78,7 +78,7 @@ class VotingClassifier:
         model_file = self.models_dir +'/' + clf_name + '_model_'+ now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
 
         with open(model_file, 'wb') as f:
-            pickle.dump(classifier, f)
+            pickle.dump(model, f)
 
         cliente = Classifier.objects.filter(name=clf_name).first()  
 
@@ -111,7 +111,6 @@ class VotingClassifier:
         
 
         for clf, weight in zip(self.classifiers, self.weights):
-            print(clf)
             predictions.append(clf.predict({'location':location, 'topic_id' : topic_id, 'X':X}))
         
         

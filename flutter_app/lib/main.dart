@@ -26,7 +26,7 @@ void main() async {
   final MqttServerClient client;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  const String broker = '192.168.1.78';
+  const String broker = '192.168.242.177';
   const int port = 1883;
   String clientId = prefs.getString("email") ?? "teste";
 

@@ -2,6 +2,7 @@ from move_id_app.classifiers.classifiers import AnomalyDetector
 from adtk.detector import OutlierDetector
 import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
+from adtk.data import validate_series
 
 class OutlierDetection(AnomalyDetector):
 

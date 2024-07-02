@@ -1,5 +1,6 @@
 from move_id_app.classifiers.classifiers import AnomalyDetector
 from adtk.detector import QuantileAD
+from adtk.data import validate_series
 
 class Quantile(AnomalyDetector):
 

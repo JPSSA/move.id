@@ -1,5 +1,5 @@
 from .models import SensorData
-import pandas as pd # type: ignore
+import pandas as pd 
 import json
 import pytz
 from datetime import datetime
@@ -29,7 +29,6 @@ def get_sensor_data_as_dataframe(topic_id):
     flattened_data_list = []
 
     for sensor_data in sensor_data_queryset:
-        print(sensor_data)
         data = json.loads(sensor_data.message)
         flattened_data = dict_flatten(data)
         datetime_utc = sensor_data.datetime.astimezone(pytz.UTC)

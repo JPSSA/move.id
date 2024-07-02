@@ -103,14 +103,19 @@ class subscriberMQTT:
         Publishes a notification message to the MQTT topic if a certain condition is met.
         Contains patient and location information in the payload.
         """
+
+        
+
         msg_count = 1
-        sensor_id = self.sensor.patient.id
+        sensor_id = self.sensor.patient.nif
         fname = self.sensor.patient.first_name
         lname = self.sensor.patient.last_name
         room =self.sensor.patient.room
         bed = self.sensor.patient.bed
         location_name = self.location.name
         location_id = self.location.id
+
+        
 
         while True:
             time.sleep(1)
@@ -208,7 +213,7 @@ class subscriberMQTT:
         matrix = self.preprocessing.fit(data)
 
         
-        return self.voting.predict(matrix,  self.location.id, self.id), matrix
+        return self.voting.predict(matrix, self.location.id, self.id), matrix
 
     def classify_unread_messages(self, data):
         """
@@ -219,14 +224,17 @@ class subscriberMQTT:
 
         classification, matrix = self.classify(data)
 
-        if classification:
+        if classification == 1:
+            
             
             instances = UserSensor.objects.filter(sensor=self.sensor)
 
             for instance in instances:
 
-                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=matrix, user = instance.user, sensor = self.sensor)
+                data_classif = SensorDataClassification(datetime = datetime.now(pytz.UTC), message=json.dumps(matrix), user = instance.user, sensor = self.sensor)
                 data_classif.save()
+
+            print('chegou aqui')
 
             self.publish(self.client)
     

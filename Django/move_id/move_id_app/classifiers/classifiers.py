@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-import move_id_app.sensordatautils
+from move_id_app.sensordatautils import get_sensor_data_as_dataframe
+import warnings
+warnings.filterwarnings("ignore", message="Setting an item of incompatible dtype is deprecated", category=FutureWarning)
 
 class Classifier(ABC):
     def __init__(self,score):

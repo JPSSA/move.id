@@ -1,5 +1,6 @@
 from move_id_app.classifiers.classifiers import AnomalyDetector
 from adtk.detector import LevelShiftAD
+from adtk.data import validate_series
 
 class LevelShift(AnomalyDetector):
 
