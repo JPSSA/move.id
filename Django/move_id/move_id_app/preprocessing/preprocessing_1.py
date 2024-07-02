@@ -3,16 +3,13 @@ import numpy as np
 import scipy
 from move_id_app.preprocessing.preprocessing import PreProcessing
 from scipy.stats import skew, kurtosis
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning, message="Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.")
 
 class PreProcessing_v1(PreProcessing):
 
-    def windowed_data(data, window_size):
-        num_samples = len(data)
-        num_windows = num_samples - window_size + 1
-        windows = [data[i:i+window_size] for i in range(num_windows)]
-        return windows
-
-    def dict_flatten(dic):
+    
+    def dict_flatten(self,dic):
         Dic = {}
         for key in dic.keys():
             sample_dict = dic[key]
@@ -49,13 +46,11 @@ class PreProcessing_v1(PreProcessing):
             return kurtosis(array) if not np.isnan(kurtosis(array)) else 0
         super().__init__([np.std, np.var, mad, rms, energy, entropy, skew_func, kurtosis_func])
 
-    def calculate_statistics(window):
+    def calculate_statistics(self,window):
         
         Dic = {}
         
-        
-        
-        flatten = [dict_flatten(json.loads(dic.message)) for dic in window]
+        flatten = [self.dict_flatten(json.loads(message)) for message in window]
         
         keys = list(flatten[0].keys())
 
@@ -70,7 +65,7 @@ class PreProcessing_v1(PreProcessing):
                         
         return Dic
 
-    def to_matrix(processed_data):
+    def to_matrix(self,processed_data):
         X = []
         for sample in processed_data:
             sample_values = []
@@ -85,7 +80,7 @@ class PreProcessing_v1(PreProcessing):
         return X
 
 
-    def fit(data):
-        calculated = calculate_statistics(data)
-        return to_matrix([calculated])
+    def fit(self,data):
+        calculated = self.calculate_statistics(data)
+        return self.to_matrix([calculated])
 

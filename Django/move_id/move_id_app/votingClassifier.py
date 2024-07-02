@@ -109,11 +109,12 @@ class VotingClassifier:
         '''
         predictions = []
         
-        
+
         for clf, weight in zip(self.classifiers, self.weights):
+            print(clf)
             predictions.append(clf.predict({'location':location, 'topic_id' : topic_id, 'X':X}))
         
-        print(self.classifiers)
+        
         print(predictions)
         
         return int(np.sum(predictions)/len(predictions) > 0.5)

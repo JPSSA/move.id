@@ -81,7 +81,7 @@ class subscriberMQTT:
                 if array_data:
                     for data in array_data:
                         if len(data) != 0:
-                            self.executor.submit(self.classify_unread_messages, data, msg)
+                            self.executor.submit(self.classify_unread_messages, data)
 
                     
 
@@ -161,21 +161,44 @@ class subscriberMQTT:
 
         unread_messages = SensorData.objects.filter(topic_id='moveID/subscriber/' + str(self.location.id) + '/' + str(self.id), read=False).order_by('-datetime')
 
+        unread_data = [message.message for message in unread_messages]
 
-        previous_messages = SensorData.objects.filter(
-                topic_id=unread_messages[len(unread_messages)-1].topic_id,
-                datetime__lt=unread_messages[len(unread_messages)-1].datetime,
-            ).order_by('-datetime')[:window-1]
+        for message in unread_messages:
+            message.read = True
+            message.save()
 
-        messages = np.concatenate((unread_messages,previous_messages))
 
-        for indice, message in enumerate(messages):
-            if(indice <= len(messages) - window):
-                array.append(messages[indice:indice+window])
+        
+        
 
+        if(len(unread_data) != 0):
+
+            previous_messages = SensorData.objects.filter(
+                    topic_id=unread_messages[len(unread_messages)-1].topic_id,
+                    datetime__lt=unread_messages[len(unread_messages)-1].datetime,
+                ).order_by('-datetime')[:window-1]
+
+            
+            previous_data = [message.message for message in previous_messages]
+
+            for message in previous_messages:
+                message.read = True
+                message.save()
+
+            messages = np.concatenate((unread_data,previous_data))
+
+            
+
+            for indice, message in enumerate(messages):
+                if(indice <= len(messages) - window):
+                    array.append(messages[indice:indice+window])
+
+            
+            
                 
     
-        return array
+            return array
+        return []
 
     def classify(self, data):
         """
@@ -184,6 +207,7 @@ class subscriberMQTT:
         
         matrix = self.preprocessing.fit(data)
 
+        
         return self.voting.predict(matrix,  self.location.id, self.id), matrix
 
     def classify_unread_messages(self, data):
@@ -192,8 +216,6 @@ class subscriberMQTT:
         a table for later classification, and calls the function to publish a notification.
         """
 
-        for d in data:
-            d.update(read=True)
 
         classification, matrix = self.classify(data)
 

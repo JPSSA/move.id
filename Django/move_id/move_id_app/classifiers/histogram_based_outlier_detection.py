@@ -1,6 +1,8 @@
 from pyod.models.hbos import HBOS
 from move_id_app.classifiers.classifiers import OneClassClassifier
 from sklearn.preprocessing import StandardScaler
+import numpy as np
+
 
 class HistogramBasedOutlierDetection(OneClassClassifier):
     
@@ -17,8 +19,8 @@ class HistogramBasedOutlierDetection(OneClassClassifier):
     def predict(self,info):
         X_test_scalled = self.scaler.transform(info['X'])
         scores = model.decision_function(X_test_scalled)        
-        threshold = np.percentile(scores, p)  
-        predicitons = -(scores > 90).astype(int)
+        threshold = np.percentile(scores, 90)  
+        predicitons = -(scores > threshold).astype(int)
         y_pred = [ -1 if p == -1 else 1 for p in predicitons]
         for y in y_pred:
             if(y == -1):
