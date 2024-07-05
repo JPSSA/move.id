@@ -1,8 +1,0 @@
-@startuml
-class OutlierDetection {
-    check_detection_with_window()
-    getanomalyList()
-        __init__()
-}
-AnomalyDetector <|-- OutlierDetection
-@enduml
