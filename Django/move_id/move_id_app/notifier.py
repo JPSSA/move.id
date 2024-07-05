@@ -1,4 +1,4 @@
-from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Sensor, Patient, Location
+from move_id_app.models import Classifier, Dataset, UserSensor, SensorData, Sensor, Patient, Location, SensorDataClassification
 from django.contrib.auth.models import User
 from .votingClassifier import VotingClassifier
 from .subscriberMQTT import subscriberMQTT
@@ -11,6 +11,7 @@ import csv
 import move_id_app.preprocessing.preprocessing as preprocessing
 import time
 import sys
+import numpy as np
 from django.db import transaction
 
 
@@ -44,21 +45,13 @@ class Notifier:
 
                 if existing_dataset:
 
-                    # Atualizar o caminho do dataset existente
                     new_instance = Dataset(path=path)
                     new_instance.save()
 
-                    # Obter todos os classificadores existentes
                     classifiers = Classifier.objects.all()
 
                     if classifiers:
 
-                        # Dicionário para armazenar os scores
-                        scores = {}
-
-                        scores['old_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
-
-                        # Treinar cada classificador com o novo dataset e os parâmetros existentes
                         for cl in classifiers:
                             class_name = cl.name
                             module_name = cl.module
@@ -66,19 +59,10 @@ class Notifier:
 
                             self.add_classifier(classifier, cl.params)
 
-                        classifiers = Classifier.objects.all()
 
-                        scores['new_dataset'] = [{'name': cl.name, 'path': cl.path, 'score' : cl.score, 'best_params' : cl.params} for cl in classifiers]
+                        
 
-                        now = datetime.now()
-
-                        file_name = './move_id_app/dataset' +'/' + 'dataset_change' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
-
-        
-                        with open(file_name, 'wb') as f: 
-                            pickle.dump(scores, f)
-
-                        print('New dataset ready to use! We provided a file "'+ file_name +'" with the score differences in each one classifier.')
+                        print('New dataset ready to use!')
 
                 else:
                     new_instance = Dataset(path=path)
@@ -92,7 +76,7 @@ class Notifier:
             print(f"An error occurred: {e}")
             raise
 
-    def make_new_dataset():
+    def make_new_dataset(self):
         """
         Creates a new dataset by combining existing dataset with user classifications.
         """
@@ -104,24 +88,26 @@ class Notifier:
         dataset=pickle.load(open(path,'rb'))
         X = dataset['X']
         y = dataset['y']
+        len_window = dataset['len_window']
 
-        notification_with_avaliation = SensorDataClassification.objects.filter(classification != None)
 
-        data = [notif.message for notif in notification_with_avaliation]
-        classifications = [notif.classification for notif in notification_with_avaliation]
+        notification_with_avaliation = SensorDataClassification.objects.filter(classification__isnull=False)
 
-        calculated = preprocessing.calculate_statistics(data)
-        matrix = preprocessing.to_matrix([calculated])
-
-        new_X = np.vstack((X,matrix))
-        new_y = np.hstack((y,classifications))
+        data = [json.loads(notif.message)[0] for notif in notification_with_avaliation]
+        classifications = [int(notif.classification) for notif in notification_with_avaliation]
 
         
 
-        file_name = 'dataset' +'/' + 'dataset_with_users_classifications_' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
+        new_X = np.vstack((X,data))
+        new_y = np.hstack((y,classifications))
+        
+        now = datetime.now()
+        
+
+        file_name = './move_id_app/dataset' +'/' + 'dataset_with_users_classifications_' + now.strftime("%d_%m_%Y_%H_%M_%S") +'.p'
         
         with open(file_name, 'wb') as f: 
-            pickle.dump({'X':new_X,'y':new_y}, f)
+            pickle.dump({'X':new_X,'y':new_y, 'len_window':len_window}, f)
         
         print('New dataset with users classification saved on path: ' + file_name)
 

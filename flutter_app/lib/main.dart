@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:move_id/Notification/notification_controller.dart';
@@ -26,7 +25,7 @@ void main() async {
   final MqttServerClient client;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  const String broker = '192.168.242.177';
+  const String broker = '192.168.198.177';
   const int port = 1883;
   String clientId = prefs.getString("email") ?? "teste";
 
@@ -36,7 +35,7 @@ void main() async {
 
   client.onConnected = () => onConnected(client);
 
-  await prefs.setStringList('topic_pause_mqtt', [].map((e) => e.toString()).toList());
+  await prefs.setStringList('topic_pause_mqtt', []);
 
   // Connect to the MQTT broker
     try {
@@ -138,8 +137,8 @@ Future<void> onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) asy
   String patientLastName = jsonMessage['patient_lname'];
   String alert = jsonMessage['alert'];
   String location = jsonMessage['location'];
-  String id_sensor = jsonMessage['sensor_id'];
-  String id_location = jsonMessage['location_id'];
+  String id_sensor = jsonMessage['sensor_id'].toString();
+  String id_location = jsonMessage['location_id'].toString();
 
   // Create notification using parsed information
   String title = "Alert: $alert";
@@ -152,7 +151,6 @@ Future<void> onMessageReceived(List<MqttReceivedMessage<MqttMessage>> event) asy
     // Create Awesome Notification
   AwesomeNotifications().createNotification(
   content: NotificationContent(
-    icon: "assets/images/move_id_logo_green.png",
     id: 1, 
     channelKey: "MoveID_Notification_Channel",
     title: title,
@@ -181,19 +179,18 @@ AwesomeNotifications().setListeners(
 
 
 Future<void> pauseMqttSubscription(String topic) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final List<String> stringList = prefs.getStringList('topic_pause_mqtt') ?? [];
+  stringList.add(topic);
+  await prefs.setStringList('topic_pause_mqtt', stringList);
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String> stringList = prefs.getStringList('topic_pause_mqtt')??[];
-    stringList.add(topic);
+  await Future.delayed(Duration(minutes: 2));
 
-    
-    await Future.delayed(Duration(minutes: 2));
+  final List<String> stringList2 = prefs.getStringList('topic_pause_mqtt') ?? [];
+  stringList2.remove(topic);
+  await prefs.setStringList('topic_pause_mqtt', stringList2);
+}
 
-    
-    final List<String> stringList2 = prefs.getStringList('topic_pause_mqtt')??[];
-    stringList2.remove(topic);
-    
-  }
 
   void initializeAwesomeNotifications() async {
     // Initialize Awesome Notifications
@@ -225,8 +222,8 @@ Future<void> pauseMqttSubscription(String topic) async {
     }
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationController.OnNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationController.OnNotificationDisplayedMethod
+    onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+    onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+    onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
     );
   }

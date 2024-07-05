@@ -10,7 +10,7 @@ class NotificationController {
 
   // Use this method to detect every time that a new notification is displayed
   @pragma("vm:entry-point")
-  static Future<void> OnNotificationDisplayedMethod(
+  static Future<void> onNotificationDisplayedMethod(
     ReceivedNotification receivedNotification) async{
       // code here
     }
