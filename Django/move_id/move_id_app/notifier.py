@@ -94,7 +94,7 @@ class Notifier:
         notification_with_avaliation = SensorDataClassification.objects.filter(classification__isnull=False)
 
         data = [json.loads(notif.message)[0] for notif in notification_with_avaliation]
-        classifications = [int(notif.classification) for notif in notification_with_avaliation]
+        classifications = [ -1 if notif.classification == True else 1 for notif in notification_with_avaliation]
 
         
 
