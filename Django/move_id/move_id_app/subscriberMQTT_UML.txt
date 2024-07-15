@@ -1,0 +1,25 @@
+@startuml
+class subscriberMQTT {
+    connect_mqtt()
+    on_connect()
+    subscribe()
+    on_message()
+    stop()
+    publish()
+    getData()
+    classify()
+    classify_unread_messages()
+    run()
+        broker
+    port
+    id
+    preprocessing
+    start_time
+    voting
+    sensor
+    location
+    executor
+    client
+    __init__()
+}
+@enduml
