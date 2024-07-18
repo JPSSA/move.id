@@ -83,9 +83,21 @@ For the usage somethings are still going to be configurated, mainly the database
 
 Let's fist start with the creation of the super user in Django.
 To create the super user you need to run the following command in the terminal:
-  ```sh
+    ```sh
  python manage.py createsuperuser
   ```
+
+After creating this super user you need to migrate the models into the database using the followig commands:
+Create:
+    ```sh
+ python manage.py makemigrations
+  ```
+Apply:
+   ```sh
+ python manage.py makemigrations
+  ````
+
+
 
 
 
