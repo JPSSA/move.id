@@ -81,6 +81,12 @@ DATABASES = {
 
 For the usage somethings are still going to be configurated, mainly the database table migrations and the admin super user.
 
+Let's fist start with the creation of the super user in Django.
+To create the super user you need to run the following command in the terminal:
+  ```sh
+ python manage.py createsuperuser
+  ```
+
 
 
 
