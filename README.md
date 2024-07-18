@@ -83,19 +83,76 @@ For the usage somethings are still going to be configurated, mainly the database
 
 Let's fist start with the creation of the super user in Django.
 To create the super user you need to run the following command in the terminal:
-    ```sh
+
+```sh
  python manage.py createsuperuser
-  ``
+```
 After creating this super user you need to migrate the models into the database using the followig commands:
 Create:
 
-    ```sh
+```sh
  python manage.py makemigrations
-  ``
+```
 Apply:
-   ```sh
- python manage.py makemigrations
-  ``
+```
+sh
+python manage.py makemigrations
+```
+
+Upon creating the database structure and the super admin, run the server with the command,access the localhost and login with the superuser credentials:
+```
+sh
+python manage.py runserver
+```
+
+## Features
+
+The "move.id - Outlier Detection in Human Activity Data" project includes several features to enhance patient monitoring and ensure timely alerts for potential issues detected through the analysis of sensor data:
+
+### 1. Data Acquisition from Sensors
+- Collect data from sensors (e.g., smartphones) attached to patients at risk of falling.
+- Gather a variety of movement data to build comprehensive datasets representing both normal and abnormal activities.
+
+### 2. Data Processing and Cleaning
+- Preprocess and clean the raw data to ensure accuracy and consistency.
+
+### 3. Machine Learning-Based Classification and Unsupervised Classification
+- Utilize machine learning algorithms to build classifiers capable of distinguishing between standard and outlier movements.
+- Train models on representative datasets to accurately detect abnormal movements.
+- Utilizes ADTK library to classify outliers
+
+### 4. Real-Time Outlier Detection
+- Implement real-time detection of outlier movements using the trained classifiers.
+- Monitor sensor data continuously to identify potential issues as they occur.
+
+### 5. Notification and Classification System
+- Send alerts to predefined users, such as healthcare teams, via a mobile application when outlier movements are detected.
+- Ensure timely intervention and monitoring of patients based on the notifications received.
+- Allows users to classify the notifications they received
+
+### 6. User Management and Authentication
+- Manage user accounts and permissions within the Django admin interface.
+- Authenticate users to ensure secure access to the system and its features.
+
+### 7. Integration with Flutter Mobile Application
+- Provide a mobile interface for healthcare professionals to receive and manage alerts.
+- Ensure seamless integration between the Django backend and the Flutter frontend.
+
+### 8. Database Management with PostgreSQL
+- Utilize PostgreSQL for robust and scalable database management.
+- Store and manage large volumes of sensor data efficiently.
+
+### 9. RESTful API with Django Rest Framework
+- Implement RESTful API endpoints for data interaction between the backend and the mobile application.
+- Ensure secure and efficient communication through the API.
+
+### 10. Scalability and Extensibility
+- Design the system to be scalable and extensible for future enhancements.
+- Allow for easy integration of additional sensors, data types, and machine learning models.
+
+These features collectively provide a comprehensive solution for detecting and managing outlier movements in patients, enhancing their safety and improving healthcare outcomes.
+
+
 
 
 
