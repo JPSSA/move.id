@@ -14,6 +14,8 @@ import 'package:move_id/utils/notification_history_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +27,9 @@ void main() async {
   final MqttServerClient client;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  const String broker = '192.168.198.177';
-  const int port = 1883;
+  loadConfig();
+  String broker = prefs.getString("ip_mqtt")??"";
+  int port = prefs.getInt("port_mqtt")??0;
   String clientId = prefs.getString("email") ?? "teste";
 
   client = MqttServerClient(broker, clientId);
@@ -227,3 +230,13 @@ Future<void> pauseMqttSubscription(String topic) async {
     onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
     );
   }
+
+Future<void> loadConfig() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String configString = await rootBundle.loadString('assets/config.json');
+  Map<String, dynamic> dic = jsonDecode(configString);
+  prefs.setString("ip_mqtt", dic["MQTT"]["ip"]);
+  prefs.setString("port_mqtt", dic["MQTT"]["port"]);
+  prefs.setString("ip_http", dic["HTTP"]["ip"]);
+  prefs.setString("port_http", dic["HTTP"]["port"]);
+}

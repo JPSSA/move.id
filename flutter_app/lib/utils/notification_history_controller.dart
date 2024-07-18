@@ -12,8 +12,11 @@ class NotificationHistoryController extends GetxController {
   List<dynamic> filteredNotifications = [];
 
   Future<List<dynamic>> getNotificationHistory() async {
-    const String url = ApiUrls.getNotificationHistoryUrl;
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.getNotificationHistoryUrl;
     String email = prefs.getString("email").toString();
     String? startHour = prefs.getString('startHour');
     String? endHour = prefs.getString('endHour');
@@ -58,7 +61,11 @@ class NotificationHistoryController extends GetxController {
   }
 
   void evaluateNotification(Map<String,String> infos, bool classification) async {
-    const String url = ApiUrls.notificationHistoryUrl;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.notificationHistoryUrl;
 
     try {
       final prefs = await SharedPreferences.getInstance();

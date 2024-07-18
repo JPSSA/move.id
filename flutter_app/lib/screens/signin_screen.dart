@@ -21,7 +21,11 @@ class SignInScreen extends StatefulWidget {
 
 Future<Map<String, String>> loginRequest(BuildContext context, emailController,TextEditingController passwordController, MqttServerClient client) async {
   
-  const String url = ApiUrls.loginUrl;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.loginUrl;
 
   try {
     final String email = emailController.text;

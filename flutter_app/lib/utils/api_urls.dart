@@ -1,14 +1,14 @@
 class ApiUrls {
   
-  static const String baseUrl = 'http://192.168.198.177:8000/';
-  static const String loginUrl = '$baseUrl/loginAPI/';
-  static const String registerUrl = '$baseUrl/registerAPI/';
-  static const String getListenersUrl = '$baseUrl/listenersAPI/';
-  static const String addNotifierUrl = '$baseUrl/addNotifierAPI/';
-  static const String removeNotifierUrl = '$baseUrl/removeNotifierAPI/';
-  static const String locationGetterUrl = '$baseUrl/LocationGetterAPI/';
-  static const String notificationHistoryUrl = '$baseUrl/notificationHistory/';
-  static const String getNotificationHistoryUrl = '$baseUrl/getNotificationHistory/';
+  
+  static const String loginUrl = '/loginAPI/';
+  static const String registerUrl = '/registerAPI/';
+  static const String getListenersUrl = '/listenersAPI/';
+  static const String addNotifierUrl = '/addNotifierAPI/';
+  static const String removeNotifierUrl = '/removeNotifierAPI/';
+  static const String locationGetterUrl = '/LocationGetterAPI/';
+  static const String notificationHistoryUrl = '/notificationHistory/';
+  static const String getNotificationHistoryUrl = '/getNotificationHistory/';
 
 
 }

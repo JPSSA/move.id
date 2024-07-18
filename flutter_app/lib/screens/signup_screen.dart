@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:move_id/utils/api_urls.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignUpScreen extends StatefulWidget {
@@ -22,7 +23,12 @@ Future<Map<String, String>> registerRequest(TextEditingController fnameControlle
     TextEditingController usernameController, TextEditingController emailController,
     TextEditingController password1Controller) async {
   
-  const String url = ApiUrls.registerUrl;
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.registerUrl;
   
   final String firstName = fnameController.text;
   final String lastName = lnameController.text;

@@ -46,7 +46,11 @@ class HomeController extends GetxController{
    
   void addNotifierRequest(String idLocation, String deviceid) async {
   
-  const String url = ApiUrls.addNotifierUrl;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.addNotifierUrl;
 
   try {
     final prefs = await SharedPreferences.getInstance();
@@ -96,7 +100,11 @@ class HomeController extends GetxController{
 
 void removeNotifierRequest(String deviceid, String idLocation, MqttServerClient client) async {
   
-  const String url = ApiUrls.removeNotifierUrl;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.removeNotifierUrl;
 
   try {
     final prefs = await SharedPreferences.getInstance();
@@ -154,7 +162,11 @@ void removeNotifierRequest(String deviceid, String idLocation, MqttServerClient 
 final List<String> dropdownOptions = [];
 
 Future<Map<String,String>>  getAllLocationsAndIds() async {
-  const String url = ApiUrls.locationGetterUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.locationGetterUrl; 
   
   try {
     final http.Response response = await http.get(Uri.parse(url));
@@ -187,7 +199,11 @@ Future<Map<String,String>>  getAllLocationsAndIds() async {
 }
 
 Future<Map<String,String>> getAllListeners( MqttServerClient client) async {
-  const String url = ApiUrls.getListenersUrl; // Replace 'YOUR_API_URL_HERE' with your actual API endpoint for fetching locations and IDs
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ip = prefs.getString("ip_http")??"";
+  String port = prefs.getString("ip_http")??"";
+
+  String url = 'http://'+ip+':'+port+'/' + ApiUrls.getListenersUrl; 
   
   try {
 
