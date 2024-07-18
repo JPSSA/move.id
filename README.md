@@ -153,6 +153,55 @@ The "move.id - Outlier Detection in Human Activity Data" project includes severa
 These features collectively provide a comprehensive solution for detecting and managing outlier movements in patients, enhancing their safety and improving healthcare outcomes.
 
 
+## Project Structure
+
+The "move.id - Outlier Detection in Human Activity Data" project is organized into several directories and files, each serving a specific purpose. Below is an overview of the project structure:
+
+
+1. **Django Directory**:
+    - `manage.py`: Script to manage the Django project.
+    - `virtual/`: Directory containing the virtual environment.
+    - `requirements.txt`: File listing the Python dependencies.
+    - `move_id/`: Main Django project directory.
+        - `settings.py`: Configuration settings for the Django project.
+        - `urls.py`: URL configuration for the project.
+        - `wsgi.py`: WSGI application entry point.
+        - `asgi.py`: ASGI application entry point.
+    - `move_id_app/`: Directory containing Django applications.
+        - `migrations/`: Database migrations.
+        - `models.py`: Data models.
+        - `views.py`: Views for handling requests.
+        - `admin.py`: Admin interface configuration.
+        - `urls.py`: URL configuration for the sensors app.
+        - `tests.py`: Tests for the sensors app.
+        - `notifier.py`: 
+        - `sensordatautils.py`: Funtions for sensor data management.
+        - `subscriberMQTT.py`:
+        - `votingClassifier.py`:
+        - `classifiers/`: Application for user management.
+            - `classifiers.py`: Abstract Classes for the classifiers.
+            - `histogram_based_outlier_detection.py`:
+            - `isolation_forest_classifier.py`:
+            - `level_shift.py`: ADTK LevelShiftAD classifier.
+            - `oneclassSVMclassifier.py`:
+            - `outlier_detection.py`: ADTK OutlierDetector classifier.
+            - `quantile.py`: ADTK QuantileAD classifier.
+        - `dataset/`: Folder to store datasets.
+        - `migrations/`: Folder to store database migrations.
+        - `models/`: 
+
+2. **Flutter Directory**:
+    - `android/` and `ios/`: Platform-specific files for Android and iOS.
+    - `lib/`: Main directory for Dart code.
+        - `main.dart`: Entry point for the Flutter application.
+        - `models/`: Data models for the Flutter application.
+        - `screens/`: UI screens for the application.
+        - `utils/`: Code used to simplify the flutter implemention.
+        - `Notification/`: Handles the notification system.
+    - `pubspec.yaml`: File listing the Flutter project dependencies.
+
+3. **Root Directory**:
+    - `README.md`: Main documentation file for the project.
 
 
 
