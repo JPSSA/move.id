@@ -174,21 +174,21 @@ The "move.id - Outlier Detection in Human Activity Data" project is organized in
         - `admin.py`: Admin interface configuration.
         - `urls.py`: URL configuration for the sensors app.
         - `tests.py`: Tests for the sensors app.
-        - `notifier.py`: 
+        - `notifier.py`: Main class, the only one that needs to be instantiated for the main process to work.
         - `sensordatautils.py`: Funtions for sensor data management.
-        - `subscriberMQTT.py`:
-        - `votingClassifier.py`:
+        - `subscriberMQTT.py`:  Class responsible for the MQTT communication.
+        - `votingClassifier.py`: Class to support the entire process of voting by the classification models.
         - `classifiers/`: Application for user management.
             - `classifiers.py`: Abstract Classes for the classifiers.
-            - `histogram_based_outlier_detection.py`:
-            - `isolation_forest_classifier.py`:
+            - `histogram_based_outlier_detection.py`: Histogram-based outlier detection classifier implementation.
+            - `isolation_forest_classifier.py`: Isolation Forest classifier implementation.
             - `level_shift.py`: ADTK LevelShiftAD classifier.
-            - `oneclassSVMclassifier.py`:
-            - `outlier_detection.py`: ADTK OutlierDetector classifier.
+            - `oneclassSVMclassifier.py`: OneClassSVM classifier.
+            - `outlier_detection.py`: ADTK OutlierDetector classifier implementation.
             - `quantile.py`: ADTK QuantileAD classifier.
         - `dataset/`: Folder to store datasets.
         - `migrations/`: Folder to store database migrations.
-        - `models/`: 
+        - `models/`: Folder to store the classification models
 
 2. **Flutter Directory**:
     - `android/` and `ios/`: Platform-specific files for Android and iOS.
