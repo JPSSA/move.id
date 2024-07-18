@@ -205,6 +205,20 @@ The "move.id - Outlier Detection in Human Activity Data" project is organized in
 
 
 
+## About
+
+This project, "move.id - Outlier Detection in Human Activity Data," was developed by Hugo Ferreira, João Pereira, and João Alves. They are students at the Instituto Superior de Engenharia de Lisboa (ISEL) in Lisbon, Portugal, pursuing a degree in Licenciatura em Engenharia Informática e Multimédia.
+
+The team's goal is to enhance patient monitoring by detecting outlier movements using data from sensors. This system aims to provide timely alerts for potential issues, improving the safety and well-being of patients at risk of falling.
+
+## Contacts
+
+- Hugo Ferreira 
+  - [LinkedIn](https://www.linkedin.com/in/hugo-ferreira-bab142206/)
+  - Email: [hugo.dn.ferreira@gmail.com](mailto:hugo.dn.ferreira@gmail.com)
+
+
+
 
 
 
