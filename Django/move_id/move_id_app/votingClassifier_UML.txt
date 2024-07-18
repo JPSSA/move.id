@@ -1,0 +1,12 @@
+@startuml
+class VotingClassifier {
+    add_classifier()
+    add_classifier_unsupervised()
+    delete_classifier()
+    predict()
+        models_dir
+    classifiers
+    weights
+    __init__()
+}
+@enduml
