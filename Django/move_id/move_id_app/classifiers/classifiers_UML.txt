@@ -1,0 +1,23 @@
+@startuml
+class Classifier {
+    predict()
+        score
+    __init__()
+}
+class OneClassClassifier {
+    fit()
+        model
+    params
+    __init__()
+}
+class AnomalyDetector {
+    is_majority_anomaly()
+    detect_anomalies()
+    predict()
+    check_detection_with_window()
+        __init__()
+}
+ABC <|-- Classifier
+Classifier <|-- OneClassClassifier
+Classifier <|-- AnomalyDetector
+@enduml
